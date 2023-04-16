@@ -131,6 +131,13 @@ namespace GamesaveCloudCLI
                 Console.WriteLine("GetFolders " + sfolder.Name);
             }
 
+            var helper2 = new GoolgeDriveHelper();
+            folders = helper2.GetFolders("root");
+            foreach (var sfolder in folders)
+            {
+                Console.WriteLine("GetFolders " + sfolder.Name);
+            }
+
             //NewFolder PASS
             //var newfolder = helper.NewFolder("my new folder", folder.Id);
             //Console.WriteLine("NewFolder " + newfolder.Name);
