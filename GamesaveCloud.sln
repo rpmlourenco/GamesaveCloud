@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudLib", "GamesaveCloudLib\GamesaveCloudLib.csproj", "{4AB1630D-FEFD-05F2-204B-DF25435BD8B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudCLI", "GamesaveCloudCLI\GamesaveCloudCLI.csproj", "{9B2D43C9-67EF-05EB-0332-81A26D27BE66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestOneDriveWin", "TestOneDriveWin\TestOneDriveWin.csproj", "{C0905C34-E312-4922-AA62-6A429CBEC920}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestOneDriveCLI", "TestOneDriveCLI\TestOneDriveCLI.csproj", "{FA3010B7-3D75-46E4-A8B8-ABB82FDEF549}"
+EndProject
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "GamesaveCloudWin", "GamesaveCloudWin\GamesaveCloudWin.vbproj", "{1FEA4603-E33B-4496-A288-CCAB62636F50}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0} = {4AB1630D-FEFD-05F2-204B-DF25435BD8B0}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1A191B0C-4232-4075-AC05-A9216FFA10CE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesaveCloudUpdater", "GamesaveCloudUpdater\GamesaveCloudUpdater.csproj", "{3FEDFE58-2789-4676-941E-B96312DAE34B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0905C34-E312-4922-AA62-6A429CBEC920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0905C34-E312-4922-AA62-6A429CBEC920}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0905C34-E312-4922-AA62-6A429CBEC920}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0905C34-E312-4922-AA62-6A429CBEC920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA3010B7-3D75-46E4-A8B8-ABB82FDEF549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA3010B7-3D75-46E4-A8B8-ABB82FDEF549}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA3010B7-3D75-46E4-A8B8-ABB82FDEF549}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA3010B7-3D75-46E4-A8B8-ABB82FDEF549}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA6B5BC4-4256-41CB-9484-6432EF09124D}
+	EndGlobalSection
+EndGlobal
