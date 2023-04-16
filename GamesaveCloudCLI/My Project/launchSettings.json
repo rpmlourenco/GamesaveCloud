@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GameSaveCloudCLI": {
+      "commandName": "Project",
+      "commandLineArgs": "2"
+    }
+  }
+}

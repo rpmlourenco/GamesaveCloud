@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>GamesaveCloudCLI</RootNamespace>
+    <TargetFramework>net7.0</TargetFramework>
+    <Version>1.0.6.0</Version>
+    <InformationalVersion>Initial release</InformationalVersion>
+	<VersionSuffix>$([System.DateTime]::UtcNow.ToString(`yyyyMMdd-HHmm`))</VersionSuffix>
+    <ApplicationIcon>Resources\gamepad.ico</ApplicationIcon>
+    <ImportedNamespaces>GamesaveCloudLib=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,GamesaveCloudCLI=True</ImportedNamespaces>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb</DefaultItemExcludes>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\GamesaveDB.db" />
+    <None Remove="Resources\Playnite - Load Config From Cloud.ps1" />
+    <None Remove="Resources\Playnite - Save Config To Cloud.ps1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\gamepad.ico" />
+    <Content Include="Playnite - Load Config From Cloud.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Playnite - Save Config To Cloud.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\GamesaveDB.db" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.2986" />
+    <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <CustomToolNamespace>GamesaveCloudCLI.My.Resources</CustomToolNamespace>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GamesaveCloudLib\GamesaveCloudLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="GamesaveCloudLib" />
+  </ItemGroup>
+
+</Project>
