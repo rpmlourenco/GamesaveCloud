@@ -1,7 +1,6 @@
 # GamesaveCloud
 
 Todo:
-- updater does not delete existing files
 - test wildcards
 - fix bug when moving credentials to another pc
 - implement parallelism
@@ -27,3 +26,4 @@ Done:
 - Check for new version download from cloud
 - implement filters and recursiveness
 - build script to update playnite library and config on startup
+- updater does not delete existing files
