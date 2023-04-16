@@ -12,9 +12,6 @@ namespace GamesaveCloudCLI
 
         public static void Main(string[] args)
         {
-            UnitTests();
-            return;
-
             int? gameId = null;
             string gameTitle = null;
             string cloudService = null;
