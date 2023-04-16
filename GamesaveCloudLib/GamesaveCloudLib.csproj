@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\googledrive.json" />
-    <None Remove="Resources\onedrive.json" />
+    <None Remove="Resources\googledrive_secrets.json" />
+    <None Remove="Resources\onedrive_secrets.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\googledrive.json" />
-    <EmbeddedResource Include="Resources\onedrive.json" />
+    <EmbeddedResource Include="Resources\googledrive_secrets.json" />
+    <EmbeddedResource Include="Resources\onedrive_secrets.json" />
   </ItemGroup>
 
   <ItemGroup>

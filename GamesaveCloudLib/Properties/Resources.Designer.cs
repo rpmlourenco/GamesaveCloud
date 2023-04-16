@@ -63,9 +63,9 @@ namespace GamesaveCloudLib.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
-        internal static byte[] googledrive {
+        internal static byte[] googledrive_secrets {
             get {
-                object obj = ResourceManager.GetObject("googledrive", resourceCulture);
+                object obj = ResourceManager.GetObject("googledrive_secrets", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace GamesaveCloudLib.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
-        internal static byte[] onedrive {
+        internal static byte[] onedrive_secrets {
             get {
-                object obj = ResourceManager.GetObject("onedrive", resourceCulture);
+                object obj = ResourceManager.GetObject("onedrive_secrets", resourceCulture);
                 return ((byte[])(obj));
             }
         }

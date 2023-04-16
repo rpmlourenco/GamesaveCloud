@@ -36,7 +36,7 @@ namespace GamesaveCloudLib
 
         public GoolgeDriveHelper()
         {
-            string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("googledrive.json"));
+            string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("googledrive_secrets.json"));
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
 
             credentials = Authenticate(stream);

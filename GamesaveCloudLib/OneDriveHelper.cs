@@ -67,7 +67,7 @@ namespace GamesaveCloudLib
             handle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
             //BrokerOptions options = new(BrokerOptions.OperatingSystems.Windows);
 
-            string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("onedrive.json"));
+            string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("onedrive_secrets.json"));
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
             using var sr = new StreamReader(stream);
             string content = sr.ReadToEnd();

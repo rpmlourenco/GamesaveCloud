@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="googledrive" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\googledrive.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="googledrive_secrets" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\googledrive_secrets.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="onedrive" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\onedrive.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="onedrive_secrets" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\onedrive_secrets.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
