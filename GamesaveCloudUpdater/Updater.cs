@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
-using System.Reflection;
 using System.Xml.Linq;
 
 namespace GamesaveCloudUpdater
@@ -87,9 +86,9 @@ namespace GamesaveCloudUpdater
                 if (xversion != null)
                 {
                     return xversion.Value;
-                } 
+                }
                 else { return null; }
-                
+
             }
             else
             {
@@ -121,7 +120,7 @@ namespace GamesaveCloudUpdater
                     LogWriteLine("Error: could not determine current path.");
                     return 1;
                 }
-            } 
+            }
             else
             {
                 LogWriteLine("Error: could not determine current path.");
@@ -140,7 +139,7 @@ namespace GamesaveCloudUpdater
             if (this.remoteVersion != null)
             {
                 if (this.localVersion != null)
-                { 
+                {
                     if (this.remoteVersion.Equals(this.localVersion))
                     {
                         LogWriteLine($"Version {this.localVersion} is up to date.");
@@ -224,10 +223,12 @@ namespace GamesaveCloudUpdater
 
             ZipFile.ExtractToDirectory(downloadDestination, extractTarget);
 
-            if (this.assemblyWithoutExtendion != null) { 
+            if (this.assemblyWithoutExtendion != null)
+            {
                 foreach (string newPath in Directory.GetFiles(assemblyPath, "*.*", SearchOption.TopDirectoryOnly))
                 {
-                    if (!Path.GetFileName(newPath).Contains(this.assemblyWithoutExtendion)) {
+                    if (!Path.GetFileName(newPath).Contains(this.assemblyWithoutExtendion))
+                    {
                         File.Delete(newPath);
                     }
                 }
@@ -252,7 +253,7 @@ namespace GamesaveCloudUpdater
 
         private void LaunchExecutable()
         {
-            
+
             logFile?.Flush();
             logFile?.Close();
             logFile = null;

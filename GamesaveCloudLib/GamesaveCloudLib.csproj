@@ -18,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.2986" />
-    <PackageReference Include="Microsoft.Graph" Version="5.5.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.52.0" />
-    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.52.0" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3024" />
+    <PackageReference Include="Microsoft.Graph" Version="5.7.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.53.0" />
+    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.53.0" />
     <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.13.7" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="7.0.1" />

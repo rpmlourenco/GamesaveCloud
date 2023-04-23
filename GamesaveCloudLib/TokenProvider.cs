@@ -24,6 +24,9 @@ namespace GamesaveCloudLib
             return getTokenDelegate(scopes);
         }
 
-        public AllowedHostsValidator AllowedHostsValidator { get; }
+        public AllowedHostsValidator AllowedHostsValidator
+        {
+            get;
+        }
     }
 }

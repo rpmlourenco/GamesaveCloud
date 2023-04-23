@@ -45,7 +45,10 @@ namespace GamesaveCloudLib
         /// <summary>
         /// Path to the token cache
         /// </summary>
-        public static string CacheFilePath { get; private set; }
+        public static string CacheFilePath
+        {
+            get; private set;
+        }
 
         private static readonly object FileLock = new object();
 

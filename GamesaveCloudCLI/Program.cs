@@ -23,7 +23,7 @@ namespace GamesaveCloudCLI
                     { "i|id=", "The {ID} of the game to be synchronized (0 to synchronize all games in the database).", v => {if (int.Parse(v) >= 0) gameId = int.Parse(v);} },
                     { "t|title=", "The {TITLE} of the game to be synchronized (see https://www.igdb.com/).", v => gameTitle = v },
                     { "s|service=", "The {SERVICE} to use. valid options are: " + $"{String.Join(", ",Synchronizer.CloudServices)}", v => {if (Synchronizer.CloudServices.Contains(v.ToLower())) cloudService = v.ToLower(); } },
-                    { "d|direction=", "The {DIRECTION} of the synchronization (0 default/auto, 1 from local, 2 from could).", v => {if (Synchronizer.SyncDirections.Contains(v.ToLower())) syncDirection = v.ToLower(); } },
+                    { "d|direction=", "The {DIRECTION} of the synchronization (auto, tocloud, fromcloud).", v => {if (Synchronizer.SyncDirections.Contains(v.ToLower())) syncDirection = v.ToLower(); } },
                     { "h|?|help", v => help = v != null },
                 };
                 List<string> extra;

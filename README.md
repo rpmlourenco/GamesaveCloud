@@ -4,12 +4,11 @@ Todo:
 - test wildcards
 - fix bug when moving credentials to another pc
 - implement parallelism
-- Admin tool
+- upload database to cloud
 - open savegame folder
 - delete local files, delete cloud files
 - open backup folder
 - delete backup folder
-- status bar, initializing, full sync, monitoring, partial sync
 - delete permanently from onedrive
 
 Done:
@@ -27,3 +26,4 @@ Done:
 - implement filters and recursiveness
 - build script to update playnite library and config on startup
 - updater does not delete existing files
+- Admin tool

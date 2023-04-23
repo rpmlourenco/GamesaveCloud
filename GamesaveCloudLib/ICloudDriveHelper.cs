@@ -1,9 +1,7 @@
-﻿using Microsoft.Graph.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GamesaveCloudLib
 {
@@ -54,7 +52,8 @@ namespace GamesaveCloudLib
                 }
                 foreach (var file in files)
                 {
-                    if (Regex.IsMatch(file.Name, WildCardToRegular(expression))) { 
+                    if (Regex.IsMatch(file.Name, WildCardToRegular(expression)))
+                    {
                         result.Add(file);
                     }
                 }
@@ -99,7 +98,7 @@ namespace GamesaveCloudLib
         {
             DateTime lastModified = default;
             IList<ICloudFile> files;
-            
+
             if (!String.IsNullOrEmpty(filter))
             {
                 var allfiles = GetFiles(folderId);
@@ -109,8 +108,8 @@ namespace GamesaveCloudLib
             {
                 files = GetFiles(folderId);
             }
-                        
-            if (files is not null && files.Count > 0)            
+
+            if (files is not null && files.Count > 0)
             {
                 totalFiles += files.Count;
                 foreach (var file in files)
@@ -328,7 +327,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            if (recursive && folders!=null)
+            if (recursive && folders != null)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 foreach (var folderEntry in folderEntries)
