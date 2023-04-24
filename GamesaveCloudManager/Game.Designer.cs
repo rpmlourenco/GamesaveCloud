@@ -35,10 +35,8 @@
             buttonDelete = new Button();
             buttonEdit = new Button();
             buttonClear = new Button();
-            label2 = new Label();
             buttonSyncGames = new Button();
             button2 = new Button();
-            richTextBox1 = new RichTextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridGame).BeginInit();
             SuspendLayout();
             // 
@@ -78,7 +76,7 @@
             // 
             // buttonAdd
             // 
-            buttonAdd.Location = new Point(1119, 420);
+            buttonAdd.Location = new Point(1119, 417);
             buttonAdd.Name = "buttonAdd";
             buttonAdd.Size = new Size(94, 29);
             buttonAdd.TabIndex = 18;
@@ -88,7 +86,7 @@
             // 
             // buttonDelete
             // 
-            buttonDelete.Location = new Point(1319, 420);
+            buttonDelete.Location = new Point(1319, 417);
             buttonDelete.Name = "buttonDelete";
             buttonDelete.Size = new Size(94, 29);
             buttonDelete.TabIndex = 19;
@@ -98,7 +96,7 @@
             // 
             // buttonEdit
             // 
-            buttonEdit.Location = new Point(1219, 420);
+            buttonEdit.Location = new Point(1219, 417);
             buttonEdit.Name = "buttonEdit";
             buttonEdit.Size = new Size(94, 29);
             buttonEdit.TabIndex = 27;
@@ -116,17 +114,9 @@
             buttonClear.UseVisualStyleBackColor = true;
             buttonClear.Click += buttonClear_Click;
             // 
-            // label2
-            // 
-            label2.BorderStyle = BorderStyle.Fixed3D;
-            label2.Location = new Point(12, 458);
-            label2.Name = "label2";
-            label2.Size = new Size(1401, 2);
-            label2.TabIndex = 29;
-            // 
             // buttonSyncGames
             // 
-            buttonSyncGames.Location = new Point(12, 420);
+            buttonSyncGames.Location = new Point(12, 417);
             buttonSyncGames.Name = "buttonSyncGames";
             buttonSyncGames.Size = new Size(120, 29);
             buttonSyncGames.TabIndex = 30;
@@ -136,30 +126,20 @@
             // 
             // button2
             // 
-            button2.Location = new Point(138, 420);
+            button2.Location = new Point(138, 417);
             button2.Name = "button2";
             button2.Size = new Size(120, 29);
             button2.TabIndex = 31;
             button2.Text = "Sync Config";
             button2.UseVisualStyleBackColor = true;
             // 
-            // richTextBox1
-            // 
-            richTextBox1.Location = new Point(12, 471);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(1401, 120);
-            richTextBox1.TabIndex = 32;
-            richTextBox1.Text = "";
-            // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1425, 603);
-            Controls.Add(richTextBox1);
+            ClientSize = new Size(1425, 471);
             Controls.Add(button2);
             Controls.Add(buttonSyncGames);
-            Controls.Add(label2);
             Controls.Add(buttonClear);
             Controls.Add(buttonEdit);
             Controls.Add(buttonDelete);
@@ -187,9 +167,7 @@
         private Button buttonDelete;
         private Button buttonEdit;
         private Button buttonClear;
-        private Label label2;
         private Button buttonSyncGames;
         private Button button2;
-        private RichTextBox richTextBox1;
     }
 }
