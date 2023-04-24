@@ -2,11 +2,11 @@
   "profiles": {
     "GamesaveCloudCLI 2": {
       "commandName": "Project",
-      "commandLineArgs": "-i 900000000 -s onedrive -d tocloud"
+      "commandLineArgs": "-i 900000000 -s googledrive -d tocloud"
     },
     "GamesaveCloudCLI 1": {
       "commandName": "Project",
-      "commandLineArgs": "-t \"Forza Horizon 5\" -s GoogleDrive"
+      "commandLineArgs": "-t \"Forza Horizon 5\" -s googledrive"
     }
   }
 }

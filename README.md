@@ -5,15 +5,14 @@ Todo:
 - fix bug when moving credentials to another pc
 - implement parallelism
 - upload database to cloud
-- open savegame folder
 - delete local files, delete cloud files
-- open backup folder
-- delete backup folder
 - delete permanently from onedrive
+- search igdb, get id directly from igdb
+- admin check incompatibility between machine and filter
 
 Done:
 - Create local backup when synchronizing from cloud
-- Disable File Watcher when synchronizing from cloud and machine update
+- disable File Watcher when synchronizing from cloud and machine update
 - Scroll to bottom
 - Indication synch from or to cloud
 - avoid using one drive query by name since it takes long, search in memory instead and compare performance
@@ -26,4 +25,5 @@ Done:
 - implement filters and recursiveness
 - build script to update playnite library and config on startup
 - updater does not delete existing files
-- Admin tool
+- admin tool
+- open savegame folder

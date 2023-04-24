@@ -35,6 +35,10 @@
             buttonDelete = new Button();
             buttonEdit = new Button();
             buttonClear = new Button();
+            label2 = new Label();
+            buttonSyncGames = new Button();
+            button2 = new Button();
+            richTextBox1 = new RichTextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridGame).BeginInit();
             SuspendLayout();
             // 
@@ -112,11 +116,50 @@
             buttonClear.UseVisualStyleBackColor = true;
             buttonClear.Click += buttonClear_Click;
             // 
+            // label2
+            // 
+            label2.BorderStyle = BorderStyle.Fixed3D;
+            label2.Location = new Point(12, 458);
+            label2.Name = "label2";
+            label2.Size = new Size(1401, 2);
+            label2.TabIndex = 29;
+            // 
+            // buttonSyncGames
+            // 
+            buttonSyncGames.Location = new Point(12, 420);
+            buttonSyncGames.Name = "buttonSyncGames";
+            buttonSyncGames.Size = new Size(120, 29);
+            buttonSyncGames.TabIndex = 30;
+            buttonSyncGames.Text = "Sync Games";
+            buttonSyncGames.UseVisualStyleBackColor = true;
+            buttonSyncGames.Click += buttonSyncGames_Click;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(138, 420);
+            button2.Name = "button2";
+            button2.Size = new Size(120, 29);
+            button2.TabIndex = 31;
+            button2.Text = "Sync Config";
+            button2.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox1
+            // 
+            richTextBox1.Location = new Point(12, 471);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.Size = new Size(1401, 120);
+            richTextBox1.TabIndex = 32;
+            richTextBox1.Text = "";
+            // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1425, 461);
+            ClientSize = new Size(1425, 603);
+            Controls.Add(richTextBox1);
+            Controls.Add(button2);
+            Controls.Add(buttonSyncGames);
+            Controls.Add(label2);
             Controls.Add(buttonClear);
             Controls.Add(buttonEdit);
             Controls.Add(buttonDelete);
@@ -124,6 +167,8 @@
             Controls.Add(label1);
             Controls.Add(textBoxFilter);
             Controls.Add(dataGridGame);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "Game";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Gamesave Cloud Manager";
@@ -142,5 +187,9 @@
         private Button buttonDelete;
         private Button buttonEdit;
         private Button buttonClear;
+        private Label label2;
+        private Button buttonSyncGames;
+        private Button button2;
+        private RichTextBox richTextBox1;
     }
 }

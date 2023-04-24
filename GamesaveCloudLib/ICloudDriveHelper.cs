@@ -9,6 +9,8 @@ namespace GamesaveCloudLib
     {
         public string _username;
 
+        protected IProgress<string> progress;
+
         public abstract ICloudFile GetFolder(string parentId, string name);
         public abstract IList<ICloudFile> GetFolders(string parentId);
         public abstract ICloudFile GetFile(string parentId, string name);
@@ -385,9 +387,10 @@ namespace GamesaveCloudLib
 
         }
 
-        public static void Log(string message)
+        public void Log(string message)
         {
-            Console.Write(message);
+            progress.Report(message);
+            //Console.Write(message);
         }
 
     }

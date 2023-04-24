@@ -7,11 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudLib", "Gamesav
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudCLI", "GamesaveCloudCLI\GamesaveCloudCLI.csproj", "{9B2D43C9-67EF-05EB-0332-81A26D27BE66}"
 EndProject
-Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "GamesaveCloudWin", "GamesaveCloudWin\GamesaveCloudWin.vbproj", "{1FEA4603-E33B-4496-A288-CCAB62636F50}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0} = {4AB1630D-FEFD-05F2-204B-DF25435BD8B0}
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1A191B0C-4232-4075-AC05-A9216FFA10CE}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -20,6 +15,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudUpdater", "GamesaveCloudUpdater\GamesaveCloudUpdater.csproj", "{3FEDFE58-2789-4676-941E-B96312DAE34B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudManager", "GamesaveCloudManager\GamesaveCloudManager.csproj", "{F2483998-D566-4DA4-AAF2-EAE97429F84C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4AB1630D-FEFD-05F2-204B-DF25435BD8B0} = {4AB1630D-FEFD-05F2-204B-DF25435BD8B0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,16 +63,6 @@ Global
 		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Release|x64.Build.0 = Release|Any CPU
 		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Release|x86.ActiveCfg = Release|Any CPU
 		{9B2D43C9-67EF-05EB-0332-81A26D27BE66}.Release|x86.Build.0 = Release|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|arm64.ActiveCfg = Release|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|x64.ActiveCfg = Release|Any CPU
-		{1FEA4603-E33B-4496-A288-CCAB62636F50}.Release|x86.ActiveCfg = Release|Any CPU
 		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FEDFE58-2789-4676-941E-B96312DAE34B}.Debug|arm64.ActiveCfg = Debug|Any CPU

@@ -1,4 +1,5 @@
 ﻿using GamesaveCloudLib;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,14 +23,15 @@ public class Synchronizer
     private ICloudFile configFolder;
     private string backupFolder;
     private string pathConfigFile;
-    public string version = "0.9";
-    private StreamWriter logFile;
+    //public string version = "0.9";
+    //private StreamWriter logFile;
     public string cloudService;
 
     private DateTime sessionStartTime;
 
     // configuration stored in sqlite
     private bool performBackup;
+    private readonly IProgress<string> progress;
 
     public class Args
     {
@@ -38,7 +40,13 @@ public class Synchronizer
     }
 
     [SupportedOSPlatform("windows")]
-    public void Initialize(string cloudService)
+    public Synchronizer(IProgress<string> progress)
+    {
+        this.progress = progress;
+    }
+
+    [SupportedOSPlatform("windows")]
+    public void Initialize(string cloudService, IPublicClientApplication clientApp = null, IntPtr? handle = null)
     {
         sessionStartTime = DateTime.Now;
 
@@ -46,11 +54,11 @@ public class Synchronizer
 
         var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        var pathLog = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "logs");
+        //var pathLog = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "logs");
 
-        Directory.CreateDirectory(pathLog);
+        //Directory.CreateDirectory(pathLog);
 
-        logFile = new StreamWriter(Path.Combine(pathLog, "GamesaveCloud.Log"), true);
+        //logFile = new StreamWriter(Path.Combine(pathLog, "GamesaveCloud.Log"), true);
 
         //var myFile = new FileInfo(Path.Combine(pathLog, "GamesaveCloud.Log"));
         //if (myFile.Length > 0L)
@@ -64,9 +72,10 @@ public class Synchronizer
         driveHelper = cloudService switch
         {
             "googledrive" => new GoolgeDriveHelper(),
-            "onedrive" => new OneDriveHelper(),
-            _ => new OneDriveHelper(),
+            "onedrive" => new OneDriveHelper(progress, clientApp, handle),
+            _ => new OneDriveHelper(progress, clientApp, handle),
         };
+
         gamesaveRootFolder = driveHelper.GetFolder("root", "GamesaveCloud");
         gamesaveRootFolder ??= driveHelper.NewFolder("GamesaveCloud", "root");
 
@@ -344,15 +353,15 @@ public class Synchronizer
         Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + $": Total session time {secs:N2} seconds" + Environment.NewLine);
         Log(Environment.NewLine);
 
-        logFile?.Close();
+        //logFile?.Close();
 
     }
 
-
     public void Log(string text)
     {
-        Console.Write(text);
-        logFile?.Write(text);
+        progress.Report(text);
+        //Console.Write(text);
+        //logFile?.Write(text);
     }
 
     private static void BinaryStreamCopy(Stream sReader, Stream sWriter)

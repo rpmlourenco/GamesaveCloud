@@ -105,6 +105,15 @@ namespace GamesaveCloudManager
                 buttonDelete.Enabled = false;
             }
 
+            if (dataGridGame.SelectedRows.Count > 0)
+            {
+                buttonSyncGames.Enabled = true;
+            }
+            else
+            {
+                buttonSyncGames.Enabled = false;
+            }
+
             // For any other operation except, StateChanged, do nothing
             //if (e.StateChanged != DataGridViewElementStates.Selected) return;
 
@@ -198,6 +207,33 @@ namespace GamesaveCloudManager
                 LoadData();
             }
         }
+
+        private void buttonSyncGames_Click(object sender, EventArgs e)
+        {
+
+            var selectedRows = dataGridGame.SelectedRows;
+            List<long> games = new();
+            foreach (DataGridViewRow row in selectedRows)
+            {
+                games.Add((long)row.Cells["Id"].Value);
+            }
+
+            /*
+            var progress = new Progress<string>(msg =>
+            {
+                richTextBox1.Text += msg;
+            });
+
+            Synchronizer sync = new(progress);
+            sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), this.Handle);
+            */
+
+            SyncForm syncForm = new(games);
+            if (syncForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+            }
+        }
+
     }
 }
 #pragma warning restore IDE1006 // Estilos de Nomenclatura

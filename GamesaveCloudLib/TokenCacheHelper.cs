@@ -50,7 +50,7 @@ namespace GamesaveCloudLib
             get; private set;
         }
 
-        private static readonly object FileLock = new object();
+        private static readonly object FileLock = new();
 
         [SupportedOSPlatform("windows")]
         public static void BeforeAccessNotification(TokenCacheNotificationArgs args)

@@ -39,6 +39,7 @@
             buttonDelete = new Button();
             buttonAdd = new Button();
             groupBoxPath = new GroupBox();
+            buttonFolderOpen = new Button();
             buttonFolderBrowser = new Button();
             textBoxFilter = new TextBox();
             labelFilter = new Label();
@@ -159,6 +160,7 @@
             // 
             // groupBoxPath
             // 
+            groupBoxPath.Controls.Add(buttonFolderOpen);
             groupBoxPath.Controls.Add(buttonFolderBrowser);
             groupBoxPath.Controls.Add(textBoxFilter);
             groupBoxPath.Controls.Add(labelFilter);
@@ -176,10 +178,21 @@
             groupBoxPath.TabStop = false;
             groupBoxPath.Text = "Path Details";
             // 
+            // buttonFolderOpen
+            // 
+            buttonFolderOpen.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonFolderOpen.Location = new Point(1094, 67);
+            buttonFolderOpen.Name = "buttonFolderOpen";
+            buttonFolderOpen.Size = new Size(29, 29);
+            buttonFolderOpen.TabIndex = 34;
+            buttonFolderOpen.Text = "+";
+            buttonFolderOpen.UseVisualStyleBackColor = true;
+            buttonFolderOpen.Click += buttonFolderOpen_Click;
+            // 
             // buttonFolderBrowser
             // 
             buttonFolderBrowser.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonFolderBrowser.Location = new Point(1097, 65);
+            buttonFolderBrowser.Location = new Point(1060, 67);
             buttonFolderBrowser.Name = "buttonFolderBrowser";
             buttonFolderBrowser.Size = new Size(29, 29);
             buttonFolderBrowser.TabIndex = 33;
@@ -193,7 +206,7 @@
             textBoxFilter.Location = new Point(90, 100);
             textBoxFilter.MaxLength = 256;
             textBoxFilter.Name = "textBoxFilter";
-            textBoxFilter.Size = new Size(1036, 27);
+            textBoxFilter.Size = new Size(1033, 27);
             textBoxFilter.TabIndex = 32;
             textBoxFilter.TextChanged += textBoxFilter_TextChanged;
             // 
@@ -234,7 +247,7 @@
             textBoxPath.Location = new Point(90, 67);
             textBoxPath.MaxLength = 1024;
             textBoxPath.Name = "textBoxPath";
-            textBoxPath.Size = new Size(1001, 27);
+            textBoxPath.Size = new Size(963, 27);
             textBoxPath.TabIndex = 28;
             textBoxPath.TextChanged += textBoxPath_TextChanged;
             // 
@@ -281,6 +294,8 @@
             Controls.Add(labelTitle);
             Controls.Add(textBoxId);
             Controls.Add(labelId);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             MinimizeBox = false;
             Name = "GameDetail";
             StartPosition = FormStartPosition.CenterParent;
@@ -314,5 +329,6 @@
         private Label labelPath;
         private TextBox textBoxPathId;
         private Label labelPathId;
+        private Button buttonFolderOpen;
     }
 }

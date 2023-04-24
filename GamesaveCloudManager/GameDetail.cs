@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -70,14 +71,14 @@ namespace GamesaveCloudManager
                 dataGridViewPaths.Columns.Remove("machine");
             }
             catch { };
-            DataGridViewCheckBoxColumn colActive = new()
+            DataGridViewCheckBoxColumn colMachine = new()
             {
                 DataPropertyName = "machine",
                 Name = "Machine",
                 TrueValue = 1,
                 FalseValue = 0
             };
-            dataGridViewPaths.Columns.Add(colActive);
+            dataGridViewPaths.Columns.Add(colMachine);
 
             try
             {
@@ -99,6 +100,11 @@ namespace GamesaveCloudManager
             dataGridViewPaths.Columns[3].Width = (int)(dataGridViewPaths.Width * 0.15);
             dataGridViewPaths.Columns[4].Width = (int)(dataGridViewPaths.Width * 0.08);
             dataGridViewPaths.Columns[5].Width = (int)(dataGridViewPaths.Width * 0.08);
+
+            if (dataGridViewPaths.Rows.Count > 0)
+            {
+                dataGridViewPaths.Rows[0].Selected = true;
+            }
 
         }
 
@@ -358,7 +364,7 @@ namespace GamesaveCloudManager
         {
             if (String.IsNullOrEmpty(textBoxTitle.Text))
             {
-                MessageBox.Show("Game title must not be empty.","Warning");
+                MessageBox.Show("Game title must not be empty.", "Warning");
                 textBoxTitle.Focus();
                 return false;
             }
@@ -368,7 +374,7 @@ namespace GamesaveCloudManager
                 {
                     if (dataRow.RowState != DataRowState.Deleted && String.IsNullOrEmpty(dataRow["Path"].ToString()))
                     {
-                        MessageBox.Show("Game path must not be empty.","Warning");
+                        MessageBox.Show("Game path must not be empty.", "Warning");
                         dataGridViewPaths.ClearSelection();
                         foreach (DataGridViewRow gridrow in dataGridViewPaths.Rows)
                         {
@@ -399,6 +405,20 @@ namespace GamesaveCloudManager
                 e.Handled = true;
             }
         }
+
+        private void buttonFolderOpen_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(textBoxPath.Text) && Directory.Exists(HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text)))
+            {
+                ProcessStartInfo startInfo = new()
+                {
+                    Arguments = HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text),
+                    FileName = "explorer.exe"
+                };
+                Process.Start(startInfo);
+            };
+        }
+
     }
 }
 #pragma warning restore IDE1006 // Estilos de Nomenclatura

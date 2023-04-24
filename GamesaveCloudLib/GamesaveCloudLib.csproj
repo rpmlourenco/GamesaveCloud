@@ -5,6 +5,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb</DefaultItemExcludes>
     <LangVersion>latest</LangVersion>
+    <BaseOutputPath>bin\</BaseOutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>

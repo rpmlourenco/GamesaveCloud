@@ -15,15 +15,15 @@ namespace GamesaveCloudUpdater
         string? assemblyWithoutExtendion;
         string? assemblyPath;
         string? fileToUpdate;
-        readonly string[] args;
+        //readonly string[] args;
         string? localVersion;
         string? remoteVersion;
         private StreamWriter? logFile;
         private bool logLastNewline;
 
-        public Updater(string[] args)
+        public Updater()
         {
-            this.args = args;
+            //this.args = args;
             this.logLastNewline = true;
         }
 

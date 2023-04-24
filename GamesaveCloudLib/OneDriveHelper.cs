@@ -38,7 +38,7 @@ namespace GamesaveCloudLib
         //static RichTextBox? console;
         //static Button? _button;
         static int howToSign;
-        static IntPtr handle;
+        public IntPtr handle;
         public string _userDriveId;
         public string _rootId;
         public string pathCredential;
@@ -57,33 +57,50 @@ namespace GamesaveCloudLib
         static readonly string[] scopes = new string[] { "user.read", "Files.ReadWrite.All" };
 
         [SupportedOSPlatform("windows")]
-        public OneDriveHelper()
+        public OneDriveHelper(IProgress<string> progress, IPublicClientApplication clientApplication = null, IntPtr? handle = null)
         {
+            this.progress = progress;
             string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             pathCredential = Path.Combine(pathCurrent, "credential");
 
             howToSign = 2;
-            handle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            if (handle == null)
+            {
+                this.handle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            }
+            else
+            {
+                this.handle = (IntPtr)handle;
+            }
             //BrokerOptions options = new(BrokerOptions.OperatingSystems.Windows);
 
-            string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("onedrive_secrets.json"));
-            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-            using var sr = new StreamReader(stream);
-            string content = sr.ReadToEnd();
-            JObject json = JObject.Parse(content);
-            string ClientId = json["client_id"].Value<string>();
-            string Tenant = json["tenant"].Value<string>();
+            if (clientApplication == null)
+            {
+                string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("onedrive_secrets.json"));
+                Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+                using var sr = new StreamReader(stream);
+                string content = sr.ReadToEnd();
+                JObject json = JObject.Parse(content);
+                string ClientId = json["client_id"].Value<string>();
+                string Tenant = json["tenant"].Value<string>();
 
-            var builder = PublicClientApplicationBuilder.Create(ClientId)
-                .WithAuthority($"{Instance}{Tenant}")
-                .WithDefaultRedirectUri();
-            //.WithWindowsDesktopFeatures(options);
-            //.WithParentActivityOrWindow(handle);
+                var builder = PublicClientApplicationBuilder.Create(ClientId)
+                    .WithAuthority($"{Instance}{Tenant}")
+                    .WithDefaultRedirectUri();
+                //.WithWindowsDesktopFeatures(options);
+                //.WithParentActivityOrWindow(handle);
 
-            _clientApp = builder.Build();
+                _clientApp = builder.Build();
+            }
+            else
+            {
+                _clientApp = clientApplication;
+            }
+
             TokenCacheHelper.EnableSerialization(_clientApp.UserTokenCache);
 
-            SignInAndInitializeGraphServiceClient().Wait();
+            //TEST 24.04 SignInAndInitializeGraphServiceClient().Wait();
+            SignInAndInitializeGraphServiceClient();
         }
 
         /// <summary>
@@ -200,7 +217,7 @@ namespace GamesaveCloudLib
         /// Sign in user using MSAL and obtain a token for Microsoft Graph
         /// </summary>
         /// <returns>GraphServiceClient</returns>
-        public async Task<GraphServiceClient> SignInAndInitializeGraphServiceClient()
+        public void SignInAndInitializeGraphServiceClient()
         {
             TokenProvider tokenProvider = new(GetToken, scopes);
             var authProvider = new BaseBearerTokenAuthenticationProvider(tokenProvider);
@@ -209,21 +226,20 @@ namespace GamesaveCloudLib
             _graphClient = graphClient;
 
             // Get the user's driveId
-            var driveItem = await _graphClient.Me.Drive.GetAsync();
-            if (driveItem != null)
+            var task1 = Task.Run(() => _graphClient.Me.Drive.GetAsync());
+            task1.Wait();
+            if (task1.Result != null)
             {
-                _userDriveId = driveItem.Id;
-
-                var root = await _graphClient.Drives[_userDriveId].Root.GetAsync();
-                if (root != null)
+                _userDriveId = task1.Result.Id;
+                var task2 = Task.Run(() => _graphClient.Drives[_userDriveId].Root.GetAsync());
+                task2.Wait();
+                if (task2.Result != null)
                 {
-                    _rootId = root.Id;
+                    _rootId = task2.Result.Id;
                 }
-
             }
             else { Log("Could not retrieve OneDrive Id"); }
-
-            return await Task.FromResult(graphClient);
+            //return await Task.FromResult(graphClient);
         }
 
         public override ICloudFile GetFolder(string parentId, string name)

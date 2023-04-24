@@ -75,12 +75,17 @@ namespace GamesaveCloudCLI
 
         static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection)
         {
-            var sync = new Synchronizer();
+            Logger logger = new();
+            var progress = new Progress<string>(msg =>
+            {
+                Console.Write(msg);
+                logger.Log(msg);
+            });
+            var sync = new Synchronizer(progress);
             try
             {
                 sync.Initialize(cloudService);
                 sync.Sync(gameId, gameName, syncDirection);
-                //sync.Sync(default);
 
             }
             catch (Exception ex)
@@ -88,13 +93,17 @@ namespace GamesaveCloudCLI
                 sync.Log(ex.ToString());
             }
             sync.Close();
-
+            logger.Close();
         }
 
         public static void UnitTests()
         {
+            var progress = new Progress<string>(msg =>
+            {
+                Console.Write(msg);
+            });
 
-            var helper = new OneDriveHelper();
+            var helper = new OneDriveHelper(progress);
 
             //GetFolder PASS
             //var folder = helper.GetFolder(helper._rootId, "GamesaveCloud");
