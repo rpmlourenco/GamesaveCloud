@@ -1,6 +1,11 @@
 # GamesaveCloud
 
 Todo:
+- Use logger in updater
+- remove Playnite scripts
+- remove "My Project" folders
+- change manager Database to real one
+- add icon to manager
 - test wildcards
 - fix bug when moving credentials to another pc
 - implement parallelism
