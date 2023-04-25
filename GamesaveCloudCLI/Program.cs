@@ -98,12 +98,19 @@ namespace GamesaveCloudCLI
 
         public static void UnitTests()
         {
+            /*
+            IniFile ini = new IniFile();
+            ini.Write("DefaultCloudService","onedrive");
+            var defaultCloudService = ini.Read("DefaultCloudService");
+            Console.WriteLine(defaultCloudService);
+            /*
             var progress = new Progress<string>(msg =>
             {
                 Console.Write(msg);
             });
 
             var helper = new OneDriveHelper(progress);
+            */
 
             //GetFolder PASS
             //var folder = helper.GetFolder(helper._rootId, "GamesaveCloud");
@@ -131,6 +138,7 @@ namespace GamesaveCloudCLI
             //}
 
             //GetFolders PASS
+            /*
             var folders = helper.GetFolders("root");
             foreach (var sfolder in folders)
             {
@@ -143,6 +151,7 @@ namespace GamesaveCloudCLI
             {
                 Console.WriteLine("GetFolders " + sfolder.Name);
             }
+            */
 
             //NewFolder PASS
             //var newfolder = helper.NewFolder("my new folder", folder.Id);

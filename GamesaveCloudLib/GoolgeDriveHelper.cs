@@ -208,7 +208,7 @@ namespace GamesaveCloudLib
         private bool DownloadFileByName(string fileName, string parentId, string outputPath)
         {
 
-            string fullOutputPath = Path.Combine(outputPath, fileName);
+            string fullOutputPath = sPath.Combine(outputPath, fileName);
             var outputStream = new FileStream(fullOutputPath, FileMode.Create, FileAccess.ReadWrite);
             var driveFile = GetFile(parentId, fileName);
 
@@ -235,7 +235,7 @@ namespace GamesaveCloudLib
         public override bool DownloadFile(ICloudFile driveFile, string outputPath)
         {
 
-            //string fileName = Path.GetFileName(outputPath);
+            //string fileName = sPath.GetFileName(outputPath);
             var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite);
 
             var request = service.Files.Get(driveFile.Id);

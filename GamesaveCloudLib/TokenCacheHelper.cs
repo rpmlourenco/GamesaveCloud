@@ -43,7 +43,7 @@ namespace GamesaveCloudLib
         }
 
         /// <summary>
-        /// Path to the token cache
+        /// sPath to the token cache
         /// </summary>
         public static string CacheFilePath
         {

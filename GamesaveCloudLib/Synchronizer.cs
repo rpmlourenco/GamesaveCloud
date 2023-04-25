@@ -16,22 +16,24 @@ public class Synchronizer
 {
 
     public static readonly List<string> CloudServices = new() { "googledrive", "onedrive" };
+    public static readonly string fallbackCloudService = "onedrive";
     public static readonly List<string> SyncDirections = new() { "auto", "tocloud", "fromcloud" };
+
+    private static readonly string databaseFile = "GamesaveDB.db";
 
     private ICloudDriveHelper driveHelper;
     private ICloudFile gamesaveRootFolder;
     private ICloudFile configFolder;
     private string backupFolder;
-    private string pathConfigFile;
-    //public string version = "0.9";
-    //private StreamWriter logFile;
+    private string pathDatabaseFile;
+    public string PathDatabaseFile { get => pathDatabaseFile; }
     public string cloudService;
 
     private DateTime sessionStartTime;
 
     // configuration stored in sqlite
     private bool performBackup;
-    private readonly IProgress<string> progress;
+    private readonly IProgress<string> progress;    
 
     public class Args
     {
@@ -46,30 +48,36 @@ public class Synchronizer
     }
 
     [SupportedOSPlatform("windows")]
-    public void Initialize(string cloudService, IPublicClientApplication clientApp = null, IntPtr? handle = null)
+    public void Initialize(string cloudService = null, IPublicClientApplication clientApp = null, IntPtr? handle = null)
     {
         sessionStartTime = DateTime.Now;
-
-        this.cloudService = cloudService;
+        
+        if (!IsValidCloudService(cloudService)) {            
+            var defaultCloudService = GetDefaultCloudService();
+            if (string.IsNullOrEmpty(defaultCloudService))
+            {
+                IniFile iniFile = new();
+                iniFile.Write("DefaultCloudService", fallbackCloudService);
+                this.cloudService = fallbackCloudService;
+                Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Default cloud service set as " + fallbackCloudService + "." + Environment.NewLine);
+            }
+            else
+            {
+                this.cloudService = defaultCloudService;
+                Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Using default cloud service " + defaultCloudService + "." + Environment.NewLine);
+            }
+        } 
+        else
+        {
+            this.cloudService = cloudService;
+        }        
 
         var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        //var pathLog = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "logs");
-
-        //Directory.CreateDirectory(pathLog);
-
-        //logFile = new StreamWriter(Path.Combine(pathLog, "GamesaveCloud.Log"), true);
-
-        //var myFile = new FileInfo(Path.Combine(pathLog, "GamesaveCloud.Log"));
-        //if (myFile.Length > 0L)
-        //{
-        //    logFile.WriteLine();
-        //}
-
         var startTime = DateTime.Now;
-        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Connecting to " + cloudService + "... " + Environment.NewLine);
+        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Connecting to " + this.cloudService + "... " + Environment.NewLine);
 
-        driveHelper = cloudService switch
+        driveHelper = this.cloudService switch
         {
             "googledrive" => new GoolgeDriveHelper(),
             "onedrive" => new OneDriveHelper(progress, clientApp, handle),
@@ -93,15 +101,17 @@ public class Synchronizer
             Directory.CreateDirectory(pathConfigFolder);
         }
 
-        var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, null, "auto");
+        var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, databaseFile, "auto");
+        IniFile ini = new();
+        _ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, ini.SFilename, "auto");
 
-        pathConfigFile = Path.Combine(pathConfigFolder, "GamesaveDB.db");
+        pathDatabaseFile = Path.Combine(pathConfigFolder, databaseFile);
 
-        if (!File.Exists(pathConfigFile))
+        if (!File.Exists(pathDatabaseFile))
         {
-            var resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("GamesaveDB.db"));
+            var resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith(databaseFile));
             var sReader = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-            Stream sWriter = new FileStream(pathConfigFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            Stream sWriter = new FileStream(pathDatabaseFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
             BinaryStreamCopy(sReader, sWriter);
             sWriter.Flush();
             sWriter.Close();
@@ -109,7 +119,7 @@ public class Synchronizer
 
             SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, null, "auto");
 
-            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database initialized and synched to " + cloudService + Environment.NewLine);
+            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database initialized and synched to " + this.cloudService + Environment.NewLine);
         }
         else
         {
@@ -119,7 +129,7 @@ public class Synchronizer
                     Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from local computer" + Environment.NewLine);
                     break;
                 case -1:
-                    Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from " + cloudService + Environment.NewLine);
+                    Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from " + this.cloudService + Environment.NewLine);
                     break;
                 default:
                     Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database in sync" + Environment.NewLine);
@@ -138,7 +148,7 @@ public class Synchronizer
         SQLiteCommand sqlite_cmd;
         SQLiteDataReader sqlite_datareader;
 
-        sqlite_conn = new SQLiteConnection("Data Source=" + pathConfigFile + ";Version=3;New=True;");
+        sqlite_conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
         sqlite_conn.Open();
 
         sqlite_cmd = sqlite_conn.CreateCommand();
@@ -155,7 +165,6 @@ public class Synchronizer
         }
         sqlite_datareader.Close();
         sqlite_conn.Close();
-
     }
 
     public void Sync(int? gameId, string gameTitle, string syncDirection)
@@ -167,7 +176,7 @@ public class Synchronizer
         var startTime = DateTime.Now;
         Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + $": *** Synchronizing... " + Environment.NewLine);
 
-        sqlite_conn = new SQLiteConnection("Data Source=" + pathConfigFile + ";Version=3;New=True;");
+        sqlite_conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
         sqlite_conn.Open();
 
         // sqlite_cmd = sqlite_conn.CreateCommand()
@@ -501,5 +510,36 @@ public class Synchronizer
         }
 
     }
+
+    public static bool IsValidCloudService(string cloudServiceName)
+    {
+        if (string.IsNullOrEmpty(cloudServiceName)) { return false; }
+        if (CloudServices.Contains(cloudServiceName)) { return true; }
+        return false;
+    }
+
+    public static string GetDefaultCloudService()
+    {
+        IniFile ini = new IniFile();
+        var defaultCloudService = ini.Read("DefaultCloudService");
+
+        if (IsValidCloudService(defaultCloudService))
+        {
+            return defaultCloudService;
+        }
+        else
+        {
+            return null;
+        }
+
+    }
+
+    public static string GetPathDatabaseFile()
+    {
+        var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var pathConfigFolder = Path.Combine(pathAtual, "config");
+        return Path.Combine(pathConfigFolder, databaseFile);
+    }
+
 
 }

@@ -63,6 +63,16 @@ namespace GamesaveCloudLib.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
+        internal static byte[] GamesaveDB {
+            get {
+                object obj = ResourceManager.GetObject("GamesaveDB", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
         internal static byte[] googledrive_secrets {
             get {
                 object obj = ResourceManager.GetObject("googledrive_secrets", resourceCulture);

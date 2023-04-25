@@ -1,6 +1,9 @@
 # GamesaveCloud
 
 Todo:
+- make provider same as default in syncform
+- make cloud service optional in cli
+- manager total game count
 - Use logger in updater
 - remove Playnite scripts
 - remove "My Project" folders

@@ -1,6 +1,11 @@
+using GamesaveCloudCLI;
+using GamesaveCloudLib;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.NativeInterop;
 using System.Data;
 using System.Data.SQLite;
 using System.Text;
+using System.Windows.Forms;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -16,6 +21,9 @@ namespace GamesaveCloudManager
             "(select path from savegame s where s.game_id = g.game_id and s.savegame_id = (select min(savegame_id) from savegame s2 where s2.game_id = g.game_id)) as 'Path', " +
             "active from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
+        private readonly string defaultCloudService = Synchronizer.GetDefaultCloudService();
+        string pathDatabaseFile;
+        Synchronizer sync;
 
         public Game()
         {
@@ -24,14 +32,50 @@ namespace GamesaveCloudManager
 
         private void Game_Load(object sender, EventArgs e)
         {
-            var pathConfigFile = "C:\\Users\\rpmlo\\Desktop\\GamesaveDB.db";
-            conn = new SQLiteConnection("Data Source=" + pathConfigFile + ";Version=3;New=True;");
+            var progress = new Progress<string>(msg =>
+            {
+                textBoxStatus.Text += msg;
+            });
+            sync = new(progress);
 
+            /*
+            sync.Initialize(null, HelperFunctions.BuildOneDriveClient(), Handle);            
+            conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
             cmdGame = new(queryGame, conn);
             adapter = new(cmdGame);
+            LoadData();
+            */
 
+            StartSync(sync, HelperFunctions.BuildOneDriveClient(), Handle);
+        }
+
+        private async void StartSync(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
+        {
+            await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSync); ;
+        }
+
+        private void EndSync(Task obj)
+        {
+            pathDatabaseFile = Synchronizer.GetPathDatabaseFile();
+            conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
+            cmdGame = new(queryGame, conn);
+            adapter = new(cmdGame);
             LoadData();
         }
+
+        private static void SyncBackgroundTask(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
+        {
+            try
+            {
+                sync.Initialize(null, HelperFunctions.BuildOneDriveClient(), handle);
+            }
+            catch (Exception ex)
+            {
+                sync.Log(ex.ToString());
+            }
+            sync.Close();
+        }
+
 
         private void LoadData()
         {
@@ -52,14 +96,23 @@ namespace GamesaveCloudManager
                     dataRow[dcRowString] = sb.ToString();
                 }
 
-                dataGridGame.DataSource = dtGame;
-                dataGridGame.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-                dataGridGame.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
-                if (!String.IsNullOrEmpty(textBoxFilter.Text))
+                dataGridGame.Invoke((MethodInvoker)delegate
                 {
-                    dtGame.DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", textBoxFilter.Text);
-                }
-                dataGridGame.ClearSelection();
+                    dataGridGame.DataSource = dtGame;
+                    dataGridGame.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                    dataGridGame.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+                });
+                textBoxFilter.Invoke((MethodInvoker)delegate
+                {
+                    if (!String.IsNullOrEmpty(textBoxFilter.Text))
+                    {
+                        dtGame.DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", textBoxFilter.Text);
+                    }
+                });
+                dataGridGame.Invoke((MethodInvoker)delegate
+                {
+                    dataGridGame.ClearSelection();
+                });
             }
         }
 

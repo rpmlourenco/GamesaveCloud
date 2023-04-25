@@ -69,15 +69,5 @@ namespace GamesaveCloudCLI.My.Resources {
                 return ((byte[])(obj));
             }
         }
-        
-        /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Byte[].
-        /// </summary>
-        internal static byte[] GamesaveDB {
-            get {
-                object obj = ResourceManager.GetObject("GamesaveDB", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

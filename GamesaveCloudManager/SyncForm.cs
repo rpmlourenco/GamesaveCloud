@@ -84,8 +84,6 @@ namespace GamesaveCloudManager
             catch (Exception ex)
             {
                 sync.Log(ex.ToString());
-                //((IProgress<string>)progress).Report(ex.ToString());
-                //textBox1.Text += ex.ToString();
             }
             sync.Close();
         }

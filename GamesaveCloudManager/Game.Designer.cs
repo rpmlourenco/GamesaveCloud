@@ -37,6 +37,7 @@
             buttonClear = new Button();
             buttonSyncGames = new Button();
             button2 = new Button();
+            textBoxStatus = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridGame).BeginInit();
             SuspendLayout();
             // 
@@ -133,11 +134,22 @@
             button2.Text = "Sync Config";
             button2.UseVisualStyleBackColor = true;
             // 
+            // textBoxStatus
+            // 
+            textBoxStatus.Location = new Point(12, 452);
+            textBoxStatus.Multiline = true;
+            textBoxStatus.Name = "textBoxStatus";
+            textBoxStatus.ReadOnly = true;
+            textBoxStatus.ScrollBars = ScrollBars.Both;
+            textBoxStatus.Size = new Size(1401, 130);
+            textBoxStatus.TabIndex = 32;
+            // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1425, 471);
+            ClientSize = new Size(1425, 594);
+            Controls.Add(textBoxStatus);
             Controls.Add(button2);
             Controls.Add(buttonSyncGames);
             Controls.Add(buttonClear);
@@ -169,5 +181,6 @@
         private Button buttonClear;
         private Button buttonSyncGames;
         private Button button2;
+        private TextBox textBoxStatus;
     }
 }

@@ -15,26 +15,16 @@
     <PlatformTarget>x64</PlatformTarget>
     <BaseOutputPath>bin\</BaseOutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\GamesaveDB.db" />
     <None Remove="Resources\Playnite - Load Config From Cloud.ps1" />
     <None Remove="Resources\Playnite - Save Config To Cloud.ps1" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Resources\gamepad.ico" />
-    <Content Include="Playnite - Load Config From Cloud.cmd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Playnite - Save Config To Cloud.cmd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\GamesaveDB.db" />
   </ItemGroup>
 
   <ItemGroup>
