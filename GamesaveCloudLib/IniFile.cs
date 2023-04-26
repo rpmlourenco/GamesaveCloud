@@ -45,7 +45,7 @@ namespace GamesaveCloudLib
         public void Write(string Key, string Value, string Section = null)
         {
             WritePrivateProfileString(Section ?? EXE, Key, Value, sPath);
-        }        
+        }
 
         public void DeleteKey(string Key, string Section = null)
         {

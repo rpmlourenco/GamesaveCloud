@@ -1,6 +1,5 @@
 ﻿using GamesaveCloudCLI;
 using GamesaveCloudLib;
-using System.Windows.Forms.VisualStyles;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -9,7 +8,7 @@ namespace GamesaveCloudManager
     {
         readonly List<long> games;
         Logger? logger;
-        readonly Synchronizer? sync;
+        private readonly string defaultCloudService = Synchronizer.GetDefaultCloudService();
 
         public SyncForm(List<long> games)
         {
@@ -20,7 +19,11 @@ namespace GamesaveCloudManager
 
         private void SyncForm_Load(object sender, EventArgs e)
         {
-            comboBoxProvider.Text = "OneDrive";
+            comboBoxProvider.Text = defaultCloudService switch
+            {
+                "googledrive" => "GoogleDrive",
+                _ => "OneDrive",
+            };
             comboBoxProvider.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxDirection.Text = "Auto";
             comboBoxDirection.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -29,7 +32,7 @@ namespace GamesaveCloudManager
         private void buttonStart_Click(object sender, EventArgs e)
         {
             buttonStart.Enabled = false;
-
+            this.ControlBox = false;
             try
             {
                 logger = new();
@@ -57,6 +60,7 @@ namespace GamesaveCloudManager
             {
                 textBox1.Text += exception.Message;
                 buttonStart.Enabled = true;
+                this.ControlBox = true;
             }
         }
 
@@ -71,6 +75,12 @@ namespace GamesaveCloudManager
             {
                 buttonStart.Enabled = true;
             });
+
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.ControlBox = true;
+            });
+
             logger?.Close();
         }
 
@@ -89,6 +99,14 @@ namespace GamesaveCloudManager
                 sync.Log(ex.ToString());
             }
             sync.Close();
+        }
+
+        private void SyncForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!buttonStart.Enabled)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }

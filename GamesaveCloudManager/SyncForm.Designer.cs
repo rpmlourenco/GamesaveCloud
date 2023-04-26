@@ -110,6 +110,7 @@
             Name = "SyncForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "SyncForm";
+            FormClosing += SyncForm_FormClosing;
             Load += SyncForm_Load;
             ResumeLayout(false);
             PerformLayout();

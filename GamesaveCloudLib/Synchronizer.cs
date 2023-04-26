@@ -1,5 +1,4 @@
 ﻿using GamesaveCloudLib;
-using Microsoft.Graph.Models.TermStore;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -34,7 +33,7 @@ public class Synchronizer
 
     // configuration stored in sqlite
     private bool performBackup;
-    private IProgress<string> progress;    
+    private readonly IProgress<string> progress;
 
     public class Args
     {
@@ -52,8 +51,9 @@ public class Synchronizer
     public void Initialize(string cloudService = null, IPublicClientApplication clientApp = null, IntPtr? handle = null, bool syncDatabase = true)
     {
         sessionStartTime = DateTime.Now;
-        
-        if (!IsValidCloudService(cloudService)) {            
+
+        if (!IsValidCloudService(cloudService))
+        {
             var defaultCloudService = GetDefaultCloudService();
             if (string.IsNullOrEmpty(defaultCloudService))
             {
@@ -67,11 +67,11 @@ public class Synchronizer
                 this.cloudService = defaultCloudService;
                 Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Using default cloud service " + defaultCloudService + "." + Environment.NewLine);
             }
-        } 
+        }
         else
         {
             this.cloudService = cloudService;
-        }        
+        }
 
         var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -139,7 +139,8 @@ public class Synchronizer
                 }
 
             }
-        } else
+        }
+        else
         {
             if (!File.Exists(pathDatabaseFile))
             {
@@ -529,7 +530,7 @@ public class Synchronizer
 
     public static string GetDefaultCloudService()
     {
-        IniFile ini = new IniFile();
+        IniFile ini = new();
         var defaultCloudService = ini.Read("DefaultCloudService");
 
         if (IsValidCloudService(defaultCloudService))

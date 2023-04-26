@@ -1,14 +1,8 @@
 using GamesaveCloudCLI;
-using GamesaveCloudLib;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.NativeInterop;
-using System;
 using System.Data;
 using System.Data.SQLite;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -24,7 +18,6 @@ namespace GamesaveCloudManager
             "(select path from savegame s where s.game_id = g.game_id and s.savegame_id = (select min(savegame_id) from savegame s2 where s2.game_id = g.game_id)) as 'Path', " +
             "active from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
-        private readonly string defaultCloudService = Synchronizer.GetDefaultCloudService();
         string? pathDatabaseFile;
 
         public Game()

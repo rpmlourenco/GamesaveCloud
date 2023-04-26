@@ -1,23 +1,17 @@
 # GamesaveCloud
 
 Todo:
-- fix issue sync with google drive from manager and not logging exception and not working afer that
-- make provider same as default in syncform
+- search igdb, get id directly from igdb
 - make cloud service optional in cli
 - manager total game count
 - Use logger in updater
-- remove Playnite scripts
-- remove "My Project" folders
-- change manager Database to real one
 - add icon to manager
 - test wildcards
 - fix bug when moving credentials to another pc
 - implement parallelism
-- upload database to cloud
 - delete local files, delete cloud files
-- delete permanently from onedrive
-- search igdb, get id directly from igdb
 - admin check incompatibility between machine and filter
+- delete permanently from onedrive
 
 Done:
 - Create local backup when synchronizing from cloud
@@ -36,3 +30,9 @@ Done:
 - updater does not delete existing files
 - admin tool
 - open savegame folder
+- fix issue sync with google drive from manager and not logging exception and not working afer that
+- remove Playnite scripts
+- make provider same as default in syncform
+- remove "My Project" folders
+- change manager Database to real one
+- upload database to cloud
