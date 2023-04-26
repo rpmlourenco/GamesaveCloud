@@ -1,5 +1,6 @@
 ﻿using GamesaveCloudCLI;
 using GamesaveCloudLib;
+using System.Windows.Forms.VisualStyles;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -8,6 +9,7 @@ namespace GamesaveCloudManager
     {
         readonly List<long> games;
         Logger? logger;
+        readonly Synchronizer? sync;
 
         public SyncForm(List<long> games)
         {
@@ -33,7 +35,7 @@ namespace GamesaveCloudManager
                 logger = new();
                 var progress = new Progress<string>(msg =>
                 {
-                    textBox1.Text += msg;
+                    textBox1.AppendText(msg);
                     logger.Log(msg);
                 });
 
@@ -42,17 +44,18 @@ namespace GamesaveCloudManager
                 switch (comboBoxProvider.Text.ToLower())
                 {
                     case "googledrive":
-                        sync.Initialize("googledrive");
+                        sync.Initialize("googledrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
                         break;
                     case "onedrive":
                     default:
-                        sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), Handle);
+                        sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
                         break;
                 }
                 StartSync(sync, comboBoxDirection.Text.ToLower(), games);
             }
-            catch
+            catch (Exception exception)
             {
+                textBox1.Text += exception.Message;
                 buttonStart.Enabled = true;
             }
         }

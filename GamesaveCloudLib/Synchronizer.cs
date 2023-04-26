@@ -1,4 +1,5 @@
 ﻿using GamesaveCloudLib;
+using Microsoft.Graph.Models.TermStore;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public class Synchronizer
 
     // configuration stored in sqlite
     private bool performBackup;
-    private readonly IProgress<string> progress;    
+    private IProgress<string> progress;    
 
     public class Args
     {
@@ -48,7 +49,7 @@ public class Synchronizer
     }
 
     [SupportedOSPlatform("windows")]
-    public void Initialize(string cloudService = null, IPublicClientApplication clientApp = null, IntPtr? handle = null)
+    public void Initialize(string cloudService = null, IPublicClientApplication clientApp = null, IntPtr? handle = null, bool syncDatabase = true)
     {
         sessionStartTime = DateTime.Now;
         
@@ -101,41 +102,49 @@ public class Synchronizer
             Directory.CreateDirectory(pathConfigFolder);
         }
 
-        var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, databaseFile, "auto");
         IniFile ini = new();
         _ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, ini.SFilename, "auto");
-
         pathDatabaseFile = Path.Combine(pathConfigFolder, databaseFile);
 
-        if (!File.Exists(pathDatabaseFile))
+        if (syncDatabase)
         {
-            var resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith(databaseFile));
-            var sReader = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-            Stream sWriter = new FileStream(pathDatabaseFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-            BinaryStreamCopy(sReader, sWriter);
-            sWriter.Flush();
-            sWriter.Close();
-            sReader.Close();
-
-            SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, null, "auto");
-
-            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database initialized and synched to " + this.cloudService + Environment.NewLine);
-        }
-        else
-        {
-            switch (dbSync)
+            var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, databaseFile, "auto");
+            if (!File.Exists(pathDatabaseFile))
             {
-                case 1:
-                    Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from local computer" + Environment.NewLine);
-                    break;
-                case -1:
-                    Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from " + this.cloudService + Environment.NewLine);
-                    break;
-                default:
-                    Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database in sync" + Environment.NewLine);
-                    break;
-            }
+                var resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith(databaseFile));
+                var sReader = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+                Stream sWriter = new FileStream(pathDatabaseFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+                BinaryStreamCopy(sReader, sWriter);
+                sWriter.Flush();
+                sWriter.Close();
+                sReader.Close();
 
+                SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, databaseFile, "auto");
+
+                Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database initialized and synched to " + this.cloudService + Environment.NewLine);
+            }
+            else
+            {
+                switch (dbSync)
+                {
+                    case 1:
+                        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from local computer" + Environment.NewLine);
+                        break;
+                    case -1:
+                        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database synched from " + this.cloudService + Environment.NewLine);
+                        break;
+                    default:
+                        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database in sync" + Environment.NewLine);
+                        break;
+                }
+
+            }
+        } else
+        {
+            if (!File.Exists(pathDatabaseFile))
+            {
+                throw new Exception("Database not found.");
+            }
         }
 
         backupFolder = Path.Combine(pathAtual, "backup");

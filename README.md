@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- fix issue sync with google drive from manager and not logging exception and not working afer that
 - make provider same as default in syncform
 - make cloud service optional in cli
 - manager total game count

@@ -2,10 +2,13 @@ using GamesaveCloudCLI;
 using GamesaveCloudLib;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.NativeInterop;
+using System;
 using System.Data;
 using System.Data.SQLite;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -22,36 +25,33 @@ namespace GamesaveCloudManager
             "active from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
         private readonly string defaultCloudService = Synchronizer.GetDefaultCloudService();
-        string pathDatabaseFile;
-        Synchronizer sync;
+        string? pathDatabaseFile;
 
         public Game()
         {
             InitializeComponent();
+            Enabled = false;
         }
 
         private void Game_Load(object sender, EventArgs e)
         {
             var progress = new Progress<string>(msg =>
             {
-                textBoxStatus.Text += msg;
+                textBoxStatus.AppendText(msg);
             });
-            sync = new(progress);
 
-            /*
-            sync.Initialize(null, HelperFunctions.BuildOneDriveClient(), Handle);            
-            conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
-            cmdGame = new(queryGame, conn);
-            adapter = new(cmdGame);
-            LoadData();
-            */
+            Synchronizer sync = new(progress);
+            var clientApp = HelperFunctions.BuildOneDriveClient();
+            if (clientApp != null)
+            {
+                StartSync(sync, clientApp, Handle);
+            }
 
-            StartSync(sync, HelperFunctions.BuildOneDriveClient(), Handle);
         }
 
         private async void StartSync(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
         {
-            await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSync); ;
+            await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSync, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void EndSync(Task obj)
@@ -67,7 +67,7 @@ namespace GamesaveCloudManager
         {
             try
             {
-                sync.Initialize(null, HelperFunctions.BuildOneDriveClient(), handle);
+                sync.Initialize(null, app, handle, true);
             }
             catch (Exception ex)
             {
@@ -101,6 +101,7 @@ namespace GamesaveCloudManager
                     dataGridGame.DataSource = dtGame;
                     dataGridGame.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                     dataGridGame.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+                    dataGridGame.ClearSelection();
                 });
                 textBoxFilter.Invoke((MethodInvoker)delegate
                 {
@@ -109,10 +110,9 @@ namespace GamesaveCloudManager
                         dtGame.DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", textBoxFilter.Text);
                     }
                 });
-                dataGridGame.Invoke((MethodInvoker)delegate
-                {
-                    dataGridGame.ClearSelection();
-                });
+
+                this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
+
             }
         }
 
@@ -256,6 +256,7 @@ namespace GamesaveCloudManager
                 SQLiteCommand cmd = new(queryGameDelete, conn);
                 cmd.Parameters.AddWithValue("@game_id", dataGridGame.SelectedRows[0].Cells["Id"].Value);
                 cmd.ExecuteNonQuery();
+                cmd.Dispose();
                 conn.Close();
                 LoadData();
             }
@@ -271,21 +272,38 @@ namespace GamesaveCloudManager
                 games.Add((long)row.Cells["Id"].Value);
             }
 
-            /*
-            var progress = new Progress<string>(msg =>
-            {
-                richTextBox1.Text += msg;
-            });
-
-            Synchronizer sync = new(progress);
-            sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), this.Handle);
-            */
-
             SyncForm syncForm = new(games);
             if (syncForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
             }
         }
+
+        private void buttonSyncConfig_Click(object sender, EventArgs e)
+        {
+            var progress = new Progress<string>(msg =>
+            {
+                textBoxStatus.AppendText(msg);
+            });
+            Synchronizer sync = new(progress);
+            var clientApp = HelperFunctions.BuildOneDriveClient();
+            if (clientApp != null)
+            {
+                Enabled = false;
+                StartSyncConfig(sync, clientApp, Handle);
+            }
+
+        }
+
+        private async void StartSyncConfig(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
+        {
+            await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSyncConfig, TaskScheduler.FromCurrentSynchronizationContext()); ;
+        }
+
+        private void EndSyncConfig(Task obj)
+        {
+            this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
+        }
+
 
     }
 }

@@ -385,7 +385,7 @@ namespace GamesaveCloudLib
                     }
                 }
 
-                FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read);
+                FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[folderId].ItemWithPath(fileName).Content.PutAsync(fileStream));
                 task.Wait();
                 if (task.Result != null)

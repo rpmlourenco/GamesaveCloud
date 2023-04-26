@@ -188,7 +188,7 @@ namespace GamesaveCloudLib
 
                 FilesResource.CreateMediaUpload request;
 
-                using (var stream = new FileStream(filePath, FileMode.Open))
+                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
                     request.Fields = "id, parents";
