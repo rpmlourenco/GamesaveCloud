@@ -9,6 +9,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <NeutralLanguage>en</NeutralLanguage>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,7 +29,6 @@
     <PackageReference Include="Microsoft.Graph" Version="5.7.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.53.0" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.53.0" />
-    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.13.7" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="7.0.1" />
   </ItemGroup>
