@@ -25,6 +25,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Identity.Client" Version="4.53.0" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.53.0" />
+    <PackageReference Include="Microsoft.Identity.Client.Desktop" Version="4.53.0" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
   </ItemGroup>
 
