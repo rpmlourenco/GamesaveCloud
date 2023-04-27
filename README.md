@@ -35,7 +35,7 @@ Done:
 - remove "My Project" folders
 - change manager Database to real one
 - upload database to cloud
-- check if credentials are shared between cli and desktop (they are)
+- check if credentials are shared between cli and desktop
 - fix bug when ini is not present
 - cli does not read desktop tokens
 - unhandled exception in cli

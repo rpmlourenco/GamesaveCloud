@@ -43,8 +43,8 @@ namespace GamesaveCloudLib
             string pathCredential = Path.Combine(pathCurrent, "credential");
             Directory.CreateDirectory(pathCredential);
 
-            string exe = Path.GetFileNameWithoutExtension(System.Environment.ProcessPath);
-            CacheFilePath = Path.Combine(pathCredential, $"{exe}.OneDrive.msalcache.bin3");
+            //string exe = Path.GetFileNameWithoutExtension(System.Environment.ProcessPath);
+            CacheFilePath = Path.Combine(pathCredential, "OneDrive.msalcache.bin3");
         }
 
         /// <summary>
