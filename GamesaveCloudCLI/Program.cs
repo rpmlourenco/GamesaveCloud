@@ -1,5 +1,4 @@
-﻿using GamesaveCloudLib;
-using NDesk.Options;
+﻿using NDesk.Options;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
@@ -75,13 +74,15 @@ namespace GamesaveCloudCLI
 
         static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection)
         {
+            /*
             Logger logger = new();
             var progress = new Progress<string>(msg =>
             {
                 Console.Write(msg);
                 logger.Log(msg);
             });
-            var sync = new Synchronizer(progress);
+            */
+            var sync = new Synchronizer(null);
             try
             {
                 sync.Initialize(cloudService);
@@ -93,7 +94,7 @@ namespace GamesaveCloudCLI
                 sync.Log(ex.ToString());
             }
             sync.Close();
-            logger.Close();
+            //logger.Close();
         }
 
         public static void UnitTests()

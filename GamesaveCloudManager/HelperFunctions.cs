@@ -1,5 +1,4 @@
 ﻿using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Desktop;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 
@@ -73,9 +72,10 @@ namespace GamesaveCloudManager
                             var builder = PublicClientApplicationBuilder.Create(ClientId)
                                 .WithAuthority($"https://login.microsoftonline.com/{Tenant}")
                                 .WithDefaultRedirectUri()
-                                //.WithBroker(true);
-                                // WithWindowsDesktopFeatures needed when used in Windows Desktop
-                                .WithWindowsDesktopFeatures(options);
+                            //    .WithBroker(true);
+                            // WithWindowsDesktopFeatures needed when used in Windows Desktop
+                                .WithBroker(new BrokerOptions(BrokerOptions.OperatingSystems.Windows));
+                            //.WithWindowsDesktopFeatures(options);
                             //.WithParentActivityOrWindow(handle);
 
                             return builder.Build();

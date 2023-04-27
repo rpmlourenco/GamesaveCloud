@@ -1,5 +1,5 @@
 # TODO parse directories from PublishProfile xml
-$GamesaveCloudCLI_PubFolder = '.\GamesaveCloudCLI\bin\Release\net7.0\publish'
+$GamesaveCloudCLI_PubFolder = '.\GamesaveCloudCLI\bin\Release\net7.0\singlefile'
 $GamesaveCloudManager_PubFolder = '.\GamesaveCloudManager\bin\Release\net7.0-windows\publish'
 $TempFolder = '.\published\Temp'
 

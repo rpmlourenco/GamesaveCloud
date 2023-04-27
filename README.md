@@ -1,6 +1,8 @@
 # GamesaveCloud
 
 Todo:
+- cli does not read desktop tokens
+- unhandled exception in cli 
 - make single file to avoid conflicts in shared dll
 - improve parameter parsing unknown direction
 - search igdb, get id directly from igdb

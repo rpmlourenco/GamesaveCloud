@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using Logger = GamesaveCloudLib.Logger;
 
 namespace GamesaveCloudCLI;
 
@@ -34,6 +35,7 @@ public class Synchronizer
     // configuration stored in sqlite
     private bool performBackup;
     private readonly IProgress<string> progress;
+    private readonly Logger logger;
 
     public class Args
     {
@@ -44,7 +46,14 @@ public class Synchronizer
     [SupportedOSPlatform("windows")]
     public Synchronizer(IProgress<string> progress)
     {
-        this.progress = progress;
+        if (progress == null)
+        {
+            logger = new();
+        }
+        else
+        {
+            this.progress = progress;
+        }
     }
 
     [SupportedOSPlatform("windows")]
@@ -374,14 +383,23 @@ public class Synchronizer
         Log(Environment.NewLine);
 
         //logFile?.Close();
+        logger?.Close();
 
     }
 
     public void Log(string text)
     {
-        progress.Report(text);
-        //Console.Write(text);
-        //logFile?.Write(text);
+        if (progress != null)
+        {
+            progress.Report(text);
+        }
+        else
+        {
+            Console.Write(text);
+            //logFile?.Write(text);
+            logger.Log(text);
+        }
+
     }
 
     private static void BinaryStreamCopy(Stream sReader, Stream sWriter)
@@ -548,7 +566,7 @@ public class Synchronizer
     public static string GetPathDatabaseFile()
     {
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);        
+        var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
         var pathConfigFolder = Path.Combine(pathAtual, "config");
         return Path.Combine(pathConfigFolder, databaseFile);
     }
