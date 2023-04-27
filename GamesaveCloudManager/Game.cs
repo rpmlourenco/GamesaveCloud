@@ -23,7 +23,7 @@ namespace GamesaveCloudManager
         public Game()
         {
             InitializeComponent();
-            Enabled = false;
+            //Enabled = false;
         }
 
         private void Game_Load(object sender, EventArgs e)

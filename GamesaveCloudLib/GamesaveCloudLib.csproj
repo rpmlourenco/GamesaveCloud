@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3024" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3034" />
     <PackageReference Include="Microsoft.Graph" Version="5.7.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.53.0" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.53.0" />

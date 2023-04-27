@@ -18,8 +18,8 @@ if (Test-Path -Path $TempFolder) {
 }
 New-Item -Path $TempFolder -ItemType Directory
 
-Copy-Item -Path $GamesaveCloudCLI_PubFolder\*.* -Destination $TempFolder -recurse -Force
 Copy-Item -Path $GamesaveCloudManager_PubFolder\*.* -Destination $TempFolder -recurse -Force
+Copy-Item -Path $GamesaveCloudCLI_PubFolder\*.* -Destination $TempFolder -recurse -Force
 
 $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("$GamesaveCloudCLI_PubFolder\GamesaveCloudCLI.exe").FileVersion
 # Keep older versions in GitHub

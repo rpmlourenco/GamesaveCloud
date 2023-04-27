@@ -36,7 +36,8 @@ namespace GamesaveCloudLib
     {
         static TokenCacheHelper()
         {
-            string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
             string pathCredential = Path.Combine(pathCurrent, "credential");
             Directory.CreateDirectory(pathCredential);
             CacheFilePath = Path.Combine(pathCredential, "OneDrive.msalcache.bin3");

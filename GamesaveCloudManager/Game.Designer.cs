@@ -140,7 +140,6 @@
             textBoxStatus.Location = new Point(12, 452);
             textBoxStatus.Multiline = true;
             textBoxStatus.Name = "textBoxStatus";
-            textBoxStatus.ReadOnly = true;
             textBoxStatus.ScrollBars = ScrollBars.Both;
             textBoxStatus.Size = new Size(1401, 130);
             textBoxStatus.TabIndex = 32;

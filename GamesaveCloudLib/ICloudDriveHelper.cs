@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace GamesaveCloudLib
@@ -163,26 +164,32 @@ namespace GamesaveCloudLib
                 fileEntries = Directory.GetFiles(folderPath);
             }
 
-            totalFiles += fileEntries.Length;
-            foreach (var fileName in fileEntries)
+            if (fileEntries != null && fileEntries.Length > 0)
             {
-                var fileLastModified = File.GetLastWriteTime(fileName);
-                if (lastModified == default || fileLastModified > lastModified)
+                totalFiles += fileEntries.Length;
+                foreach (var fileName in fileEntries)
                 {
-                    lastModified = fileLastModified;
+                    var fileLastModified = File.GetLastWriteTime(fileName);
+                    if (lastModified == default || fileLastModified > lastModified)
+                    {
+                        lastModified = fileLastModified;
+                    }
                 }
             }
 
             if (recursive)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
-                totalFiles += folderEntries.Length;
-                foreach (var folderEntry in folderEntries)
+                if (folderEntries != null && folderEntries.Length > 0)
                 {
-                    var folderLastModified = LocalLastModifiedDate(folderEntry, ref totalFiles, recursive, filter);
-                    if (lastModified == default || folderLastModified > lastModified)
+                    totalFiles += folderEntries.Length;
+                    foreach (var folderEntry in folderEntries)
                     {
-                        lastModified = folderLastModified;
+                        var folderLastModified = LocalLastModifiedDate(folderEntry, ref totalFiles, recursive, filter);
+                        if (lastModified == default || folderLastModified > lastModified)
+                        {
+                            lastModified = folderLastModified;
+                        }
                     }
                 }
             }
@@ -246,24 +253,26 @@ namespace GamesaveCloudLib
             {
                 fileEntries = Directory.GetFiles(folderPath);
             }
-
-            foreach (var fileEntry in fileEntries)
+            if (fileEntries != null && fileEntries.Length > 0)
             {
-                var fileLastModified = File.GetLastWriteTime(fileEntry);
-                long size = new FileInfo(fileEntry).Length;
+                foreach (var fileEntry in fileEntries)
+                {
+                    var fileLastModified = File.GetLastWriteTime(fileEntry);
+                    long size = new FileInfo(fileEntry).Length;
 
-                var driveFile = FindFile(Path.GetFileName(fileEntry), files);
-                if (driveFile is null)
-                {
-                    UploadFile(fileEntry, folderId, false);
-                }
-                else
-                {
-                    DateTime driveLastModified = (DateTime)driveFile.ModifiedTime;
-                    if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || driveFile.Size != size)
+                    var driveFile = FindFile(Path.GetFileName(fileEntry), files);
+                    if (driveFile is null)
                     {
-                        DeleteFile(driveFile.Id);
                         UploadFile(fileEntry, folderId, false);
+                    }
+                    else
+                    {
+                        DateTime driveLastModified = (DateTime)driveFile.ModifiedTime;
+                        if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || driveFile.Size != size)
+                        {
+                            DeleteFile(driveFile.Id);
+                            UploadFile(fileEntry, folderId, false);
+                        }
                     }
                 }
             }
@@ -271,22 +280,25 @@ namespace GamesaveCloudLib
             if (recursive)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
-                foreach (var folderEntry in folderEntries)
+                if (folderEntries != null && folderEntries.Length > 0)
                 {
-                    string folderName = Path.GetFileName(folderEntry);
-                    var driveFolder = FindFile(folderName, folders);
-                    string driveFolderId;
-                    if (driveFolder is null)
+                    foreach (var folderEntry in folderEntries)
                     {
-                        // driveFolder = DriveNewFolder(service, folderName, folderId, Directory.GetCreationTime(folderEntry), Directory.GetLastWriteTime(folderEntry))
-                        driveFolderId = NewFolder(folderName, folderId).Id;
-                    }
-                    else
-                    {
-                        driveFolderId = driveFolder.Id;
-                    }
+                        string folderName = Path.GetFileName(folderEntry);
+                        var driveFolder = FindFile(folderName, folders);
+                        string driveFolderId;
+                        if (driveFolder is null)
+                        {
+                            // driveFolder = DriveNewFolder(service, folderName, folderId, Directory.GetCreationTime(folderEntry), Directory.GetLastWriteTime(folderEntry))
+                            driveFolderId = NewFolder(folderName, folderId).Id;
+                        }
+                        else
+                        {
+                            driveFolderId = driveFolder.Id;
+                        }
 
-                    SyncFromLocal(folderEntry, driveFolderId, recursive, filter);
+                        SyncFromLocal(folderEntry, driveFolderId, recursive, filter);
+                    }
                 }
             }
         }
@@ -319,13 +331,16 @@ namespace GamesaveCloudLib
             {
                 fileEntries = Directory.GetFiles(folderPath);
             }
-            foreach (var fileEntry in fileEntries)
+            if (fileEntries != null && fileEntries.Length > 0)
             {
-
-                var driveFile = FindFile(Path.GetFileName(fileEntry), files);
-                if (driveFile is null)
+                foreach (var fileEntry in fileEntries)
                 {
-                    File.Delete(fileEntry);
+
+                    var driveFile = FindFile(Path.GetFileName(fileEntry), files);
+                    if (driveFile is null)
+                    {
+                        File.Delete(fileEntry);
+                    }
                 }
             }
 

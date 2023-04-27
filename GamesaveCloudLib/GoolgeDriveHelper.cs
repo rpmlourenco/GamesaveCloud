@@ -49,7 +49,8 @@ namespace GamesaveCloudLib
 
             using (stream)
             {
-                string pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                //string pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
                 string pathCredential = Path.Combine(pathAtual, "credential");
                 Directory.CreateDirectory(pathCredential);
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.FromStream(stream).Secrets, new[] { DriveService.Scope.Drive }, "user", System.Threading.CancellationToken.None, new FileDataStore(pathCredential, true)).Result;

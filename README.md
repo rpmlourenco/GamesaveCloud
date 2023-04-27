@@ -1,6 +1,8 @@
 # GamesaveCloud
 
 Todo:
+- make single file to avoid conflicts in shared dll
+- improve parameter parsing unknown direction
 - search igdb, get id directly from igdb
 - make cloud service optional in cli
 - manager total game count
@@ -36,3 +38,5 @@ Done:
 - remove "My Project" folders
 - change manager Database to real one
 - upload database to cloud
+- check if credentials are shared between cli and desktop (they are)
+- fix bug when ini is not present

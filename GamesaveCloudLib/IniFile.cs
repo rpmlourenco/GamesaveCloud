@@ -23,7 +23,8 @@ namespace GamesaveCloudLib
 
         public IniFile(string IniPath = null)
         {
-            var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
             var pathConfigFolder = Path.Combine(pathAtual, "config");
             if (!Directory.Exists(pathConfigFolder))
             {

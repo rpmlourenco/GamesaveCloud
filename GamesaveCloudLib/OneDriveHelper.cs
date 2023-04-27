@@ -60,7 +60,8 @@ namespace GamesaveCloudLib
         public OneDriveHelper(IProgress<string> progress, IPublicClientApplication clientApplication = null, IntPtr? handle = null)
         {
             this.progress = progress;
-            string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
             pathCredential = Path.Combine(pathCurrent, "credential");
 
             howToSign = 2;
