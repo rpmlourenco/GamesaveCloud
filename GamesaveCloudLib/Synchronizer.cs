@@ -83,9 +83,10 @@ public class Synchronizer
         }
 
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+        //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+        var pathAtual = Path.GetDirectoryName(Environment.ProcessPath);
 
-        var startTime = DateTime.Now;
+            var startTime = DateTime.Now;
         Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Connecting to " + this.cloudService + "... " + Environment.NewLine);
 
         driveHelper = this.cloudService switch
@@ -566,8 +567,9 @@ public class Synchronizer
     public static string GetPathDatabaseFile()
     {
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-        var pathConfigFolder = Path.Combine(pathAtual, "config");
+        //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+        var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+        var pathConfigFolder = Path.Combine(pathCurrent, "config");
         return Path.Combine(pathConfigFolder, databaseFile);
     }
 

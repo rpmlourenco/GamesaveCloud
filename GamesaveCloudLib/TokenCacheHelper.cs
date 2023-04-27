@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.Identity.Client;
+using System;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
@@ -37,7 +38,8 @@ namespace GamesaveCloudLib
         static TokenCacheHelper()
         {
             //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+            //string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+            var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
             string pathCredential = Path.Combine(pathCurrent, "credential");
             Directory.CreateDirectory(pathCredential);
 
@@ -60,11 +62,18 @@ namespace GamesaveCloudLib
         {
             lock (FileLock)
             {
-                args.TokenCache.DeserializeMsalV3(File.Exists(CacheFilePath)
-                        ? ProtectedData.Unprotect(File.ReadAllBytes(CacheFilePath),
-                                                 null,
-                                                 DataProtectionScope.CurrentUser)
-                        : null);
+                try
+                {                    
+                    args.TokenCache.DeserializeMsalV3(File.Exists(CacheFilePath)
+                            ? ProtectedData.Unprotect(File.ReadAllBytes(CacheFilePath),
+                                                     null,
+                                                     DataProtectionScope.CurrentUser)
+                            : null);
+                }
+                catch
+                {
+                    args.TokenCache.DeserializeMsalV3(null);
+                }
             }
         }
 

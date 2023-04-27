@@ -7,8 +7,6 @@ Todo:
 - manager total game count
 - Use logger in updater
 - add icon to manager
-- test wildcards
-- fix bug when moving credentials to another pc
 - implement parallelism
 - delete local files, delete cloud files
 - admin check incompatibility between machine and filter
@@ -40,5 +38,7 @@ Done:
 - check if credentials are shared between cli and desktop (they are)
 - fix bug when ini is not present
 - cli does not read desktop tokens
-- unhandled exception in cli 
+- unhandled exception in cli
 - make single file to avoid conflicts in shared dll
+- fix bug when moving credentials to another pc
+- test wildcards

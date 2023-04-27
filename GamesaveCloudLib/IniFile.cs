@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -24,8 +25,9 @@ namespace GamesaveCloudLib
         public IniFile(string IniPath = null)
         {
             //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-            var pathConfigFolder = Path.Combine(pathAtual, "config");
+            //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+            var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+            var pathConfigFolder = Path.Combine(pathCurrent, "config");
             if (!Directory.Exists(pathConfigFolder))
             {
                 Directory.CreateDirectory(pathConfigFolder);
