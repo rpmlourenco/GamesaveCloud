@@ -1,9 +1,6 @@
 # GamesaveCloud
 
 Todo:
-- cli does not read desktop tokens
-- unhandled exception in cli 
-- make single file to avoid conflicts in shared dll
 - improve parameter parsing unknown direction
 - search igdb, get id directly from igdb
 - make cloud service optional in cli
@@ -42,3 +39,6 @@ Done:
 - upload database to cloud
 - check if credentials are shared between cli and desktop (they are)
 - fix bug when ini is not present
+- cli does not read desktop tokens
+- unhandled exception in cli 
+- make single file to avoid conflicts in shared dll

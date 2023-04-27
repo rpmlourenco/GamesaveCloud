@@ -12,6 +12,8 @@
     <PlatformTarget>x64</PlatformTarget>
 	<NeutralLanguage>en</NeutralLanguage>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	<DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

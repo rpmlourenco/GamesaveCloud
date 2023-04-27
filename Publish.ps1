@@ -1,6 +1,6 @@
 # TODO parse directories from PublishProfile xml
 $GamesaveCloudCLI_PubFolder = '.\GamesaveCloudCLI\bin\Release\net7.0\singlefile'
-$GamesaveCloudManager_PubFolder = '.\GamesaveCloudManager\bin\Release\net7.0-windows\publish'
+$GamesaveCloudManager_PubFolder = '.\GamesaveCloudManager\bin\Release\net7.0-windows\singlefile'
 $TempFolder = '.\published\Temp'
 
 if (Test-Path -Path $GamesaveCloudCLI_PubFolder) {
@@ -11,7 +11,7 @@ if (Test-Path -Path $GamesaveCloudManager_PubFolder) {
 }
 
 dotnet publish -p:PublishProfile=FolderProfileSingleFile -p:Configuration=Release .\GamesaveCloudCLI\GamesaveCloudCLI.csproj
-dotnet publish -p:PublishProfile=FolderProfile -p:Configuration=Release .\GamesaveCloudManager\GamesaveCloudManager.csproj
+dotnet publish -p:PublishProfile=FolderProfileSingleFile -p:Configuration=Release .\GamesaveCloudManager\GamesaveCloudManager.csproj
 
 if (Test-Path -Path $TempFolder) {
     Remove-Item -Recurse -Force $TempFolder
