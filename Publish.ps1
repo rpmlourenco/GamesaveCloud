@@ -10,7 +10,7 @@ if (Test-Path -Path $GamesaveCloudManager_PubFolder) {
     Remove-Item -Recurse -Force $GamesaveCloudManager_PubFolder
 }
 
-dotnet publish -p:PublishProfile=FolderProfile -p:Configuration=Release .\GamesaveCloudCLI\GamesaveCloudCLI.csproj
+dotnet publish -p:PublishProfile=FolderProfileSingleFile -p:Configuration=Release .\GamesaveCloudCLI\GamesaveCloudCLI.csproj
 dotnet publish -p:PublishProfile=FolderProfile -p:Configuration=Release .\GamesaveCloudManager\GamesaveCloudManager.csproj
 
 if (Test-Path -Path $TempFolder) {
