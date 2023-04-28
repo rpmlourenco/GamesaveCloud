@@ -6,13 +6,15 @@ namespace GamesaveCloudUpdater
 {
     public class Updater
     {
-        static readonly string remoteVersionURL = "https://raw.githubusercontent.com/rpmlourenco/GamesaveCloud/master/GamesaveCloudCLI/GamesaveCloudCLI.csproj";
-        static readonly string baseRemoteUrl = "https://github.com/rpmlourenco/GamesaveCloud/raw/master/published/GamesaveCloudCLI";
-        static readonly string executable = "GamesaveCloudCLI.exe";
+        static readonly string githubURL = "https://raw.githubusercontent.com/rpmlourenco/GamesaveCloud/master/";
+        static readonly string[] remoteVersionURL = { "GamesaveCloudCLI/GamesaveCloudCLI.csproj", "GamesaveCloudManager/GamesaveCloudManager.csproj" };
+        static readonly string[] remotePubURL = { "published/GamesaveCloudCLI", "published/GamesaveCloudManager" };
+        static readonly string[] executables = { "GamesaveCloudCLI.exe", "GamesaveCloudManager.exe" };
         static readonly string logDir = "logs";
         static readonly string logFileName = "GamesaveCloud.Log";
 
-        string? assemblyWithoutExtendion;
+        string? updaterAssembly;
+        string? updaterWithoutExtendion;
         string? assemblyPath;
         string? fileToUpdate;
         //readonly string[] args;
@@ -75,9 +77,9 @@ namespace GamesaveCloudUpdater
             }
         }
 
-        public static string? GetRemoteVersion()
+        public static string? GetRemoteVersion(int index)
         {
-            XElement xdocument = XElement.Load(remoteVersionURL);
+            XElement xdocument = XElement.Load(githubURL + remoteVersionURL[index]);
             XElement? xversion;
             XElement? xproperty = xdocument.Descendants("PropertyGroup").FirstOrDefault();
             if (xproperty != null)
@@ -96,92 +98,85 @@ namespace GamesaveCloudUpdater
             }
         }
 
-
-        public int CheckVersion()
+        public string? GetAssemblyPath()
         {
-
-            //string assembly = Assembly.GetExecutingAssembly().Location;
-            //string? assembly = Environment.ProcessPath;
-            //this.assemblyWithoutExtendion = Path.GetFileNameWithoutExtension(assembly);
-            //this.assemblyPath = Path.GetDirectoryName(assembly);
-
-            string? assembly = Environment.ProcessPath;
-
-            if (assembly != null)
+            updaterAssembly = Environment.ProcessPath;
+            if (updaterAssembly != null)
             {
-                this.assemblyPath = Path.GetDirectoryName(assembly);
-                if (this.assemblyPath != null)
-                {
-                    this.fileToUpdate = Path.Combine(this.assemblyPath, executable);
-                    this.assemblyWithoutExtendion = Path.GetFileNameWithoutExtension(assembly);
-                }
-                else
-                {
-                    LogWriteLine("Error: could not determine current path.");
-                    return 1;
-                }
+                return Path.GetDirectoryName(updaterAssembly);
             }
             else
             {
                 LogWriteLine("Error: could not determine current path.");
-                return 1;
-
-            }
-
-            string pathLog = Path.Combine(assemblyPath, logDir);
-            Directory.CreateDirectory(pathLog);
-            logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
-
-
-            this.remoteVersion = Updater.GetRemoteVersion();
-            this.localVersion = Updater.GetLocalVersion(this.fileToUpdate);
-
-            if (this.remoteVersion != null)
-            {
-                if (this.localVersion != null)
-                {
-                    if (this.remoteVersion.Equals(this.localVersion))
-                    {
-                        LogWriteLine($"Version {this.localVersion} is up to date.");
-                        LaunchExecutable();
-                        return 0;
-                    }
-                    else
-                    {
-                        LogWriteLine($"Current remoteVersion {this.localVersion} is outdated. New remoteVersion {this.remoteVersion} found.");
-                        PerformUpdate();
-                        return 0;
-                    }
-
-                }
-                else
-                {
-                    LogWriteLine($"Local installation not found. Installing latest verion {this.remoteVersion}.");
-                    PerformUpdate();
-                    return 0;
-                }
-
-            }
-            else
-            {
-                if (this.localVersion != null)
-                {
-                    LogWriteLine("No remote version found.");
-                    LaunchExecutable();
-                    return 0;
-                }
-                else
-                {
-                    LogWriteLine("No local or remote versions found. Exiting.");
-                    return 1;
-                }
+                return null;
             }
         }
 
 
-        private bool PerformUpdate()
+        public int CheckVersion()
         {
-            string remoteUrl = baseRemoteUrl + "-" + this.remoteVersion + ".zip";
+            this.assemblyPath = GetAssemblyPath();
+            if (this.assemblyPath == null)
+            {
+                LogWriteLine("Error: could not determine current path.");
+                return 1;
+            }
+
+            this.updaterWithoutExtendion = Path.GetFileNameWithoutExtension(updaterAssembly);
+            string pathLog = Path.Combine(assemblyPath, logDir);
+            Directory.CreateDirectory(pathLog);
+            logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
+
+            for (int i = 0; i < executables.Length; i++)
+            {                
+                this.fileToUpdate = Path.Combine(this.assemblyPath, executables[i]);
+                this.remoteVersion = Updater.GetRemoteVersion(i);
+                this.localVersion = Updater.GetLocalVersion(this.fileToUpdate);
+
+                if (this.remoteVersion != null)
+                {
+                    if (this.localVersion != null)
+                    {
+                        if (this.remoteVersion.Equals(this.localVersion))
+                        {
+                            LogWriteLine($"{executables[i]}: Version {this.localVersion} is up to date.");
+                            //Close();
+                        }
+                        else
+                        {
+                            LogWriteLine($"{executables[i]}:Current remoteVersion {this.localVersion} is outdated. New remoteVersion {this.remoteVersion} found.");
+                            PerformUpdate(i);
+                        }
+
+                    }
+                    else
+                    {
+                        LogWriteLine($"{executables[i]}: Local installation not found. Installing latest verion {this.remoteVersion}.");
+                        PerformUpdate(i);
+                    }
+
+                }
+                else
+                {
+                    if (this.localVersion != null)
+                    {
+                        LogWriteLine($"{executables[i]}: No remote version found.");
+                        //Close();
+                    }
+                    else
+                    {
+                        LogWriteLine($"{executables[i]}: No local or remote versions found. Exiting.");
+                    }
+                }                
+            }            
+            Close();
+            return 0;
+        }
+
+
+        private bool PerformUpdate(int index)
+        {
+            string remoteUrl = githubURL + remotePubURL[index] + "-" + this.remoteVersion + ".zip";
 
             LogWriteLine("Beginning update...");
             string downloadDestination = Path.GetTempFileName();
@@ -223,11 +218,11 @@ namespace GamesaveCloudUpdater
 
             ZipFile.ExtractToDirectory(downloadDestination, extractTarget);
 
-            if (this.assemblyWithoutExtendion != null)
+            if (this.updaterWithoutExtendion != null)
             {
-                foreach (string newPath in Directory.GetFiles(assemblyPath, "*.*", SearchOption.TopDirectoryOnly))
+                foreach (string newPath in Directory.GetFiles(this.assemblyPath, "*.*", SearchOption.TopDirectoryOnly))
                 {
-                    if (!Path.GetFileName(newPath).Contains(this.assemblyWithoutExtendion))
+                    if (!Path.GetFileName(newPath).Contains(this.updaterWithoutExtendion))
                     {
                         File.Delete(newPath);
                     }
@@ -238,7 +233,7 @@ namespace GamesaveCloudUpdater
             // C# doesn't easily let us extract & replace at the same time
             // From http://stackoverflow.com/a/3822913/1460422
             foreach (string newPath in Directory.GetFiles(extractTarget, "*.*", SearchOption.TopDirectoryOnly))
-                File.Copy(newPath, newPath.Replace(extractTarget, assemblyPath), true);
+                File.Copy(newPath, newPath.Replace(extractTarget, this.assemblyPath), true);
             LogWriteLine("done.");
 
             // Clean up the temporary files
@@ -246,12 +241,11 @@ namespace GamesaveCloudUpdater
             Directory.Delete(extractTarget, true);
             LogWriteLine("done.");
 
-            LaunchExecutable();
-
+            //Close();
             return true;
         }
 
-        private void LaunchExecutable()
+        private void Close()
         {
 
             logFile?.Flush();

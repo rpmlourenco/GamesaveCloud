@@ -1,8 +1,7 @@
 {
   "profiles": {
     "GamesaveCloudUpdater": {
-      "commandName": "Project",
-      "commandLineArgs": "-i 141503 -s GoogleDrive"
+      "commandName": "Project"
     }
   }
 }
