@@ -6,7 +6,8 @@ namespace GamesaveCloudUpdater
 {
     public class Updater
     {
-        static readonly string githubURL = "https://raw.githubusercontent.com/rpmlourenco/GamesaveCloud/master/";
+        //static readonly string githubURL = "https://raw.githubusercontent.com/rpmlourenco/GamesaveCloud/master/";
+        static readonly string githubURL = "https://github.com/rpmlourenco/GamesaveCloud/raw/master/";
         static readonly string[] remoteVersionURL = { "GamesaveCloudCLI/GamesaveCloudCLI.csproj", "GamesaveCloudManager/GamesaveCloudManager.csproj" };
         static readonly string[] remotePubURL = { "published/GamesaveCloudCLI", "published/GamesaveCloudManager" };
         static readonly string[] executables = { "GamesaveCloudCLI.exe", "GamesaveCloudManager.exe" };
