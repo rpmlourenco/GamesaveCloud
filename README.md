@@ -1,7 +1,6 @@
 # GamesaveCloud
 
 Todo:
-- separate two updates
 - search igdb, get id directly from igdb
 - manager total game count
 - add icon to manager
@@ -42,3 +41,4 @@ Done:
 - test wildcards
 - improve parameter parsing unknown direction
 - make cloud service optional in cli
+- separate two updates
