@@ -13,11 +13,18 @@
 	<NeutralLanguage>en</NeutralLanguage>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	
+	<!-- needed for single file to work with onedrive sign on -->
 	<DebugType>embedded</DebugType>
+	<ApplicationIcon>Resources\gamepad.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\onedrive_secrets.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\gamepad.ico" />
   </ItemGroup>
 
   <ItemGroup>

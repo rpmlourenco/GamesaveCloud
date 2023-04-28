@@ -6,7 +6,7 @@
     },
     "GamesaveCloudCLI 1": {
       "commandName": "Project",
-      "commandLineArgs": "-t \"Forza Horizon 5\" -s onedrive"
+      "commandLineArgs": "-t \"Forza Horizon 5\" -d auto -s OneDrive"
     }
   }
 }

@@ -21,8 +21,8 @@ namespace GamesaveCloudCLI
                 var options = new OptionSet() {
                     { "i|id=", "The {ID} of the game to be synchronized (0 to synchronize all games in the database).", v => {if (int.Parse(v) >= 0) gameId = int.Parse(v);} },
                     { "t|title=", "The {TITLE} of the game to be synchronized (see https://www.igdb.com/).", v => gameTitle = v },
-                    { "s|service=", "The {SERVICE} to use. valid options are: " + $"{String.Join(", ",Synchronizer.CloudServices)}", v => {if (Synchronizer.CloudServices.Contains(v.ToLower())) cloudService = v.ToLower(); } },
-                    { "d|direction=", "The {DIRECTION} of the synchronization (auto, tocloud, fromcloud).", v => {if (Synchronizer.SyncDirections.Contains(v.ToLower())) syncDirection = v.ToLower(); } },
+                    { "s|service=", "The {SERVICE} to use. valid options are: " + $"{String.Join(", ",Synchronizer.CloudServices)}", v => cloudService = v },
+                    { "d|direction=", "The {DIRECTION} of the synchronization (auto, tocloud, fromcloud).", v => syncDirection = v },
                     { "h|?|help", v => help = v != null },
                 };
                 List<string> extra;
@@ -41,15 +41,43 @@ namespace GamesaveCloudCLI
                     help = true;
                 }
 
+                // validate cloud service
+                if (cloudService != null)
+                {
+                    if (Synchronizer.CloudServices.Contains(cloudService.ToLower()))
+                    {
+                        cloudService = cloudService.ToLower();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid cloud service.");
+                        help = true;
+                    }
+                }
+
+                // validate direction
+                if (syncDirection == null)
+                {
+                    syncDirection = "auto";
+                }
+                else
+                {
+                    if (Synchronizer.SyncDirections.Contains(syncDirection.ToLower()))
+                    {
+                        syncDirection = syncDirection.ToLower();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid direction.");
+                        help = true;
+                    }
+                }
+
                 if (help)
                 {
                     ShowHelp(options);
                     return;
                 }
-
-                cloudService ??= "onedrive";
-
-                syncDirection ??= "auto";
 
                 LaunchSynchronizer(gameId, gameTitle, cloudService, syncDirection);
             }

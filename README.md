@@ -1,11 +1,8 @@
 # GamesaveCloud
 
 Todo:
-- improve parameter parsing unknown direction
 - search igdb, get id directly from igdb
-- make cloud service optional in cli
 - manager total game count
-- Use logger in updater
 - add icon to manager
 - implement parallelism
 - delete local files, delete cloud files
@@ -42,3 +39,5 @@ Done:
 - make single file to avoid conflicts in shared dll
 - fix bug when moving credentials to another pc
 - test wildcards
+- improve parameter parsing unknown direction
+- make cloud service optional in cli

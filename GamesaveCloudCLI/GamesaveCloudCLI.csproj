@@ -22,11 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Playnite - Load Config From Cloud.ps1" />
-    <None Remove="Resources\Playnite - Save Config To Cloud.ps1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Resources\gamepad.ico" />
   </ItemGroup>
 

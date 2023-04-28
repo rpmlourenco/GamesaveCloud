@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Game));
             dataGridGame = new DataGridView();
             textBoxFilter = new TextBox();
             label1 = new Label();
@@ -160,6 +161,7 @@
             Controls.Add(textBoxFilter);
             Controls.Add(dataGridGame);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Game";
             StartPosition = FormStartPosition.CenterScreen;

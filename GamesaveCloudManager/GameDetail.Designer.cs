@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameDetail));
             buttonSave = new Button();
             checkBoxActive = new CheckBox();
             dataGridViewPaths = new DataGridView();
@@ -295,6 +296,7 @@
             Controls.Add(textBoxId);
             Controls.Add(labelId);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "GameDetail";
