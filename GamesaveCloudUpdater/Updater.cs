@@ -14,7 +14,7 @@ namespace GamesaveCloudUpdater
         static readonly string logFileName = "GamesaveCloud.Log";
 
         string? updaterAssembly;
-        string? updaterWithoutExtendion;
+        //string? updaterWithoutExtendion;
         string? assemblyPath;
         string? fileToUpdate;
         //readonly string[] args;
@@ -122,7 +122,7 @@ namespace GamesaveCloudUpdater
                 return 1;
             }
 
-            this.updaterWithoutExtendion = Path.GetFileNameWithoutExtension(updaterAssembly);
+            //this.updaterWithoutExtendion = Path.GetFileNameWithoutExtension(updaterAssembly);
             string pathLog = Path.Combine(assemblyPath, logDir);
             Directory.CreateDirectory(pathLog);
             logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
@@ -218,6 +218,7 @@ namespace GamesaveCloudUpdater
 
             ZipFile.ExtractToDirectory(downloadDestination, extractTarget);
 
+            /*
             if (this.updaterWithoutExtendion != null)
             {
                 foreach (string newPath in Directory.GetFiles(this.assemblyPath, "*.*", SearchOption.TopDirectoryOnly))
@@ -228,6 +229,7 @@ namespace GamesaveCloudUpdater
                     }
                 }
             }
+            */
 
             // Copy the extracted files and replace everything in the current directory to finish the update
             // C# doesn't easily let us extract & replace at the same time
