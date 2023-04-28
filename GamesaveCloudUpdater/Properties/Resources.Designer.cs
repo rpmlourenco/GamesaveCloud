@@ -63,9 +63,9 @@ namespace GamesaveCloudUpdater.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
-        internal static byte[] gamepad {
+        internal static byte[] update {
             get {
-                object obj = ResourceManager.GetObject("gamepad", resourceCulture);
+                object obj = ResourceManager.GetObject("update", resourceCulture);
                 return ((byte[])(obj));
             }
         }
