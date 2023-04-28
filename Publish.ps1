@@ -24,7 +24,7 @@ Remove-Item -Recurse -Force $TempFolder
 
 New-Item -Path $TempFolder -ItemType Directory
 Copy-Item -Path $GamesaveCloudManager_PubFolder\*.* -Destination $TempFolder -recurse -Force
-$versionManager = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("$GamesaveCloudCLI_PubFolder\GamesaveCloudManager.exe").FileVersion
+$versionManager = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("$GamesaveCloudManager_PubFolder\GamesaveCloudManager.exe").FileVersion
 Compress-Archive -Force -Path $TempFolder\*.* -DestinationPath .\published\GamesaveCloudManager-$versionManager.zip
 Remove-Item -Recurse -Force $TempFolder
 
