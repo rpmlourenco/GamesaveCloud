@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- separate two updates
 - search igdb, get id directly from igdb
 - manager total game count
 - add icon to manager
