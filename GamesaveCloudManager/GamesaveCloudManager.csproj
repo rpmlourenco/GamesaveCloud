@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Version>1.0.2.0</Version>
-    <InformationalVersion>Initial release</InformationalVersion>
+    <Version>1.0.3.0</Version>
+    <InformationalVersion>IGDB Lookup</InformationalVersion>
     <VersionSuffix>$([System.DateTime]::UtcNow.ToString(`yyyyMMdd-HHmm`))</VersionSuffix>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
