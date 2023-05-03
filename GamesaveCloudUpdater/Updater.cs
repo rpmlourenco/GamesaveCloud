@@ -129,7 +129,7 @@ namespace GamesaveCloudUpdater
             logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
 
             for (int i = 0; i < executables.Length; i++)
-            {                
+            {
                 this.fileToUpdate = Path.Combine(this.assemblyPath, executables[i]);
                 this.remoteVersion = Updater.GetRemoteVersion(i);
                 this.localVersion = Updater.GetLocalVersion(this.fileToUpdate);
@@ -168,8 +168,8 @@ namespace GamesaveCloudUpdater
                     {
                         LogWriteLine($"{executables[i]}: No local or remote versions found. Exiting.");
                     }
-                }                
-            }            
+                }
+            }
             Close();
             return 0;
         }

@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\igdb_secrets.json" />
     <None Remove="Resources\onedrive_secrets.json" />
   </ItemGroup>
 
@@ -31,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\igdb_secrets.json" />
     <EmbeddedResource Include="Resources\onedrive_secrets.json" />
   </ItemGroup>
 

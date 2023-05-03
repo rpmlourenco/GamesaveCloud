@@ -1,7 +1,6 @@
 # GamesaveCloud
 
 Todo:
-- search igdb, get id directly from igdb
 - manager total game count
 - add icon to manager
 - implement parallelism
@@ -42,3 +41,4 @@ Done:
 - improve parameter parsing unknown direction
 - make cloud service optional in cli
 - separate two updates
+- search igdb, get id directly from igdb

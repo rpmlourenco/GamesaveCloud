@@ -39,6 +39,7 @@
             buttonSyncGames = new Button();
             buttonSyncConfig = new Button();
             textBoxStatus = new TextBox();
+            buttonIGDB = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridGame).BeginInit();
             SuspendLayout();
             // 
@@ -145,11 +146,22 @@
             textBoxStatus.Size = new Size(1401, 130);
             textBoxStatus.TabIndex = 32;
             // 
+            // buttonIGDB
+            // 
+            buttonIGDB.Location = new Point(264, 417);
+            buttonIGDB.Name = "buttonIGDB";
+            buttonIGDB.Size = new Size(120, 29);
+            buttonIGDB.TabIndex = 33;
+            buttonIGDB.Text = "IGDB";
+            buttonIGDB.UseVisualStyleBackColor = true;
+            buttonIGDB.Click += buttonIGDB_Click;
+            // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1425, 594);
+            Controls.Add(buttonIGDB);
             Controls.Add(textBoxStatus);
             Controls.Add(buttonSyncConfig);
             Controls.Add(buttonSyncGames);
@@ -184,5 +196,6 @@
         private Button buttonSyncGames;
         private Button buttonSyncConfig;
         private TextBox textBoxStatus;
+        private Button buttonIGDB;
     }
 }

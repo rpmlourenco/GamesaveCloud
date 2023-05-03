@@ -12,6 +12,7 @@ namespace GamesaveCloudManager
         DataTable? dtSavegame;
         readonly string mode;
         bool updateMaster = true;
+        readonly IGDBHelper igdbHelper;
 
         readonly string queryPath = "select game_id, savegame_id as 'Id', path as 'Path', filter as 'Filter', machine, recursive from savegame where game_id = @game_id order by savegame_id";
         readonly string queryGameUpdate = "update game set title = @title, active = @active where game_id = @game_id";
@@ -19,12 +20,13 @@ namespace GamesaveCloudManager
         readonly string queryPathDelete = "delete from savegame where game_id = @game_id";
         readonly string queryPathInsert = "INSERT INTO savegame (game_id,savegame_id,path,machine,recursive,filter) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter)";
 
-        public GameDetail(ref DataRow row, SQLiteConnection conn, string mode)
+        public GameDetail(ref DataRow row, SQLiteConnection conn, string mode, IGDBHelper igdbHelper)
         {
             InitializeComponent();
             this.gameDataRow = row;
             this.conn = conn;
             this.mode = mode;
+            this.igdbHelper = igdbHelper;
             groupBoxPath.Visible = false;
         }
 
@@ -34,6 +36,7 @@ namespace GamesaveCloudManager
             if (mode == "EDIT")
             {
                 textBoxId.Enabled = false;
+                buttonIGDBId.Enabled = false;
                 this.Text = "Edit Game " + gameDataRow["Id"].ToString();
 
                 if ((Int64)gameDataRow["Active"] == 1)
@@ -47,6 +50,8 @@ namespace GamesaveCloudManager
             }
             else
             {
+                textBoxId.Enabled = true;
+                buttonIGDBId.Enabled = true;
                 this.Text = "Add Game";
                 checkBoxActive.Checked = true;
             }
@@ -419,6 +424,29 @@ namespace GamesaveCloudManager
             };
         }
 
+        private async void buttonIGDBId_Click(object sender, EventArgs e)
+        {
+            var task = igdbHelper.GetIdAsync(textBoxTitle.Text);
+            var id = await task;
+            if (id != default)
+            {
+                textBoxId.Text = id.ToString();
+            }
+
+        }
+
+        private async void buttonIGDB_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(textBoxId.Text))
+            {
+                var task = igdbHelper.GetGameAsync(long.Parse(textBoxId.Text));
+                var url = await task;
+                if (url != null)
+                {
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+            }
+        }
     }
 }
 #pragma warning restore IDE1006 // Estilos de Nomenclatura

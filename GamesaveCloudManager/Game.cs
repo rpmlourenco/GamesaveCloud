@@ -2,6 +2,7 @@ using GamesaveCloudCLI;
 using Microsoft.Identity.Client;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Text;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
@@ -13,6 +14,7 @@ namespace GamesaveCloudManager
         SQLiteConnection? conn;
         SQLiteCommand? cmdGame;
         SQLiteDataAdapter? adapter;
+        readonly IGDBHelper igdbHelper = new();
 
         readonly string queryGame = "select game_id as 'Id', title as 'Title', " +
             "(select path from savegame s where s.game_id = g.game_id and s.savegame_id = (select min(savegame_id) from savegame s2 where s2.game_id = g.game_id)) as 'Path', " +
@@ -143,12 +145,14 @@ namespace GamesaveCloudManager
             {
                 buttonEdit.Enabled = true;
                 buttonDelete.Enabled = true;
+                buttonIGDB.Enabled = true;
 
             }
             else
             {
                 buttonEdit.Enabled = false;
                 buttonDelete.Enabled = false;
+                buttonIGDB.Enabled = false;
             }
 
             if (dataGridGame.SelectedRows.Count > 0)
@@ -172,7 +176,7 @@ namespace GamesaveCloudManager
             if (conn != null && dtGame != null)
             {
                 DataRow dataRow = dtGame.NewRow();
-                GameDetail detailForm = new(ref dataRow, conn, "ADD");
+                GameDetail detailForm = new(ref dataRow, conn, "ADD", igdbHelper);
                 if (detailForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     var addedGameId = dataRow["Id"];
@@ -192,7 +196,6 @@ namespace GamesaveCloudManager
 
         private void buttonEdit_Click(object sender, EventArgs e)
         {
-            // Calculate amount code goes here
             if (conn != null && dataGridGame.SelectedRows.Count == 1)
             {
                 if (dtGame != null)
@@ -202,7 +205,7 @@ namespace GamesaveCloudManager
 
                     if (foundRows != null && foundRows.Length == 1)
                     {
-                        GameDetail detailForm = new(ref foundRows[0], conn, "EDIT");
+                        GameDetail detailForm = new(ref foundRows[0], conn, "EDIT", igdbHelper);
                         if (detailForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
                             LoadData();
@@ -289,7 +292,7 @@ namespace GamesaveCloudManager
 
         private async void StartSyncConfig(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
         {
-            await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSyncConfig, TaskScheduler.FromCurrentSynchronizationContext()); ;
+            await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSyncConfig, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void EndSyncConfig(Task obj)
@@ -297,7 +300,18 @@ namespace GamesaveCloudManager
             this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
         }
 
-
+        private async void buttonIGDB_Click(object sender, EventArgs e)
+        {
+            if (dataGridGame.SelectedRows.Count == 1)
+            {
+                var task = igdbHelper.GetGameAsync((long)dataGridGame.SelectedRows[0].Cells["Id"].Value);
+                var url = await task;
+                if (url != null)
+                {
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+            }
+        }
     }
 }
 #pragma warning restore IDE1006 // Estilos de Nomenclatura

@@ -63,7 +63,7 @@ namespace GamesaveCloudLib
             lock (FileLock)
             {
                 try
-                {                    
+                {
                     args.TokenCache.DeserializeMsalV3(File.Exists(CacheFilePath)
                             ? ProtectedData.Unprotect(File.ReadAllBytes(CacheFilePath),
                                                      null,

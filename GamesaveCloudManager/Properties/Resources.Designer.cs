@@ -73,6 +73,16 @@ namespace GamesaveCloudManager.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
+        internal static byte[] igdb_secrets {
+            get {
+                object obj = ResourceManager.GetObject("igdb_secrets", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
         internal static byte[] onedrive_secrets {
             get {
                 object obj = ResourceManager.GetObject("onedrive_secrets", resourceCulture);

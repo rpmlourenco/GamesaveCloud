@@ -50,6 +50,8 @@
             labelPath = new Label();
             textBoxPathId = new TextBox();
             labelPathId = new Label();
+            buttonIGDBId = new Button();
+            buttonIGDB = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewPaths).BeginInit();
             groupBoxPath.SuspendLayout();
             SuspendLayout();
@@ -68,7 +70,7 @@
             // 
             checkBoxActive.AutoSize = true;
             checkBoxActive.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            checkBoxActive.Location = new Point(236, 15);
+            checkBoxActive.Location = new Point(338, 14);
             checkBoxActive.Name = "checkBoxActive";
             checkBoxActive.Size = new Size(75, 24);
             checkBoxActive.TabIndex = 32;
@@ -97,7 +99,7 @@
             textBoxTitle.Location = new Point(104, 42);
             textBoxTitle.MaxLength = 256;
             textBoxTitle.Name = "textBoxTitle";
-            textBoxTitle.Size = new Size(1054, 27);
+            textBoxTitle.Size = new Size(954, 27);
             textBoxTitle.TabIndex = 30;
             // 
             // labelTitle
@@ -279,11 +281,33 @@
             labelPathId.TabIndex = 25;
             labelPathId.Text = "Path Id*";
             // 
+            // buttonIGDBId
+            // 
+            buttonIGDBId.Location = new Point(1064, 40);
+            buttonIGDBId.Name = "buttonIGDBId";
+            buttonIGDBId.Size = new Size(94, 29);
+            buttonIGDBId.TabIndex = 39;
+            buttonIGDBId.Text = "Get Id";
+            buttonIGDBId.UseVisualStyleBackColor = true;
+            buttonIGDBId.Click += buttonIGDBId_Click;
+            // 
+            // buttonIGDB
+            // 
+            buttonIGDB.Location = new Point(217, 11);
+            buttonIGDB.Name = "buttonIGDB";
+            buttonIGDB.Size = new Size(94, 29);
+            buttonIGDB.TabIndex = 40;
+            buttonIGDB.Text = "IGDB";
+            buttonIGDB.UseVisualStyleBackColor = true;
+            buttonIGDB.Click += buttonIGDB_Click;
+            // 
             // GameDetail
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1170, 517);
+            Controls.Add(buttonIGDB);
+            Controls.Add(buttonIGDBId);
             Controls.Add(groupBoxPath);
             Controls.Add(buttonDelete);
             Controls.Add(buttonAdd);
@@ -332,5 +356,7 @@
         private TextBox textBoxPathId;
         private Label labelPathId;
         private Button buttonFolderOpen;
+        private Button buttonIGDBId;
+        private Button buttonIGDB;
     }
 }

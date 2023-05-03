@@ -86,7 +86,7 @@ public class Synchronizer
         //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
         var pathAtual = Path.GetDirectoryName(Environment.ProcessPath);
 
-            var startTime = DateTime.Now;
+        var startTime = DateTime.Now;
         Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Connecting to " + this.cloudService + "... " + Environment.NewLine);
 
         driveHelper = this.cloudService switch
