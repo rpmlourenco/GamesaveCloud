@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace GamesaveCloudLib
 {
@@ -16,7 +17,9 @@ namespace GamesaveCloudLib
         public abstract ICloudFile GetFile(string parentId, string name);
         public abstract IList<ICloudFile> GetFiles(string parentId);
         public abstract bool DownloadFile(ICloudFile driveFile, string outputPath);
+        public abstract Task<bool> DownloadFileAsync(ICloudFile driveFile, string outputPath);
         public abstract ICloudFile UploadFile(string filePath, string folderId, bool checkExists);
+        public abstract Task<bool> UploadFileAsync(string filePath, string folderId, bool checkExists);
         public abstract void DeleteFile(string itemId);
         public abstract ICloudFile NewFolder(string name, string parentId, DateTime createdTime = default, DateTime modifiedTime = default);
 
@@ -399,6 +402,259 @@ namespace GamesaveCloudLib
                 }
             }
 
+        }
+
+        public async Task<bool> SyncFromLocalAsync(string folderPath, string folderId, bool recursive, string filter)
+        {
+            //Console.WriteLine("Synching " + folderPath);
+
+            // Delete files in drive which do not exist locally
+            // var files = GetFiles(folderId);
+            IList<ICloudFile> files;
+            if (!String.IsNullOrEmpty(filter))
+            {
+                var allfiles = GetFiles(folderId);
+                files = FilterFiles(filter, allfiles);
+            }
+            else
+            {
+                files = GetFiles(folderId);
+            }
+
+            if (files is not null && files.Count > 0)
+            {
+                foreach (var file in files)
+                {
+                    string checkFile = Path.Combine(folderPath, file.Name);
+                    if (!File.Exists(checkFile))
+                    {
+                        DeleteFile(file.Id);
+                    }
+                }
+            }
+
+            IList<ICloudFile> folders = null;
+            if (recursive)
+                folders = GetFolders(folderId);
+
+            if (folders is not null && folders.Count > 0)
+            {
+                foreach (var folder in folders)
+                {
+                    string checkFolder = Path.Combine(folderPath, folder.Name);
+                    if (!Directory.Exists(checkFolder))
+                    {
+                        DeleteFile(folder.Id);
+                    }
+                }
+            }
+
+            
+            // Uploads non existing or different files
+            //string[] fileEntries = Directory.GetFiles(folderPath);
+            string[] fileEntries;
+            if (!String.IsNullOrEmpty(filter))
+            {
+                var allFileEntries = Directory.GetFiles(folderPath);
+                fileEntries = FilterFiles(filter, allFileEntries);
+            }
+            else
+            {
+                fileEntries = Directory.GetFiles(folderPath);
+            }
+            
+            if (fileEntries != null && fileEntries.Length > 0)
+            {
+                var uploadTasks = new List<Task>();
+                foreach (var fileEntry in fileEntries)
+                {
+                    var fileLastModified = File.GetLastWriteTime(fileEntry);
+                    long size = new FileInfo(fileEntry).Length;
+
+                    var driveFile = FindFile(Path.GetFileName(fileEntry), files);
+                    if (driveFile is null)
+                    {
+                        //Console.WriteLine("Uploading " + fileEntry);
+                        var uploadTask = UploadFileAsync(fileEntry, folderId, false);
+                        uploadTasks.Add(uploadTask);
+                    }
+                    else
+                    {
+                        DateTime driveLastModified = (DateTime)driveFile.ModifiedTime;
+                        if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || driveFile.Size != size)
+                        {
+                            DeleteFile(driveFile.Id);
+                            //Console.WriteLine("Uploading " + fileEntry);
+                            var uploadTask = UploadFileAsync(fileEntry, folderId, false);
+                            uploadTasks.Add(uploadTask);
+                        }
+                    }
+                }
+                while (uploadTasks.Count > 0)
+                {
+                    Task finishedTask = await Task.WhenAny(uploadTasks);
+                    //Console.WriteLine("Upload completed");
+                    await finishedTask;
+                    uploadTasks.Remove(finishedTask);
+                }
+            }
+
+            if (recursive)
+            {                
+                string[] folderEntries = Directory.GetDirectories(folderPath);
+                if (folderEntries != null && folderEntries.Length > 0)
+                {
+                    var syncTasks = new List<Task>();
+                    foreach (var folderEntry in folderEntries)
+                    {
+                        string folderName = Path.GetFileName(folderEntry);
+                        var driveFolder = FindFile(folderName, folders);
+                        string driveFolderId;
+                        if (driveFolder is null)
+                        {
+                            // driveFolder = DriveNewFolder(service, folderName, folderId, Directory.GetCreationTime(folderEntry), Directory.GetLastWriteTime(folderEntry))
+                            driveFolderId = NewFolder(folderName, folderId).Id;
+                        }
+                        else
+                        {
+                            driveFolderId = driveFolder.Id;
+                        }
+                        //await SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filter);
+                        var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filter);
+                        syncTasks.Add(syncTask);
+                    }
+                    while (syncTasks.Count > 0)
+                    {
+                        Task finishedTask = await Task.WhenAny(syncTasks);
+                        //Console.WriteLine("Sync completed");
+                        await finishedTask;
+                        syncTasks.Remove(finishedTask);
+                    }
+                }
+            }
+            return true;
+        }
+
+        public async Task<bool> SyncFromDriveAsync(string folderPath, string folderId, bool recursive, string filter)
+        {
+            //Console.WriteLine("Synching " + folderPath);
+            IList<ICloudFile> files;
+            if (!String.IsNullOrEmpty(filter))
+            {
+                var allfiles = GetFiles(folderId);
+                files = FilterFiles(filter, allfiles);
+            }
+            else
+            {
+                files = GetFiles(folderId);
+            }
+
+            IList<ICloudFile> folders = null;
+            if (recursive)
+                folders = GetFolders(folderId);
+
+            //string[] fileEntries = Directory.GetFiles(folderPath);
+            string[] fileEntries;
+            if (!String.IsNullOrEmpty(filter))
+            {
+                var allFileEntries = Directory.GetFiles(folderPath);
+                fileEntries = FilterFiles(filter, allFileEntries);
+            }
+            else
+            {
+                fileEntries = Directory.GetFiles(folderPath);
+            }
+            if (fileEntries != null && fileEntries.Length > 0)
+            {
+                foreach (var fileEntry in fileEntries)
+                {
+
+                    var driveFile = FindFile(Path.GetFileName(fileEntry), files);
+                    if (driveFile is null)
+                    {
+                        File.Delete(fileEntry);
+                    }
+                }
+            }
+
+            if (recursive && folders != null)
+            {
+                string[] folderEntries = Directory.GetDirectories(folderPath);
+                foreach (var folderEntry in folderEntries)
+                {
+
+                    string folderName = Path.GetFileName(folderEntry);
+                    var driveFolder = FindFile(folderName, folders);
+
+                    if (driveFolder is null)
+                    {
+                        Directory.Delete(folderEntry, true);
+                    }
+                }
+            }
+            
+            if (files is not null && files.Count > 0)
+            {
+                var downloadTasks = new List<Task>();
+                foreach (var fileEntry in files)
+                {
+                    string checkFile = Path.Combine(folderPath, fileEntry.Name);
+                    if (!File.Exists(checkFile))
+                    {
+                        //Console.WriteLine("Downloading " + fileEntry.Name);
+                        var downloadTask = DownloadFileAsync(fileEntry, checkFile);
+                        downloadTasks.Add(downloadTask);
+                    }
+                    else
+                    {
+                        var fileLastModified = File.GetLastWriteTime(checkFile);
+                        long size = new FileInfo(checkFile).Length;
+                        DateTime driveLastModified = (DateTime)fileEntry.ModifiedTime;
+
+                        if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || fileEntry.Size != size)
+                        {
+                            //Console.WriteLine("Downloading " + fileEntry.Name);
+                            var downloadTask = DownloadFileAsync(fileEntry, checkFile);
+                            downloadTasks.Add(downloadTask);
+                        }
+                    }
+                }
+                while (downloadTasks.Count > 0)
+                {
+                    Task finishedTask = await Task.WhenAny(downloadTasks);
+                    //Console.WriteLine("Download completed");
+                    await finishedTask;
+                    downloadTasks.Remove(finishedTask);
+                }
+            }
+
+            if (folders is not null && folders.Count > 0)
+            {
+                var syncTasks = new List<Task>();
+                foreach (var folder in folders)
+                {
+
+                    string checkFolder = Path.Combine(folderPath, folder.Name);
+                    if (!Directory.Exists(checkFolder))
+                    {
+                        Directory.CreateDirectory(checkFolder);
+                        // Directory.SetCreationTime(checkFolder, driveFolder.CreatedTime)
+                        // Directory.SetLastWriteTime(checkFolder, driveFolder.ModifiedTime)
+                    }
+
+                    var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filter);
+                    syncTasks.Add(syncTask);
+                }
+                while (syncTasks.Count > 0)
+                {
+                    Task finishedTask = await Task.WhenAny(syncTasks);
+                    //Console.WriteLine("Sync completed");
+                    await finishedTask;
+                    syncTasks.Remove(finishedTask);
+                }
+            }
+
+            return true;
         }
 
         public void Log(string message)

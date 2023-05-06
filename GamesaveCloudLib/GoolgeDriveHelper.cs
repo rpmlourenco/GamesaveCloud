@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace GamesaveCloudLib
 {
@@ -295,6 +296,65 @@ namespace GamesaveCloudLib
             var request = service.Files.Create(folder);
             return new GoogleDriveFile(request.Execute());
 
+        }
+
+        public override async Task<bool> UploadFileAsync(string filePath, string folderId, bool checkExists)
+        {
+
+            var plist = new List<string>
+            {
+                folderId // Set parent driveFolder
+            };
+
+            string fileName = Path.GetFileName(filePath);
+
+            if (File.Exists(filePath))
+            {
+                var fileMetadata = new Google.Apis.Drive.v3.Data.File
+                {
+                    Name = Path.GetFileName(filePath),
+                    Parents = plist,
+                    CreatedTime = File.GetCreationTime(filePath),
+                    ModifiedTime = File.GetLastWriteTime(filePath)
+                };
+
+                if (checkExists)
+                {
+                    var drivefile = GetFile(folderId, fileName);
+                    if (drivefile is not null)
+                    {
+                        service.Files.Delete(drivefile.Id).Execute();
+                    }
+                }
+
+                FilesResource.CreateMediaUpload request;
+
+                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
+                request.Fields = "id, parents";
+                await request.UploadAsync();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override async Task<bool> DownloadFileAsync(ICloudFile driveFile, string outputPath)
+        {
+            var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite);
+
+            var request = service.Files.Get(driveFile.Id);
+            await request.DownloadAsync(outputStream);
+            outputStream.Flush();
+            outputStream.Close();
+
+            File.SetLastWriteTime(outputPath, (DateTime)driveFile.ModifiedTime);
+            File.SetCreationTime(outputPath, (DateTime)driveFile.CreatedTime);
+
+            return true;
         }
 
     }

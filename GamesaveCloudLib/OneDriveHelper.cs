@@ -409,7 +409,7 @@ namespace GamesaveCloudLib
                     }
                     catch
                     {
-                        Thread.Sleep(1000);
+                        Thread.Sleep(200);
                         _graphClient.Drives[_userDriveId].Items[result.Id].PatchAsync(driveItem).Wait();
                     }
 
@@ -436,6 +436,86 @@ namespace GamesaveCloudLib
                 {
                     //myOtherObject.InputStream.Seek(0, SeekOrigin.Begin);
                     task.Result.CopyTo(fileStream);
+                }
+                File.SetLastWriteTime(outputPath, (DateTime)driveFile.ModifiedTime);
+                File.SetCreationTime(outputPath, (DateTime)driveFile.CreatedTime);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override async Task<bool> UploadFileAsync(string filePath, string folderId, bool checkExists)
+        {
+            string fileName = Path.GetFileName(filePath);
+
+            if (folderId.Equals("root")) { folderId = _rootId; }
+
+            if (File.Exists(filePath))
+            {
+                if (folderId.Equals("root")) { folderId = _rootId; }
+                DateTimeOffset modifiedTime = (DateTimeOffset)DateTime.SpecifyKind(File.GetLastWriteTime(filePath), DateTimeKind.Local);
+                DateTimeOffset createdTime = (DateTimeOffset)DateTime.SpecifyKind(File.GetCreationTime(filePath), DateTimeKind.Local);
+
+                if (checkExists)
+                {
+                    var drivefile = GetFile(folderId, fileName);
+                    if (drivefile is not null)
+                    {
+                        _graphClient.Drives[_userDriveId].Items[drivefile.Id].DeleteAsync().Wait();
+                    }
+                }
+
+                FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                var result = await _graphClient.Drives[_userDriveId].Items[folderId].ItemWithPath(fileName).Content.PutAsync(fileStream);
+                if (result != null)
+                {
+                    var driveFile = new OneDriveFile(result);
+
+                    var driveItem = new DriveItem()
+                    {
+                        FileSystemInfo = new Microsoft.Graph.Models.FileSystemInfo()
+                        {
+                            LastModifiedDateTime = modifiedTime,
+                            CreatedDateTime = createdTime
+                        }
+                    };
+
+                    try
+                    {
+                        await _graphClient.Drives[_userDriveId].Items[driveFile.Id].PatchAsync(driveItem);
+                    }
+                    catch
+                    {
+                        Thread.Sleep(200);
+                        await _graphClient.Drives[_userDriveId].Items[driveFile.Id].PatchAsync(driveItem);
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override async Task<bool> DownloadFileAsync(ICloudFile driveFile, string outputPath)
+        {
+            var result = await _graphClient.Drives[_userDriveId].Items[driveFile.Id].Content.GetAsync();
+            if (result != null)
+            {
+                using (var fileStream = File.Create(outputPath))
+                {
+                    //myOtherObject.InputStream.Seek(0, SeekOrigin.Begin);
+                    result.CopyTo(fileStream);
                 }
                 File.SetLastWriteTime(outputPath, (DateTime)driveFile.ModifiedTime);
                 File.SetCreationTime(outputPath, (DateTime)driveFile.CreatedTime);

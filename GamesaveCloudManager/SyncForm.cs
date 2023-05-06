@@ -33,6 +33,9 @@ namespace GamesaveCloudManager
         {
             buttonStart.Enabled = false;
             this.ControlBox = false;
+            this.checkBoxAsync.Enabled = false;
+            this.comboBoxProvider.Enabled = false;
+            this.comboBoxDirection.Enabled = false;
             try
             {
                 logger = new();
@@ -54,19 +57,23 @@ namespace GamesaveCloudManager
                         sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
                         break;
                 }
-                StartSync(sync, comboBoxDirection.Text.ToLower(), games);
+
+                StartSync(sync, comboBoxDirection.Text.ToLower(), games, this.checkBoxAsync.Checked);
             }
             catch (Exception exception)
             {
                 textBox1.Text += exception.Message;
                 buttonStart.Enabled = true;
                 this.ControlBox = true;
+                this.checkBoxAsync.Enabled = true;
+                this.comboBoxProvider.Enabled = true;
+                this.comboBoxDirection.Enabled = true;
             }
         }
 
-        private async void StartSync(Synchronizer sync, string direction, List<long> games)
+        private async void StartSync(Synchronizer sync, string direction, List<long> games, bool async)
         {
-            await Task.Run(() => SyncBackgroundTask(sync, direction, games)).ContinueWith(EndSync); ;
+            await Task.Run(() => SyncBackgroundTask(sync, direction, games, async)).ContinueWith(EndSync); ;
         }
 
         private void EndSync(Task obj)
@@ -74,6 +81,21 @@ namespace GamesaveCloudManager
             buttonStart.Invoke((MethodInvoker)delegate
             {
                 buttonStart.Enabled = true;
+            });
+
+            checkBoxAsync.Invoke((MethodInvoker)delegate
+            {
+                checkBoxAsync.Enabled = true;
+            });
+
+            comboBoxProvider.Invoke((MethodInvoker)delegate
+            {
+                comboBoxProvider.Enabled = true;
+            });
+
+            comboBoxDirection.Invoke((MethodInvoker)delegate
+            {
+                comboBoxDirection.Enabled = true;
             });
 
             this.Invoke((MethodInvoker)delegate
@@ -84,14 +106,14 @@ namespace GamesaveCloudManager
             logger?.Close();
         }
 
-        private static void SyncBackgroundTask(Synchronizer sync, string direction, List<long> games)
+        private static void SyncBackgroundTask(Synchronizer sync, string direction, List<long> games, bool async)
         {
 
             try
             {
                 foreach (var game in games)
                 {
-                    sync.Sync((int)game, null, direction);
+                    sync.Sync((int)game, null, direction, async);
                 }
             }
             catch (Exception ex)

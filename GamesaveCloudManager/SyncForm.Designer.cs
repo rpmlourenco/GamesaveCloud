@@ -35,6 +35,7 @@
             comboBoxDirection = new ComboBox();
             textBox1 = new TextBox();
             buttonStart = new Button();
+            checkBoxAsync = new CheckBox();
             SuspendLayout();
             // 
             // label1
@@ -77,12 +78,12 @@
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(91, 120);
+            textBox1.Location = new Point(91, 115);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
             textBox1.ScrollBars = ScrollBars.Both;
-            textBox1.Size = new Size(697, 392);
+            textBox1.Size = new Size(697, 397);
             textBox1.TabIndex = 4;
             // 
             // buttonStart
@@ -95,11 +96,25 @@
             buttonStart.UseVisualStyleBackColor = true;
             buttonStart.Click += buttonStart_Click;
             // 
+            // checkBoxAsync
+            // 
+            checkBoxAsync.AutoSize = true;
+            checkBoxAsync.Checked = true;
+            checkBoxAsync.CheckState = CheckState.Checked;
+            checkBoxAsync.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            checkBoxAsync.Location = new Point(261, 83);
+            checkBoxAsync.Name = "checkBoxAsync";
+            checkBoxAsync.Size = new Size(73, 24);
+            checkBoxAsync.TabIndex = 20;
+            checkBoxAsync.Text = "Async";
+            checkBoxAsync.UseVisualStyleBackColor = true;
+            // 
             // SyncForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 524);
+            Controls.Add(checkBoxAsync);
             Controls.Add(buttonStart);
             Controls.Add(textBox1);
             Controls.Add(comboBoxDirection);
@@ -126,5 +141,6 @@
         private ComboBox comboBoxDirection;
         private TextBox textBox1;
         private Button buttonStart;
+        private CheckBox checkBoxAsync;
     }
 }

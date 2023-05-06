@@ -235,10 +235,7 @@ namespace GamesaveCloudManager
                     var jUrlToken = json["id"];
                     if (jUrlToken != null)
                     {
-                        //if (jUrlToken.Value<long>() != null)
-                        //{
                         return jUrlToken.Value<long>();
-                        //}
                     }
 
                 }

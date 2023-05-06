@@ -16,6 +16,7 @@ namespace GamesaveCloudCLI
             string cloudService = null;
             bool help = false;
             string syncDirection = null;
+            bool async = true;
             try
             {
                 var options = new OptionSet() {
@@ -23,6 +24,7 @@ namespace GamesaveCloudCLI
                     { "t|title=", "The {TITLE} of the game to be synchronized (see https://www.igdb.com/).", v => gameTitle = v },
                     { "s|service=", "The {SERVICE} to use. valid options are: " + $"{String.Join(", ",Synchronizer.CloudServices)}", v => cloudService = v },
                     { "d|direction=", "The {DIRECTION} of the synchronization (auto, tocloud, fromcloud).", v => syncDirection = v },
+                    { "a|async=", "Asynchronous operation - downloads/uploads in parallel (yes/no). Default is yes.", v => async = !(v.ToLower() == "no" || v.ToLower() == "n") },
                     { "h|?|help", v => help = v != null },
                 };
                 List<string> extra;
@@ -79,7 +81,7 @@ namespace GamesaveCloudCLI
                     return;
                 }
 
-                LaunchSynchronizer(gameId, gameTitle, cloudService, syncDirection);
+                LaunchSynchronizer(gameId, gameTitle, cloudService, syncDirection, async);
             }
             catch (Exception e)
             {
@@ -100,7 +102,7 @@ namespace GamesaveCloudCLI
             p.WriteOptionDescriptions(Console.Out);
         }
 
-        static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection)
+        static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection, bool async = true)
         {
             /*
             Logger logger = new();
@@ -114,7 +116,7 @@ namespace GamesaveCloudCLI
             try
             {
                 sync.Initialize(cloudService);
-                sync.Sync(gameId, gameName, syncDirection);
+                sync.Sync(gameId, gameName, syncDirection, async);
 
             }
             catch (Exception ex)

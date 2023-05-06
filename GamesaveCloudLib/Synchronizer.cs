@@ -1,4 +1,5 @@
 ﻿using GamesaveCloudLib;
+using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -188,7 +189,7 @@ public class Synchronizer
         sqlite_conn.Close();
     }
 
-    public void Sync(int? gameId, string gameTitle, string syncDirection)
+    public void Sync(int? gameId, string gameTitle, string syncDirection, bool async = true)
     {
         SQLiteConnection sqlite_conn;
         SQLiteCommand sqlite_cmd;
@@ -266,9 +267,12 @@ public class Synchronizer
                 recursive = (int)(long)sqlite_datareader2.GetValue(3);
                 try
                 {
-                    filter = sqlite_datareader2.GetString(4);
+                    if (sqlite_datareader2.GetValue(4).GetType().Equals(typeof(String)))
+                    {
+                        filter = (String)sqlite_datareader2.GetString(4);
+                    }                                          
                 }
-                catch { }
+                catch (Exception) { }
 
                 if (machine == 1)
                 {
@@ -303,7 +307,7 @@ public class Synchronizer
                 if (gamesaveFolder is not null)
                 {
 
-                    var syncResult = SyncPath(path, gamesaveFolder.Id, performBackup, game_id.ToString() + "_" + savegame_id.ToString() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss"), recursive == 1, filter, syncDirection);
+                    var syncResult = SyncPath(path, gamesaveFolder.Id, performBackup, game_id.ToString() + "_" + savegame_id.ToString() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss"), recursive == 1, filter, syncDirection, async);
                     if (syncResult == -1)
                     {
                         if (machine == 1)
@@ -423,24 +427,49 @@ public class Synchronizer
 
     }
 
+    private void SyncPathFromLocal(string folderPath, string folderId, bool recursive, string filter, bool async)
+    {
+        if (async)
+        {
+            driveHelper.SyncFromLocalAsync(folderPath, folderId, recursive, filter).Wait();
+        }
+        else
+        {
+            driveHelper.SyncFromLocal(folderPath, folderId, recursive, filter);
+        }
+    }
+
+    private void SyncPathFromDrive(string folderPath, string folderId, bool backup, string backupName, bool recursive, string filter, bool async)
+    {
+        if (backup)
+        {
+            ZipFile.CreateFromDirectory(folderPath, Path.Combine(backupFolder, backupName) + ".zip", CompressionLevel.Optimal, true);
+        }
+        if (async)
+        {
+            driveHelper.SyncFromDriveAsync(folderPath, folderId, recursive, filter).Wait();
+        }
+        else
+        {
+            driveHelper.SyncFromDrive(folderPath, folderId, recursive, filter);
+        }
+    }
+
+
     // Fully synchronizes a local and could folder
     // Result: 0 no synch needed, 1 synchronizes from local, -1 synchronizes from cloudService
-    private int SyncPath(string folderPath, string folderId, bool backup, string backupName, bool recursive, string filter, string syncDirection)
+    private int SyncPath(string folderPath, string folderId, bool backup, string backupName, bool recursive, string filter, string syncDirection, bool async = true)
     {
         var syncResult = 0;
 
         switch (syncDirection)
         {
             case "tocloud":
-                driveHelper.SyncFromLocal(folderPath, folderId, recursive, filter);
+                SyncPathFromLocal(folderPath, folderId, recursive, filter, async);
                 syncResult = 1;
                 break;
             case "fromcloud":
-                if (backup)
-                {
-                    ZipFile.CreateFromDirectory(folderPath, Path.Combine(backupFolder, backupName) + ".zip", CompressionLevel.Optimal, true);
-                }
-                driveHelper.SyncFromDrive(folderPath, folderId, recursive, filter);
+                SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, filter, async);
                 syncResult = -1;
                 break;
             default:
@@ -457,33 +486,25 @@ public class Synchronizer
                         {
                             if (lastModifiedDrive > lastModifiedLocal)
                             {
-                                if (backup)
-                                {
-                                    ZipFile.CreateFromDirectory(folderPath, Path.Combine(backupFolder, backupName) + ".zip", CompressionLevel.Optimal, true);
-                                }
-                                driveHelper.SyncFromDrive(folderPath, folderId, recursive, filter);
+                                SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, filter, async);
                                 syncResult = -1;
                             }
                             else
                             {
-                                driveHelper.SyncFromLocal(folderPath, folderId, recursive, filter);
+                                SyncPathFromLocal(folderPath, folderId, recursive, filter, async);
                                 syncResult = 1;
                             }
                         }
                     }
                     else
                     {
-                        if (backup)
-                        {
-                            ZipFile.CreateFromDirectory(folderPath, Path.Combine(backupFolder, backupName) + ".zip", CompressionLevel.Optimal, true);
-                        }
-                        driveHelper.SyncFromDrive(folderPath, folderId, recursive, filter);
+                        SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, filter, async);
                         syncResult = -1;
                     }
                 }
                 else if (lastModifiedLocal != default)
                 {
-                    driveHelper.SyncFromLocal(folderPath, folderId, recursive, filter);
+                    SyncPathFromLocal(folderPath, folderId, recursive, filter, async);
                     syncResult = 1;
                 }
                 break;
