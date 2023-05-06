@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- add support for machine filters
 - filter choose case sensitive
 - delete local files, delete cloud files
 - delete permanently from onedrive

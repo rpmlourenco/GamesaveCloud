@@ -191,6 +191,7 @@
             Name = "Game";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Gamesave Cloud Manager";
+            FormClosing += Game_FormClosing;
             Load += Game_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridGame).EndInit();
             ResumeLayout(false);

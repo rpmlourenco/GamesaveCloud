@@ -1,8 +1,11 @@
 using GamesaveCloudCLI;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.NativeInterop;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using System.Text;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
@@ -21,6 +24,8 @@ namespace GamesaveCloudManager
             "active from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
         string? pathDatabaseFile;
+
+        bool closing = false;
 
         public Game()
         {
@@ -308,10 +313,18 @@ namespace GamesaveCloudManager
 
         private void EndSyncConfig(Task obj)
         {
-            this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
-            if (dtGame != null)
+            if (!closing)
             {
-                labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = $"Displaying {dtGame.DefaultView.Count} out of {dtGame.Rows.Count} games"; });
+                this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
+                if (dtGame != null)
+                {
+                    labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = $"Displaying {dtGame.DefaultView.Count} out of {dtGame.Rows.Count} games"; });
+                }
+
+            }
+            else
+            {
+                this.Close();
             }
         }
 
@@ -325,6 +338,15 @@ namespace GamesaveCloudManager
                 {
                     Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
                 }
+            }
+        }
+
+        private void Game_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!closing) {
+                closing = true;
+                e.Cancel = true;
+                buttonSyncConfig_Click(this, new EventArgs());
             }
         }
     }
