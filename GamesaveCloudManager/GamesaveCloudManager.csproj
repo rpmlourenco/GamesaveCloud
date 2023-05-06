@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Version>1.0.4.0</Version>
-    <InformationalVersion>Asynchronous operation</InformationalVersion>
+    <Version>1.0.5.0</Version>
+    <InformationalVersion>Status info</InformationalVersion>
     <VersionSuffix>$([System.DateTime]::UtcNow.ToString(`yyyyMMdd-HHmm`))</VersionSuffix>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>

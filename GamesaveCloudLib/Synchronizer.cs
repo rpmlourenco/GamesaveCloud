@@ -1,5 +1,4 @@
 ﻿using GamesaveCloudLib;
-using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -270,7 +269,7 @@ public class Synchronizer
                     if (sqlite_datareader2.GetValue(4).GetType().Equals(typeof(String)))
                     {
                         filter = (String)sqlite_datareader2.GetString(4);
-                    }                                          
+                    }
                 }
                 catch (Exception) { }
 

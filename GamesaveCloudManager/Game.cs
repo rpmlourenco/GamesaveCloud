@@ -25,7 +25,7 @@ namespace GamesaveCloudManager
         public Game()
         {
             InitializeComponent();
-            //Enabled = false;
+            Enabled = false;
         }
 
         private void Game_Load(object sender, EventArgs e)
@@ -46,11 +46,14 @@ namespace GamesaveCloudManager
 
         private async void StartSync(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
         {
+            labelStatus.Text = "Synchronizing database";
             await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSync, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void EndSync(Task obj)
         {
+            labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = "Database Synchronized"; });
+
             pathDatabaseFile = Synchronizer.GetPathDatabaseFile();
             conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
             cmdGame = new(queryGame, conn);
@@ -74,6 +77,7 @@ namespace GamesaveCloudManager
 
         private void LoadData()
         {
+            labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = "Loading database"; });
             if (adapter != null)
             {
                 dtGame = new();
@@ -107,6 +111,7 @@ namespace GamesaveCloudManager
                 });
 
                 this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
+                labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = $"Displaying {dtGame.DefaultView.Count} out of {dtGame.Rows.Count} games"; });
 
             }
         }
@@ -231,6 +236,7 @@ namespace GamesaveCloudManager
             {
                 //dtGame.DefaultView.RowFilter = string.Format("Convert([{0}], 'System.String') LIKE '%{1}%'", "Title", textBox1.Text);
                 dtGame.DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", textBoxFilter.Text);
+                labelStatus.Text = $"Displaying {dtGame.DefaultView.Count} out of {dtGame.Rows.Count} games";
             }
 
         }
@@ -292,12 +298,17 @@ namespace GamesaveCloudManager
 
         private async void StartSyncConfig(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
         {
+            labelStatus.Text = "Synchronizing database";
             await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSyncConfig, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void EndSyncConfig(Task obj)
         {
             this.Invoke((MethodInvoker)delegate { this.Enabled = true; });
+            if (dtGame != null)
+            {
+                labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = $"Displaying {dtGame.DefaultView.Count} out of {dtGame.Rows.Count} games"; });
+            }
         }
 
         private async void buttonIGDB_Click(object sender, EventArgs e)

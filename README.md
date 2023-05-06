@@ -1,11 +1,7 @@
 # GamesaveCloud
 
 Todo:
-- manager total game count
-- add icon to manager
-- implement parallelism
 - delete local files, delete cloud files
-- admin check incompatibility between machine and filter
 - delete permanently from onedrive
 
 Done:
@@ -42,3 +38,7 @@ Done:
 - make cloud service optional in cli
 - separate two updates
 - search igdb, get id directly from igdb
+- implement parallelism
+- add icon to manager
+- manager total game count
+- admin check incompatibility between machine and filter

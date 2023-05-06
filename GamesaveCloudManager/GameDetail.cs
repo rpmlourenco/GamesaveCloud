@@ -1,6 +1,8 @@
-﻿using System.Data;
+﻿using Microsoft.Graph.Models;
+using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Reflection.PortableExecutable;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -377,24 +379,48 @@ namespace GamesaveCloudManager
             {
                 foreach (DataRow dataRow in dtSavegame.Rows)
                 {
-                    if (dataRow.RowState != DataRowState.Deleted && String.IsNullOrEmpty(dataRow["Path"].ToString()))
+                    if (dataRow.RowState != DataRowState.Deleted)
                     {
-                        MessageBox.Show("Game path must not be empty.", "Warning");
-                        dataGridViewPaths.ClearSelection();
-                        foreach (DataGridViewRow gridrow in dataGridViewPaths.Rows)
+                        bool rowValid = true;
+                        if (String.IsNullOrEmpty(dataRow["Path"].ToString()))
                         {
-                            if (gridrow.Cells["Id"].Value.Equals(dataRow["Id"]))
-                            {
-                                dataGridViewPaths.Rows[gridrow.Index].Selected = true;
-                                //dataGridViewPaths.FirstDisplayedScrollingRowIndex = dataGridViewPaths.SelectedRows[0].Index;
+                            MessageBox.Show("Game path must not be empty.", "Warning");
+                            rowValid = false;
+                        }
 
-                                //needs to be set to column 1 because column 0 is empty
-                                dataGridViewPaths.CurrentCell = dataGridViewPaths[1, gridrow.Index];
-                                textBoxPath.Focus();
-                                return false;
+                        if (!String.IsNullOrEmpty(dataRow["machine"].ToString()) && dataRow["machine"].ToString() == "1")
+                        {
+                            if (!String.IsNullOrEmpty(dataRow["recursive"].ToString()) && dataRow["recursive"].ToString() != "1")
+                            {
+                                MessageBox.Show("If 'machine' is selected 'recursive' must be also selected.", "Warning");
+                                rowValid = false;
+                            }
+
+                            if (!String.IsNullOrEmpty(dataRow["filter"].ToString()))
+                            {
+                                MessageBox.Show("If 'machine' is selected 'filter' must be empty.", "Warning");
+                                rowValid = false;
+                            }
+
+                        }
+
+                        if (!rowValid)
+                        {
+                            dataGridViewPaths.ClearSelection();
+                            foreach (DataGridViewRow gridrow in dataGridViewPaths.Rows)
+                            {
+                                if (gridrow.Cells["Id"].Value.Equals(dataRow["Id"]))
+                                {
+                                    dataGridViewPaths.Rows[gridrow.Index].Selected = true;
+                                    //dataGridViewPaths.FirstDisplayedScrollingRowIndex = dataGridViewPaths.SelectedRows[0].Index;
+
+                                    //needs to be set to column 1 because column 0 is empty
+                                    dataGridViewPaths.CurrentCell = dataGridViewPaths[1, gridrow.Index];
+                                    textBoxPath.Focus();
+                                    return false;
+                                }
                             }
                         }
-                        return false;
                     }
                 }
             }
@@ -420,7 +446,7 @@ namespace GamesaveCloudManager
                     Arguments = HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text),
                     FileName = "explorer.exe"
                 };
-                Process.Start(startInfo);
+                System.Diagnostics.Process.Start(startInfo);
             };
         }
 
@@ -443,7 +469,7 @@ namespace GamesaveCloudManager
                 var url = await task;
                 if (url != null)
                 {
-                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                    System.Diagnostics.Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
                 }
             }
         }

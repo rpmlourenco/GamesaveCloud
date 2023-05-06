@@ -449,7 +449,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            
+
             // Uploads non existing or different files
             //string[] fileEntries = Directory.GetFiles(folderPath);
             string[] fileEntries;
@@ -462,7 +462,7 @@ namespace GamesaveCloudLib
             {
                 fileEntries = Directory.GetFiles(folderPath);
             }
-            
+
             if (fileEntries != null && fileEntries.Length > 0)
             {
                 var uploadTasks = new List<Task>();
@@ -500,7 +500,7 @@ namespace GamesaveCloudLib
             }
 
             if (recursive)
-            {                
+            {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 if (folderEntries != null && folderEntries.Length > 0)
                 {
@@ -592,7 +592,7 @@ namespace GamesaveCloudLib
                     }
                 }
             }
-            
+
             if (files is not null && files.Count > 0)
             {
                 var downloadTasks = new List<Task>();

@@ -40,6 +40,7 @@
             buttonSyncConfig = new Button();
             textBoxStatus = new TextBox();
             buttonIGDB = new Button();
+            labelStatus = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridGame).BeginInit();
             SuspendLayout();
             // 
@@ -119,7 +120,7 @@
             // 
             // buttonSyncGames
             // 
-            buttonSyncGames.Location = new Point(12, 417);
+            buttonSyncGames.Location = new Point(138, 417);
             buttonSyncGames.Name = "buttonSyncGames";
             buttonSyncGames.Size = new Size(120, 29);
             buttonSyncGames.TabIndex = 30;
@@ -129,7 +130,7 @@
             // 
             // buttonSyncConfig
             // 
-            buttonSyncConfig.Location = new Point(138, 417);
+            buttonSyncConfig.Location = new Point(12, 417);
             buttonSyncConfig.Name = "buttonSyncConfig";
             buttonSyncConfig.Size = new Size(120, 29);
             buttonSyncConfig.TabIndex = 31;
@@ -139,11 +140,13 @@
             // 
             // textBoxStatus
             // 
+            textBoxStatus.BackColor = Color.White;
             textBoxStatus.Location = new Point(12, 452);
             textBoxStatus.Multiline = true;
             textBoxStatus.Name = "textBoxStatus";
+            textBoxStatus.ReadOnly = true;
             textBoxStatus.ScrollBars = ScrollBars.Both;
-            textBoxStatus.Size = new Size(1401, 130);
+            textBoxStatus.Size = new Size(1401, 186);
             textBoxStatus.TabIndex = 32;
             // 
             // buttonIGDB
@@ -156,11 +159,21 @@
             buttonIGDB.UseVisualStyleBackColor = true;
             buttonIGDB.Click += buttonIGDB_Click;
             // 
+            // labelStatus
+            // 
+            labelStatus.AutoSize = true;
+            labelStatus.Location = new Point(478, 421);
+            labelStatus.Name = "labelStatus";
+            labelStatus.Size = new Size(18, 20);
+            labelStatus.TabIndex = 34;
+            labelStatus.Text = "...";
+            // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1425, 594);
+            ClientSize = new Size(1425, 650);
+            Controls.Add(labelStatus);
             Controls.Add(buttonIGDB);
             Controls.Add(textBoxStatus);
             Controls.Add(buttonSyncConfig);
@@ -197,5 +210,6 @@
         private Button buttonSyncConfig;
         private TextBox textBoxStatus;
         private Button buttonIGDB;
+        private Label labelStatus;
     }
 }

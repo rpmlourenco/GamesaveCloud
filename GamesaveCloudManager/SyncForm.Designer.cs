@@ -78,6 +78,7 @@
             // 
             // textBox1
             // 
+            textBox1.BackColor = Color.White;
             textBox1.Location = new Point(91, 115);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
