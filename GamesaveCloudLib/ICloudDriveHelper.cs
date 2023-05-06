@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -69,7 +68,7 @@ namespace GamesaveCloudLib
             IList<ICloudFile> result = new List<ICloudFile>();
 
             if (files is not null && files.Count > 0)
-            {                
+            {
                 foreach (var file in files)
                 {
                     if (!string.IsNullOrEmpty(filterIn))

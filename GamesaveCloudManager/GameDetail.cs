@@ -1,8 +1,6 @@
-﻿using Microsoft.Graph.Models;
-using System.Data;
+﻿using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
-using System.Reflection.PortableExecutable;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
