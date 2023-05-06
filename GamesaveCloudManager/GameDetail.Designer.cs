@@ -40,6 +40,8 @@
             buttonDelete = new Button();
             buttonAdd = new Button();
             groupBoxPath = new GroupBox();
+            label2 = new Label();
+            textBoxFilterOut = new TextBox();
             buttonFolderOpen = new Button();
             buttonFolderBrowser = new Button();
             textBoxFilter = new TextBox();
@@ -163,6 +165,8 @@
             // 
             // groupBoxPath
             // 
+            groupBoxPath.Controls.Add(label2);
+            groupBoxPath.Controls.Add(textBoxFilterOut);
             groupBoxPath.Controls.Add(buttonFolderOpen);
             groupBoxPath.Controls.Add(buttonFolderBrowser);
             groupBoxPath.Controls.Add(textBoxFilter);
@@ -176,10 +180,29 @@
             groupBoxPath.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             groupBoxPath.Location = new Point(14, 273);
             groupBoxPath.Name = "groupBoxPath";
-            groupBoxPath.Size = new Size(1144, 151);
+            groupBoxPath.Size = new Size(1144, 175);
             groupBoxPath.TabIndex = 38;
             groupBoxPath.TabStop = false;
             groupBoxPath.Text = "Path Details";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(17, 136);
+            label2.Name = "label2";
+            label2.Size = new Size(75, 20);
+            label2.TabIndex = 36;
+            label2.Text = "Filter Out";
+            // 
+            // textBoxFilterOut
+            // 
+            textBoxFilterOut.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            textBoxFilterOut.Location = new Point(90, 133);
+            textBoxFilterOut.MaxLength = 256;
+            textBoxFilterOut.Name = "textBoxFilterOut";
+            textBoxFilterOut.Size = new Size(1033, 27);
+            textBoxFilterOut.TabIndex = 35;
+            textBoxFilterOut.TextChanged += textBoxFilterOut_TextChanged;
             // 
             // buttonFolderOpen
             // 
@@ -358,5 +381,7 @@
         private Button buttonFolderOpen;
         private Button buttonIGDBId;
         private Button buttonIGDB;
+        private Label label2;
+        private TextBox textBoxFilterOut;
     }
 }

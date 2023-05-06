@@ -255,7 +255,11 @@ namespace GamesaveCloudManager
             if (conn != null)
             {
                 conn.Open();
-                SQLiteCommand cmd = new(queryGameDelete, conn);
+                SQLiteCommand cmd = new("PRAGMA foreign_keys=ON", conn);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+                cmd = new(queryGameDelete, conn);
                 cmd.Parameters.AddWithValue("@game_id", dataGridGame.SelectedRows[0].Cells["Id"].Value);
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();

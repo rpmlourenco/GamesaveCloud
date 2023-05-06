@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- filter choose case sensitive
 - delete local files, delete cloud files
 - delete permanently from onedrive
 
@@ -42,3 +43,4 @@ Done:
 - add icon to manager
 - manager total game count
 - admin check incompatibility between machine and filter
+- filter exclude, filters separated with ;

@@ -16,11 +16,11 @@ namespace GamesaveCloudManager
         bool updateMaster = true;
         readonly IGDBHelper igdbHelper;
 
-        readonly string queryPath = "select game_id, savegame_id as 'Id', path as 'Path', filter as 'Filter', machine, recursive from savegame where game_id = @game_id order by savegame_id";
+        readonly string queryPath = "select game_id, savegame_id as 'Id', path as 'Path', filter as 'Filter', filter_out as 'Filter Out', machine, recursive from savegame where game_id = @game_id order by savegame_id";
         readonly string queryGameUpdate = "update game set title = @title, active = @active where game_id = @game_id";
         readonly string queryGameInsert = "INSERT INTO game (game_id,title,active) VALUES (@game_id,@title,@active)";
         readonly string queryPathDelete = "delete from savegame where game_id = @game_id";
-        readonly string queryPathInsert = "INSERT INTO savegame (game_id,savegame_id,path,machine,recursive,filter) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter)";
+        readonly string queryPathInsert = "INSERT INTO savegame (game_id,savegame_id,path,machine,recursive,filter,filter_out) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter,@filter_out)";
 
         public GameDetail(ref DataRow row, SQLiteConnection conn, string mode, IGDBHelper igdbHelper)
         {
@@ -105,8 +105,9 @@ namespace GamesaveCloudManager
             dataGridViewPaths.Columns[1].Width = (int)(dataGridViewPaths.Width * 0.07);
             dataGridViewPaths.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewPaths.Columns[3].Width = (int)(dataGridViewPaths.Width * 0.15);
-            dataGridViewPaths.Columns[4].Width = (int)(dataGridViewPaths.Width * 0.08);
+            dataGridViewPaths.Columns[4].Width = (int)(dataGridViewPaths.Width * 0.15);
             dataGridViewPaths.Columns[5].Width = (int)(dataGridViewPaths.Width * 0.08);
+            dataGridViewPaths.Columns[6].Width = (int)(dataGridViewPaths.Width * 0.08);
 
             if (dataGridViewPaths.Rows.Count > 0)
             {
@@ -137,6 +138,7 @@ namespace GamesaveCloudManager
                 textBoxPathId.Text = dataGridViewPaths.SelectedRows[0].Cells["Id"].Value.ToString();
                 textBoxPath.Text = dataGridViewPaths.SelectedRows[0].Cells["Path"].Value.ToString();
                 textBoxFilter.Text = dataGridViewPaths.SelectedRows[0].Cells["Filter"].Value.ToString();
+                textBoxFilterOut.Text = dataGridViewPaths.SelectedRows[0].Cells["Filter Out"].Value.ToString();
 
                 if ((Int64)dataGridViewPaths.SelectedRows[0].Cells["machine"].Value == 1)
                 {
@@ -179,6 +181,7 @@ namespace GamesaveCloudManager
                     dtSavegame.Rows[index]["Path"] = textBoxPath.Text;
 
                     dtSavegame.Rows[index]["Filter"] = textBoxFilter.Text;
+                    dtSavegame.Rows[index]["Filter Out"] = textBoxFilterOut.Text;
 
                     if (checkBoxMachine.Checked == true)
                     {
@@ -218,6 +221,11 @@ namespace GamesaveCloudManager
         }
 
         private void textBoxFilter_TextChanged(object sender, EventArgs e)
+        {
+            UpdateMaster();
+        }
+
+        private void textBoxFilterOut_TextChanged(object sender, EventArgs e)
         {
             UpdateMaster();
         }
@@ -291,10 +299,14 @@ namespace GamesaveCloudManager
             {
                 conn.Open();
 
+                SQLiteCommand cmd = new("PRAGMA foreign_keys=ON", conn);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
                 using var transaction = conn.BeginTransaction();
                 try
                 {
-                    SQLiteCommand cmd;
+                    //SQLiteCommand cmd;
                     if (mode == "EDIT")
                     {
                         // update game 
@@ -336,7 +348,8 @@ namespace GamesaveCloudManager
                                 cmd.Parameters.AddWithValue("@path", dataRow["Path"]);
                                 cmd.Parameters.AddWithValue("@machine", dataRow["machine"]);
                                 cmd.Parameters.AddWithValue("@recursive", dataRow["recursive"]);
-                                cmd.Parameters.AddWithValue("@Filter", dataRow["filter"]);
+                                cmd.Parameters.AddWithValue("@Filter", dataRow["Filter"]);
+                                cmd.Parameters.AddWithValue("@Filter_out", dataRow["Filter Out"]);
                                 cmd.ExecuteNonQuery();
                             }
                         }
@@ -396,9 +409,15 @@ namespace GamesaveCloudManager
                                 rowValid = false;
                             }
 
-                            if (!String.IsNullOrEmpty(dataRow["filter"].ToString()))
+                            if (!String.IsNullOrEmpty(dataRow["Filter"].ToString()))
                             {
                                 MessageBox.Show("If 'machine' is selected 'filter' must be empty.", "Warning");
+                                rowValid = false;
+                            }
+
+                            if (!String.IsNullOrEmpty(dataRow["Filter Out"].ToString()))
+                            {
+                                MessageBox.Show("If 'machine' is selected 'filter out' must be empty.", "Warning");
                                 rowValid = false;
                             }
 
@@ -473,6 +492,7 @@ namespace GamesaveCloudManager
                 }
             }
         }
+
     }
 }
 #pragma warning restore IDE1006 // Estilos de Nomenclatura
