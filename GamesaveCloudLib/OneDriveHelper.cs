@@ -361,9 +361,10 @@ namespace GamesaveCloudLib
 
         }
 
-        public override void DeleteFile(string itemId)
+        public override async Task<bool> DeleteFile(string itemId)
         {
-            _graphClient.Drives[_userDriveId].Items[itemId].DeleteAsync().Wait();
+            await _graphClient.Drives[_userDriveId].Items[itemId].DeleteAsync();
+            return true;
         }
 
         public override ICloudFile UploadFile(string filePath, string folderId, bool checkExists)

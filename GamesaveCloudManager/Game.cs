@@ -1,11 +1,8 @@
 using GamesaveCloudCLI;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.NativeInterop;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
 using System.Text;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
@@ -257,19 +254,22 @@ namespace GamesaveCloudManager
 
         private void buttonDelete_Click(object sender, EventArgs e)
         {
-            if (conn != null)
+            if (DialogResult.Yes == MessageBox.Show($"Do you really want to delete '{dataGridGame.SelectedRows[0].Cells["Title"].Value}'?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
-                conn.Open();
-                SQLiteCommand cmd = new("PRAGMA foreign_keys=ON", conn);
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
+                if (conn != null)
+                {
+                    conn.Open();
+                    SQLiteCommand cmd = new("PRAGMA foreign_keys=ON", conn);
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
 
-                cmd = new(queryGameDelete, conn);
-                cmd.Parameters.AddWithValue("@game_id", dataGridGame.SelectedRows[0].Cells["Id"].Value);
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                conn.Close();
-                LoadData();
+                    cmd = new(queryGameDelete, conn);
+                    cmd.Parameters.AddWithValue("@game_id", dataGridGame.SelectedRows[0].Cells["Id"].Value);
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
+                    conn.Close();
+                    LoadData();
+                }
             }
         }
 
@@ -343,7 +343,8 @@ namespace GamesaveCloudManager
 
         private void Game_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!closing) {
+            if (!closing)
+            {
                 closing = true;
                 e.Cancel = true;
                 buttonSyncConfig_Click(this, new EventArgs());

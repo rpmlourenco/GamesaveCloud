@@ -20,7 +20,7 @@ namespace GamesaveCloudLib
         public abstract Task<bool> DownloadFileAsync(ICloudFile driveFile, string outputPath);
         public abstract ICloudFile UploadFile(string filePath, string folderId, bool checkExists);
         public abstract Task<bool> UploadFileAsync(string filePath, string folderId, bool checkExists);
-        public abstract void DeleteFile(string itemId);
+        public abstract Task<bool> DeleteFile(string itemId);
         public abstract ICloudFile NewFolder(string name, string parentId, DateTime createdTime = default, DateTime modifiedTime = default);
 
         public static ICloudFile FindFile(string name, IList<ICloudFile> files)
@@ -50,12 +50,48 @@ namespace GamesaveCloudLib
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
-        static bool IsMatch(string text, string filter)
+        public static bool IsMatch(string text, string filter)
         {
             var filters = filter.Split(';');
             foreach (string splitFilter in filters)
             {
                 if (Regex.IsMatch(text, WildCardToRegular(splitFilter)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool IsMatch(string text, string filterIn, string filterOut)
+        {
+            if (!string.IsNullOrEmpty(filterIn))
+            {
+                if (!string.IsNullOrEmpty(filterOut))
+                {
+                    if (IsMatch(text, filterIn) && !IsMatch(text, filterOut))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (IsMatch(text, filterIn))
+                    {
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(filterOut))
+                {
+                    if (!IsMatch(text, filterOut))
+                    {
+                        return true;
+                    }
+                }
+                else
                 {
                     return true;
                 }
@@ -71,36 +107,9 @@ namespace GamesaveCloudLib
             {
                 foreach (var file in files)
                 {
-                    if (!string.IsNullOrEmpty(filterIn))
+                    if (IsMatch(file.Name, filterIn, filterOut))
                     {
-                        if (!string.IsNullOrEmpty(filterOut))
-                        {
-                            if (IsMatch(file.Name, filterIn) && !IsMatch(file.Name, filterOut))
-                            {
-                                result.Add(file);
-                            }
-                        }
-                        else
-                        {
-                            if (IsMatch(file.Name, filterIn))
-                            {
-                                result.Add(file);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(filterOut))
-                        {
-                            if (!IsMatch(file.Name, filterOut))
-                            {
-                                result.Add(file);
-                            }
-                        }
-                        else
-                        {
-                            result.Add(file);
-                        }
+                        result.Add(file);
                     }
                 }
             }
@@ -108,7 +117,6 @@ namespace GamesaveCloudLib
             {
                 return null;
             }
-
             return result;
         }
 
@@ -120,36 +128,9 @@ namespace GamesaveCloudLib
             {
                 foreach (var file in files)
                 {
-                    if (!string.IsNullOrEmpty(filterIn))
+                    if (IsMatch(Path.GetFileName(file), filterIn, filterOut))
                     {
-                        if (!string.IsNullOrEmpty(filterOut))
-                        {
-                            if (IsMatch(Path.GetFileName(file), filterIn) && !IsMatch(Path.GetFileName(file), filterOut))
-                            {
-                                result.Add(file);
-                            }
-                        }
-                        else
-                        {
-                            if (IsMatch(Path.GetFileName(file), filterIn))
-                            {
-                                result.Add(file);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(filterOut))
-                        {
-                            if (!IsMatch(Path.GetFileName(file), filterOut))
-                            {
-                                result.Add(file);
-                            }
-                        }
-                        else
-                        {
-                            result.Add(file);
-                        }
+                        result.Add(file);
                     }
                 }
             }
@@ -162,7 +143,7 @@ namespace GamesaveCloudLib
         }
 
 
-        public DateTime LastModifiedDate(string folderId, ref int totalFiles, bool recursive, string filterIn, string filterOut)
+        public DateTime LastModifiedDate(string folderId, ref int totalFiles, int recursive, string filterIn, string filterOut, int level = 1)
         {
             DateTime lastModified = default;
             IList<ICloudFile> files;
@@ -191,7 +172,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            if (recursive)
+            if (recursive == 0 || level < recursive)
             {
                 var folders = GetFolders(folderId);
                 totalFiles += folders.Count;
@@ -200,7 +181,7 @@ namespace GamesaveCloudLib
                     foreach (var folder in folders)
                     {
 
-                        var folderLastModified = LastModifiedDate(folder.Id, ref totalFiles, recursive, filterIn, filterOut);
+                        var folderLastModified = LastModifiedDate(folder.Id, ref totalFiles, recursive, filterIn, filterOut, level+1);
                         if (lastModified == default || folderLastModified > lastModified)
                         {
                             lastModified = folderLastModified;
@@ -212,7 +193,7 @@ namespace GamesaveCloudLib
 
             return lastModified;
         }
-        public DateTime LocalLastModifiedDate(string folderPath, ref int totalFiles, bool recursive, string filterIn, string filterOut)
+        public static DateTime LocalLastModifiedDate(string folderPath, ref int totalFiles, int recursive, string filterIn, string filterOut, int level = 1)
         {
 
             DateTime lastModified = default;
@@ -242,7 +223,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            if (recursive)
+            if (recursive == 0 || level < recursive)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 if (folderEntries != null && folderEntries.Length > 0)
@@ -250,7 +231,7 @@ namespace GamesaveCloudLib
                     totalFiles += folderEntries.Length;
                     foreach (var folderEntry in folderEntries)
                     {
-                        var folderLastModified = LocalLastModifiedDate(folderEntry, ref totalFiles, recursive, filterIn, filterOut);
+                        var folderLastModified = LocalLastModifiedDate(folderEntry, ref totalFiles, recursive, filterIn, filterOut, level+1);
                         if (lastModified == default || folderLastModified > lastModified)
                         {
                             lastModified = folderLastModified;
@@ -262,7 +243,7 @@ namespace GamesaveCloudLib
             return lastModified;
         }
 
-        public void SyncFromLocal(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
+        public void SyncFromLocal(string folderPath, string folderId, int recursive, string filterIn, string filterOut, int level = 1)
         {
 
             // Delete files in drive which do not exist locally
@@ -285,13 +266,13 @@ namespace GamesaveCloudLib
                     string checkFile = Path.Combine(folderPath, file.Name);
                     if (!File.Exists(checkFile))
                     {
-                        DeleteFile(file.Id);
+                        DeleteFile(file.Id).Wait();
                     }
                 }
             }
 
             IList<ICloudFile> folders = null;
-            if (recursive)
+            if (recursive == 0 || level < recursive)
                 folders = GetFolders(folderId);
 
             if (folders is not null && folders.Count > 0)
@@ -301,7 +282,7 @@ namespace GamesaveCloudLib
                     string checkFolder = Path.Combine(folderPath, folder.Name);
                     if (!Directory.Exists(checkFolder))
                     {
-                        DeleteFile(folder.Id);
+                        DeleteFile(folder.Id).Wait();
                     }
                 }
             }
@@ -335,14 +316,14 @@ namespace GamesaveCloudLib
                         DateTime driveLastModified = (DateTime)driveFile.ModifiedTime;
                         if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || driveFile.Size != size)
                         {
-                            DeleteFile(driveFile.Id);
+                            DeleteFile(driveFile.Id).Wait();
                             UploadFile(fileEntry, folderId, false);
                         }
                     }
                 }
             }
 
-            if (recursive)
+            if (recursive == 0 || level < recursive)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 if (folderEntries != null && folderEntries.Length > 0)
@@ -362,13 +343,13 @@ namespace GamesaveCloudLib
                             driveFolderId = driveFolder.Id;
                         }
 
-                        SyncFromLocal(folderEntry, driveFolderId, recursive, filterIn, filterOut);
+                        SyncFromLocal(folderEntry, driveFolderId, recursive, filterIn, filterOut, level+1);
                     }
                 }
             }
         }
 
-        public void SyncFromDrive(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
+        public void SyncFromDrive(string folderPath, string folderId, int recursive, string filterIn, string filterOut, int level = 1)
         {
             IList<ICloudFile> files;
             if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
@@ -382,7 +363,7 @@ namespace GamesaveCloudLib
             }
 
             IList<ICloudFile> folders = null;
-            if (recursive)
+            if (recursive == 0 || level < recursive)
                 folders = GetFolders(folderId);
 
             //string[] fileEntries = Directory.GetFiles(folderPath);
@@ -409,7 +390,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            if (recursive && folders != null)
+            if ((recursive == 0 || level < recursive) && folders != null)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 foreach (var folderEntry in folderEntries)
@@ -461,13 +442,13 @@ namespace GamesaveCloudLib
                         // Directory.SetLastWriteTime(checkFolder, driveFolder.ModifiedTime)
                     }
 
-                    SyncFromDrive(checkFolder, folder.Id, recursive, filterIn, filterOut);
+                    SyncFromDrive(checkFolder, folder.Id, recursive, filterIn, filterOut, level+1);
                 }
             }
 
         }
 
-        public async Task<bool> SyncFromLocalAsync(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
+        public async Task<bool> SyncFromLocalAsync(string folderPath, string folderId, int recursive, string filterIn, string filterOut, int level = 1)
         {
             //Console.WriteLine("Synching " + folderPath);
 
@@ -491,13 +472,13 @@ namespace GamesaveCloudLib
                     string checkFile = Path.Combine(folderPath, file.Name);
                     if (!File.Exists(checkFile))
                     {
-                        DeleteFile(file.Id);
+                        await DeleteFile(file.Id);
                     }
                 }
             }
 
             IList<ICloudFile> folders = null;
-            if (recursive)
+            if (recursive == 0 || level < recursive)
                 folders = GetFolders(folderId);
 
             if (folders is not null && folders.Count > 0)
@@ -507,7 +488,7 @@ namespace GamesaveCloudLib
                     string checkFolder = Path.Combine(folderPath, folder.Name);
                     if (!Directory.Exists(checkFolder))
                     {
-                        DeleteFile(folder.Id);
+                        await DeleteFile(folder.Id);
                     }
                 }
             }
@@ -546,7 +527,7 @@ namespace GamesaveCloudLib
                         DateTime driveLastModified = (DateTime)driveFile.ModifiedTime;
                         if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || driveFile.Size != size)
                         {
-                            DeleteFile(driveFile.Id);
+                            await DeleteFile(driveFile.Id);
                             //Console.WriteLine("Uploading " + fileEntry);
                             var uploadTask = UploadFileAsync(fileEntry, folderId, false);
                             uploadTasks.Add(uploadTask);
@@ -562,7 +543,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            if (recursive)
+            if (recursive == 0 || level < recursive)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 if (folderEntries != null && folderEntries.Length > 0)
@@ -583,7 +564,7 @@ namespace GamesaveCloudLib
                             driveFolderId = driveFolder.Id;
                         }
                         //await SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filter);
-                        var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut);
+                        var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level+1);
                         syncTasks.Add(syncTask);
                     }
                     while (syncTasks.Count > 0)
@@ -598,7 +579,7 @@ namespace GamesaveCloudLib
             return true;
         }
 
-        public async Task<bool> SyncFromDriveAsync(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
+        public async Task<bool> SyncFromDriveAsync(string folderPath, string folderId, int recursive, string filterIn, string filterOut, int level = 1)
         {
             //Console.WriteLine("Synching " + folderPath);
             IList<ICloudFile> files;
@@ -613,7 +594,7 @@ namespace GamesaveCloudLib
             }
 
             IList<ICloudFile> folders = null;
-            if (recursive)
+            if (recursive == 0 || level < recursive)
                 folders = GetFolders(folderId);
 
             //string[] fileEntries = Directory.GetFiles(folderPath);
@@ -640,7 +621,7 @@ namespace GamesaveCloudLib
                 }
             }
 
-            if (recursive && folders != null)
+            if ((recursive == 0 || level < recursive) && folders != null)
             {
                 string[] folderEntries = Directory.GetDirectories(folderPath);
                 foreach (var folderEntry in folderEntries)
@@ -705,7 +686,7 @@ namespace GamesaveCloudLib
                         // Directory.SetLastWriteTime(checkFolder, driveFolder.ModifiedTime)
                     }
 
-                    var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut);
+                    var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut, level+1);
                     syncTasks.Add(syncTask);
                 }
                 while (syncTasks.Count > 0)

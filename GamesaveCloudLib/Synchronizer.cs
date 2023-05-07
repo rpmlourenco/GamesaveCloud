@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using Logger = GamesaveCloudLib.Logger;
 
 namespace GamesaveCloudCLI;
@@ -36,12 +37,6 @@ public class Synchronizer
     private bool performBackup;
     private readonly IProgress<string> progress;
     private readonly Logger logger;
-
-    public class Args
-    {
-        public string command;
-        public string game_id;
-    }
 
     [SupportedOSPlatform("windows")]
     public Synchronizer(IProgress<string> progress)
@@ -114,12 +109,12 @@ public class Synchronizer
         }
 
         IniFile ini = new();
-        _ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, ini.SFilename, null, "auto", true);
+        _ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, ini.SFilename, null, "auto", true);
         pathDatabaseFile = Path.Combine(pathConfigFolder, databaseFile);
 
         if (syncDatabase)
         {
-            var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, databaseFile, null, "auto", true);
+            var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, databaseFile, null, "auto", true);
             if (!File.Exists(pathDatabaseFile))
             {
                 var resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith(databaseFile));
@@ -130,7 +125,7 @@ public class Synchronizer
                 sWriter.Close();
                 sReader.Close();
 
-                SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, databaseFile, null, "auto", true);
+                SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, databaseFile, null, "auto", true);
 
                 Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Database initialized and synched to " + this.cloudService + Environment.NewLine);
             }
@@ -282,13 +277,6 @@ public class Synchronizer
                 }
                 catch (Exception) { }
 
-                if (machine == 1)
-                {
-                    recursive = 1;
-                    filterIn = null;
-                    filterOut = null;
-                }
-
                 var gameFolder = driveHelper.GetFolder(gamesaveRootFolder.Id, game_id.ToString());
                 ICloudFile gamesaveFolder = null;
 
@@ -316,13 +304,13 @@ public class Synchronizer
                 if (gamesaveFolder is not null)
                 {
 
-                    var syncResult = SyncPath(path, gamesaveFolder.Id, performBackup, game_id.ToString() + "_" + savegame_id.ToString() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss"), recursive == 1, filterIn, filterOut, syncDirection, async);
+                    var syncResult = SyncPath(path, gamesaveFolder.Id, performBackup, game_id.ToString() + "_" + savegame_id.ToString() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss"), recursive == 1, machine == 1, filterIn, filterOut, syncDirection, async);
                     if (syncResult == -1)
                     {
                         if (machine == 1)
                         {
                             // update machine subfolders with the most recent when synchronizing from cloudService
-                            UpdateMachine(path);
+                            UpdateMachine(path, recursive == 1, filterIn, filterOut);
                         }
                         // sync from cloudService
                         syncState = 3;
@@ -388,6 +376,157 @@ public class Synchronizer
 
     }
 
+    public async Task<bool> DeleteCloudFiles(int gameId)
+    {
+        SQLiteConnection sqlite_conn;
+        SQLiteCommand sqlite_cmd;
+        SQLiteDataReader sqlite_datareader;
+
+        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + $": *** Deleting cloud files... " + Environment.NewLine);
+
+        sqlite_conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
+        sqlite_conn.Open();
+
+        sqlite_cmd = sqlite_conn.CreateCommand();
+
+        if (gameId != default)
+        {
+            sqlite_cmd.CommandText = "select game_id, title from game where active = 1 and game_id = @gameid";
+            sqlite_cmd.Parameters.AddWithValue("@gameid", gameId);
+            sqlite_datareader = sqlite_cmd.ExecuteReader();
+        }
+        else
+        {
+            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": " + $"Game with id {gameId} not found" + Environment.NewLine);
+            return false;
+        }
+
+        if (sqlite_datareader.Read())
+        {
+            string title;
+            title = sqlite_datareader.GetString(1);
+
+            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": " + title + " ");
+
+            var gameFolder = driveHelper.GetFolder(gamesaveRootFolder.Id, gameId.ToString());
+            if (gameFolder is not null)
+            {
+                await driveHelper.DeleteFile(gameFolder.Id);
+                Log("deleted from cloud" + Environment.NewLine);
+            }
+            else
+            {
+                Log("does not exist in cloud" + Environment.NewLine);
+            }
+        }
+        sqlite_datareader.Close();
+        sqlite_conn.Close();
+        return true;
+    }
+
+    public bool DeleteLocalFiles(int gameId)
+    {
+        SQLiteConnection sqlite_conn;
+        SQLiteCommand sqlite_cmd;
+        SQLiteDataReader sqlite_datareader;
+
+        Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + $": *** Deleting local files... " + Environment.NewLine);
+
+        sqlite_conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
+        sqlite_conn.Open();
+
+        sqlite_cmd = sqlite_conn.CreateCommand();
+
+        if (gameId != default)
+        {
+            sqlite_cmd.CommandText = "select game_id, title from game where active = 1 and game_id = @gameid";
+            sqlite_cmd.Parameters.AddWithValue("@gameid", gameId);
+            sqlite_datareader = sqlite_cmd.ExecuteReader();
+        }
+        else
+        {
+            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": " + $"Game with id {gameId} not found" + Environment.NewLine);
+            return false;
+        }
+
+        if (sqlite_datareader.Read())
+        {
+            string title;
+            title = sqlite_datareader.GetString(1);
+
+            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": " + title + " ");
+
+            SQLiteCommand sqlite_cmd2 = sqlite_conn.CreateCommand();
+            sqlite_cmd2.CommandText = "select savegame_id, path, machine, recursive, filter, filter_out from savegame where game_id = @gameid";
+            sqlite_cmd2.Parameters.Add("@gameid", (DbType)SqlDbType.Int).Value = gameId;
+            SQLiteDataReader sqlite_datareader2 = sqlite_cmd2.ExecuteReader();
+
+            while (sqlite_datareader2.Read())
+            {
+                //int savegame_id;
+                string path;
+                int machine;
+                int recursive;
+                string filterIn = null;
+                string filterOut = null;
+
+                //savegame_id = (int)(long)sqlite_datareader2.GetValue(0);
+                path = sqlite_datareader2.GetString(1);
+                path = ReplaceEnvironmentVariables(path);
+                machine = (int)(long)sqlite_datareader2.GetValue(2);
+                recursive = (int)(long)sqlite_datareader2.GetValue(3);
+                try
+                {
+                    if (sqlite_datareader2.GetValue(4).GetType().Equals(typeof(String)))
+                    {
+                        filterIn = (String)sqlite_datareader2.GetString(4);
+                    }
+                }
+                catch (Exception) { }
+                try
+                {
+                    if (sqlite_datareader2.GetValue(5).GetType().Equals(typeof(String)))
+                    {
+                        filterOut = (String)sqlite_datareader2.GetString(5);
+                    }
+                }
+                catch (Exception) { }
+
+                if (DeleteDirectory(path, RecursiveLevel(recursive == 1, machine == 1), filterIn, filterOut))
+                {
+                    Log("deleted locally" + Environment.NewLine);
+                }
+                else
+                {
+                    Log("does not exist locally" + Environment.NewLine);
+                }
+                
+            }
+        }
+        sqlite_datareader.Close();
+        sqlite_conn.Close();
+        return true;
+    }
+
+    // machine recursive starts at 2nd level
+    public static int RecursiveLevel(bool recursive, bool machine)
+    {
+        if (!recursive)
+        {
+            if (!machine)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
     public void Close()
     {
@@ -436,19 +575,19 @@ public class Synchronizer
 
     }
 
-    private void SyncPathFromLocal(string folderPath, string folderId, bool recursive, string filterIn, string filterOut, bool async)
+    private void SyncPathFromLocal(string folderPath, string folderId, bool recursive, bool machine, string filterIn, string filterOut, bool async)
     {
         if (async)
         {
-            driveHelper.SyncFromLocalAsync(folderPath, folderId, recursive, filterIn, filterOut).Wait();
+            driveHelper.SyncFromLocalAsync(folderPath, folderId, RecursiveLevel(recursive, machine), filterIn, filterOut).Wait();
         }
         else
         {
-            driveHelper.SyncFromLocal(folderPath, folderId, recursive, filterIn, filterOut);
+            driveHelper.SyncFromLocal(folderPath, folderId, RecursiveLevel(recursive, machine), filterIn, filterOut);
         }
     }
 
-    private void SyncPathFromDrive(string folderPath, string folderId, bool backup, string backupName, bool recursive, string filterIn, string filterOut, bool async)
+    private void SyncPathFromDrive(string folderPath, string folderId, bool backup, string backupName, bool recursive, bool machine, string filterIn, string filterOut, bool async)
     {
         if (backup)
         {
@@ -456,36 +595,36 @@ public class Synchronizer
         }
         if (async)
         {
-            driveHelper.SyncFromDriveAsync(folderPath, folderId, recursive, filterIn, filterOut).Wait();
+            driveHelper.SyncFromDriveAsync(folderPath, folderId, RecursiveLevel(recursive, machine), filterIn, filterOut).Wait();
         }
         else
         {
-            driveHelper.SyncFromDrive(folderPath, folderId, recursive, filterIn, filterOut);
+            driveHelper.SyncFromDrive(folderPath, folderId, RecursiveLevel(recursive, machine), filterIn, filterOut);
         }
     }
 
 
     // Fully synchronizes a local and could folder
     // Result: 0 no synch needed, 1 synchronizes from local, -1 synchronizes from cloudService
-    private int SyncPath(string folderPath, string folderId, bool backup, string backupName, bool recursive, string filterIn, string filterOut, string syncDirection, bool async)
+    private int SyncPath(string folderPath, string folderId, bool backup, string backupName, bool recursive, bool machine, string filterIn, string filterOut, string syncDirection, bool async)
     {
         var syncResult = 0;
 
         switch (syncDirection)
         {
             case "tocloud":
-                SyncPathFromLocal(folderPath, folderId, recursive, filterIn, filterOut, async);
+                SyncPathFromLocal(folderPath, folderId, recursive, machine, filterIn, filterOut, async);
                 syncResult = 1;
                 break;
             case "fromcloud":
-                SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, filterIn, filterOut, async);
+                SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, machine, filterIn, filterOut, async);
                 syncResult = -1;
                 break;
             default:
                 var totalFilesDrive = 0;
-                var lastModifiedDrive = driveHelper.LastModifiedDate(folderId, ref totalFilesDrive, recursive, filterIn, filterOut);
+                var lastModifiedDrive = driveHelper.LastModifiedDate(folderId, ref totalFilesDrive, RecursiveLevel(recursive, machine), filterIn, filterOut);
                 var totalFilesLocal = 0;
-                var lastModifiedLocal = driveHelper.LocalLastModifiedDate(folderPath, ref totalFilesLocal, recursive, filterIn, filterOut);
+                var lastModifiedLocal = ICloudDriveHelper.LocalLastModifiedDate(folderPath, ref totalFilesLocal, RecursiveLevel(recursive, machine), filterIn, filterOut);
 
                 if (lastModifiedDrive != default)
                 {
@@ -495,25 +634,25 @@ public class Synchronizer
                         {
                             if (lastModifiedDrive > lastModifiedLocal)
                             {
-                                SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, filterIn, filterOut, async);
+                                SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, machine, filterIn, filterOut, async);
                                 syncResult = -1;
                             }
                             else
                             {
-                                SyncPathFromLocal(folderPath, folderId, recursive, filterIn, filterOut, async);
+                                SyncPathFromLocal(folderPath, folderId, recursive, machine, filterIn, filterOut, async);
                                 syncResult = 1;
                             }
                         }
                     }
                     else
                     {
-                        SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, filterIn, filterOut, async);
+                        SyncPathFromDrive(folderPath, folderId, backup, backupName, recursive, machine, filterIn, filterOut, async);
                         syncResult = -1;
                     }
                 }
                 else if (lastModifiedLocal != default)
                 {
-                    SyncPathFromLocal(folderPath, folderId, recursive, filterIn, filterOut, async);
+                    SyncPathFromLocal(folderPath, folderId, recursive, machine, filterIn, filterOut, async);
                     syncResult = 1;
                 }
                 break;
@@ -542,7 +681,7 @@ public class Synchronizer
 
     }
 
-    private void UpdateMachine(string folderPath)
+    public static void UpdateMachine(string folderPath, bool recursive, string filterIn, string filterOut)
     {
 
         DateTime lastModified = default;
@@ -551,7 +690,7 @@ public class Synchronizer
         foreach (var folderEntry in folderEntries)
         {
             var totalFiles = 0;
-            var folderLastModified = driveHelper.LocalLastModifiedDate(folderEntry, ref totalFiles, true, null, null);
+            var folderLastModified = ICloudDriveHelper.LocalLastModifiedDate(folderEntry, ref totalFiles, RecursiveLevel(recursive, true), filterIn, filterOut);
             if (lastModified == default || folderLastModified > lastModified)
             {
                 lastModified = folderLastModified;
@@ -563,12 +702,68 @@ public class Synchronizer
         {
             if (folderEntry != lastModifiedPath)
             {
-                Directory.Delete(folderEntry, true);
-                Directory.CreateDirectory(folderEntry);
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(lastModifiedPath, folderEntry, true);
+                //Directory.Delete(folderEntry, true);
+                //Directory.CreateDirectory(folderEntry);
+                //Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(lastModifiedPath, folderEntry, true);
+                CopyDirectory(lastModifiedPath, folderEntry, true, RecursiveLevel(recursive, true), filterIn, filterOut);
+            }
+        }
+    }
+
+    private static void CopyDirectory(string sourcePath, string targetPath, bool overwrite, int recursive, string filterIn, string filterOut, int level = 1)
+    {
+        foreach (string filePath in Directory.GetFiles(sourcePath))
+        {
+            if (ICloudDriveHelper.IsMatch(Path.GetFileName(filePath), filterIn, filterOut))
+            {
+                File.Copy(filePath, filePath.Replace(sourcePath, targetPath), overwrite);
             }
         }
 
+        if (recursive == 0 || level < recursive)
+        {
+            foreach (string dirPath in Directory.GetDirectories(sourcePath))
+            {
+                if (!Directory.Exists(dirPath.Replace(sourcePath, targetPath)))
+                {
+                    Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+                }
+                CopyDirectory(dirPath, dirPath.Replace(sourcePath, targetPath), overwrite, recursive, filterIn, filterOut, level+1);
+            }
+
+        }
+    }
+
+    private static bool DeleteDirectory(string targetPath, int recursive, string filterIn, string filterOut, int level = 1)
+    {
+        if (Directory.Exists(targetPath))
+        {
+            foreach (string filePath in Directory.GetFiles(targetPath))
+            {
+                if (ICloudDriveHelper.IsMatch(Path.GetFileName(filePath), filterIn, filterOut))
+                {
+                    File.Delete(filePath);
+                }
+            }
+
+            if (recursive == 0 || level < recursive)
+            {
+                foreach (string dirPath in Directory.GetDirectories(targetPath))
+                {
+                    DeleteDirectory(dirPath, recursive, filterIn, filterOut, level + 1);
+                }
+            }
+
+            if (!Directory.EnumerateFileSystemEntries(targetPath).Any())
+            {
+                Directory.Delete(targetPath);
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public static bool IsValidCloudService(string cloudServiceName)

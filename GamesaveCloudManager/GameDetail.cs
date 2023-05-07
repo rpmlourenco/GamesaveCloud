@@ -365,13 +365,13 @@ namespace GamesaveCloudManager
                     switch (exception.Message)
                     {
                         case "constraint failed\r\nUNIQUE constraint failed: game.game_id":
-                            MessageBox.Show("The game id already exists.", "Error");
+                            MessageBox.Show("The game id already exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
                         case "constraint failed\r\nUNIQUE constraint failed: game.title":
-                            MessageBox.Show("The game title already exists.", "Error");
+                            MessageBox.Show("The game title already exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
                         default:
-                            MessageBox.Show(exception.Message, "Error");
+                            MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
                     }
                 }
@@ -382,7 +382,7 @@ namespace GamesaveCloudManager
         {
             if (String.IsNullOrEmpty(textBoxTitle.Text))
             {
-                MessageBox.Show("Game title must not be empty.", "Warning");
+                MessageBox.Show("Game title must not be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textBoxTitle.Focus();
                 return false;
             }
@@ -395,32 +395,8 @@ namespace GamesaveCloudManager
                         bool rowValid = true;
                         if (String.IsNullOrEmpty(dataRow["Path"].ToString()))
                         {
-                            MessageBox.Show("Game path must not be empty.", "Warning");
+                            MessageBox.Show("Game path must not be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             rowValid = false;
-                        }
-
-                        if (!String.IsNullOrEmpty(dataRow["machine"].ToString()) && dataRow["machine"].ToString() == "1")
-                        {
-                            if (!String.IsNullOrEmpty(dataRow["recursive"].ToString()) && dataRow["recursive"].ToString() != "1")
-                            {
-                                MessageBox.Show("If 'machine' is selected 'recursive' must be also selected.", "Warning");
-                                rowValid = false;
-                            }
-
-                            /*
-                            if (!String.IsNullOrEmpty(dataRow["Filter"].ToString()))
-                            {
-                                MessageBox.Show("If 'machine' is selected 'filter' must be empty.", "Warning");
-                                rowValid = false;
-                            }
-
-                            if (!String.IsNullOrEmpty(dataRow["Filter Out"].ToString()))
-                            {
-                                MessageBox.Show("If 'machine' is selected 'filter out' must be empty.", "Warning");
-                                rowValid = false;
-                            }
-                            */
-
                         }
 
                         if (!rowValid)

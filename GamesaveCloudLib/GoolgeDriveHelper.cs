@@ -264,9 +264,10 @@ namespace GamesaveCloudLib
         }
         */
 
-        public override void DeleteFile(string itemId)
+        public override async Task<bool> DeleteFile(string itemId)
         {
-            service.Files.Delete(itemId).Execute();
+            await service.Files.Delete(itemId).ExecuteAsync();
+            return true;
         }
 
 

@@ -1,10 +1,12 @@
 # GamesaveCloud
 
 Todo:
-- check if filters apply to folders
-- add support for machine filters
+- ask to delete cloud/local on game delete
+- refactor into game class
+- optimize initilizer, avoid connecting to cloud on local files delete
 - filter choose case sensitive
-- delete local files, delete cloud files
+- refactor ui async calls
+- documentation
 - delete permanently from onedrive
 
 Done:
@@ -46,3 +48,8 @@ Done:
 - manager total game count
 - admin check incompatibility between machine and filter
 - filter exclude, filters separated with ;
+- add support for machine filters
+- add support for machine recursive
+- disply Icons in warning messages
+- delete local files, delete cloud files
+- machine recursive start at 2nd level

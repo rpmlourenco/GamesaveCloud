@@ -11,8 +11,6 @@ namespace GamesaveCloudLib
 
         public Logger()
         {
-            //var pathLog = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "logs");
-
             string assembly = Environment.ProcessPath;
 
             if (assembly != null)

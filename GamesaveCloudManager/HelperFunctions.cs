@@ -82,26 +82,25 @@ namespace GamesaveCloudManager
                         }
                         else
                         {
-                            MessageBox.Show("Tokens not found when parsing onedrive_secrets.json");
+                            MessageBox.Show("Tokens not found when parsing onedrive_secrets.json", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
                     {
-                        MessageBox.Show("Not possible to parse onedrive_secrets.json");
+                        MessageBox.Show("Not possible to parse onedrive_secrets.json", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Resource not found when loading onedrive_secrets.json");
+                    MessageBox.Show("Resource not found when loading onedrive_secrets.json", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                MessageBox.Show("Assembly not found when loading onedrive_secrets.json");
+                MessageBox.Show("Assembly not found when loading onedrive_secrets.json", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return null;
 
         }
-
     }
 }

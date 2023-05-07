@@ -36,6 +36,9 @@
             textBox1 = new TextBox();
             buttonStart = new Button();
             checkBoxAsync = new CheckBox();
+            buttonDeleteLocal = new Button();
+            buttonDeleteCloud = new Button();
+            buttonClearLog = new Button();
             SuspendLayout();
             // 
             // label1
@@ -86,6 +89,7 @@
             textBox1.ScrollBars = ScrollBars.Both;
             textBox1.Size = new Size(697, 397);
             textBox1.TabIndex = 4;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // buttonStart
             // 
@@ -93,7 +97,7 @@
             buttonStart.Name = "buttonStart";
             buttonStart.Size = new Size(151, 29);
             buttonStart.TabIndex = 19;
-            buttonStart.Text = "Start SyncBackgroundTask";
+            buttonStart.Text = "Start";
             buttonStart.UseVisualStyleBackColor = true;
             buttonStart.Click += buttonStart_Click;
             // 
@@ -110,11 +114,44 @@
             checkBoxAsync.Text = "Async";
             checkBoxAsync.UseVisualStyleBackColor = true;
             // 
+            // buttonDeleteLocal
+            // 
+            buttonDeleteLocal.Location = new Point(446, 80);
+            buttonDeleteLocal.Name = "buttonDeleteLocal";
+            buttonDeleteLocal.Size = new Size(110, 29);
+            buttonDeleteLocal.TabIndex = 21;
+            buttonDeleteLocal.Text = "Delete Local";
+            buttonDeleteLocal.UseVisualStyleBackColor = true;
+            buttonDeleteLocal.Click += buttonDeleteLocal_Click;
+            // 
+            // buttonDeleteCloud
+            // 
+            buttonDeleteCloud.Location = new Point(562, 80);
+            buttonDeleteCloud.Name = "buttonDeleteCloud";
+            buttonDeleteCloud.Size = new Size(110, 29);
+            buttonDeleteCloud.TabIndex = 21;
+            buttonDeleteCloud.Text = "Delete Cloud";
+            buttonDeleteCloud.UseVisualStyleBackColor = true;
+            buttonDeleteCloud.Click += buttonDeleteCloud_Click;
+            // 
+            // buttonClearLog
+            // 
+            buttonClearLog.Location = new Point(678, 80);
+            buttonClearLog.Name = "buttonClearLog";
+            buttonClearLog.Size = new Size(110, 29);
+            buttonClearLog.TabIndex = 22;
+            buttonClearLog.Text = "Clear Log";
+            buttonClearLog.UseVisualStyleBackColor = true;
+            buttonClearLog.Click += buttonClearLog_Click;
+            // 
             // SyncForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 524);
+            Controls.Add(buttonClearLog);
+            Controls.Add(buttonDeleteCloud);
+            Controls.Add(buttonDeleteLocal);
             Controls.Add(checkBoxAsync);
             Controls.Add(buttonStart);
             Controls.Add(textBox1);
@@ -143,5 +180,8 @@
         private TextBox textBox1;
         private Button buttonStart;
         private CheckBox checkBoxAsync;
+        private Button buttonDeleteLocal;
+        private Button buttonDeleteCloud;
+        private Button buttonClearLog;
     }
 }

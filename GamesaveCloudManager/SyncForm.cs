@@ -27,6 +27,7 @@ namespace GamesaveCloudManager
             comboBoxProvider.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxDirection.Text = "Auto";
             comboBoxDirection.DropDownStyle = ComboBoxStyle.DropDownList;
+            buttonClearLog.Enabled = false;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -36,6 +37,8 @@ namespace GamesaveCloudManager
             this.checkBoxAsync.Enabled = false;
             this.comboBoxProvider.Enabled = false;
             this.comboBoxDirection.Enabled = false;
+            this.buttonDeleteLocal.Enabled = false;
+            this.buttonDeleteCloud.Enabled = false;
             try
             {
                 logger = new();
@@ -68,6 +71,8 @@ namespace GamesaveCloudManager
                 this.checkBoxAsync.Enabled = true;
                 this.comboBoxProvider.Enabled = true;
                 this.comboBoxDirection.Enabled = true;
+                this.buttonDeleteLocal.Enabled = true;
+                this.buttonDeleteCloud.Enabled = true;
             }
         }
 
@@ -81,6 +86,16 @@ namespace GamesaveCloudManager
             buttonStart.Invoke((MethodInvoker)delegate
             {
                 buttonStart.Enabled = true;
+            });
+
+            buttonDeleteLocal.Invoke((MethodInvoker)delegate
+            {
+                buttonDeleteLocal.Enabled = true;
+            });
+
+            buttonDeleteCloud.Invoke((MethodInvoker)delegate
+            {
+                buttonDeleteCloud.Enabled = true;
             });
 
             checkBoxAsync.Invoke((MethodInvoker)delegate
@@ -128,6 +143,148 @@ namespace GamesaveCloudManager
             if (!buttonStart.Enabled)
             {
                 e.Cancel = true;
+            }
+        }
+
+        private void buttonDeleteLocal_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.Yes == MessageBox.Show($"Do you really want to delete local files?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            {
+                this.buttonStart.Enabled = false;
+                this.ControlBox = false;
+                this.checkBoxAsync.Enabled = false;
+                this.comboBoxProvider.Enabled = false;
+                this.comboBoxDirection.Enabled = false;
+                this.buttonDeleteLocal.Enabled = false;
+                this.buttonDeleteCloud.Enabled = false;
+                try
+                {
+                    //logger = new();
+                    var progress = new Progress<string>(msg =>
+                    {
+                        textBox1.AppendText(msg);
+                        //logger.Log(msg);
+                    });
+
+                    Synchronizer sync = new(progress);
+
+                    switch (comboBoxProvider.Text.ToLower())
+                    {
+                        case "googledrive":
+                            sync.Initialize("googledrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
+                            break;
+                        case "onedrive":
+                        default:
+                            sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
+                            break;
+                    }
+
+                    try
+                    {
+                        foreach (var game in games)
+                        {
+                            sync.DeleteLocalFiles((int)game);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        sync.Log(ex.ToString());
+                    }
+                    sync.Close();
+
+                }
+                catch (Exception exception)
+                {
+                    textBox1.Text += exception.Message;
+                }
+
+                this.buttonStart.Enabled = true;
+                this.ControlBox = true;
+                this.checkBoxAsync.Enabled = true;
+                this.comboBoxProvider.Enabled = true;
+                this.comboBoxDirection.Enabled = true;
+                this.buttonDeleteLocal.Enabled = true;
+                this.buttonDeleteCloud.Enabled = true;
+
+            }
+        }
+
+        private async void buttonDeleteCloud_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.Yes == MessageBox.Show($"Do you really want to delete cloud files?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            {
+                this.buttonStart.Enabled = false;
+                this.ControlBox = false;
+                this.checkBoxAsync.Enabled = false;
+                this.comboBoxProvider.Enabled = false;
+                this.comboBoxDirection.Enabled = false;
+                this.buttonDeleteLocal.Enabled = false;
+                this.buttonDeleteCloud.Enabled = false;
+                try
+                {
+                    //logger = new();
+                    var progress = new Progress<string>(msg =>
+                    {
+                        textBox1.AppendText(msg);
+                        //logger.Log(msg);
+                    });
+
+                    Synchronizer sync = new(progress);
+
+                    switch (comboBoxProvider.Text.ToLower())
+                    {
+                        case "googledrive":
+                            sync.Initialize("googledrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
+                            break;
+                        case "onedrive":
+                        default:
+                            sync.Initialize("onedrive", HelperFunctions.BuildOneDriveClient(), Handle, false);
+                            break;
+                    }
+
+                    try
+                    {
+                        foreach (var game in games)
+                        {
+                            await sync.DeleteCloudFiles((int)game);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        sync.Log(ex.ToString());
+                    }
+                    sync.Close();
+
+                }
+                catch (Exception exception)
+                {
+                    textBox1.Text += exception.Message;
+                }
+
+                this.buttonStart.Enabled = true;
+                this.ControlBox = true;
+                this.checkBoxAsync.Enabled = true;
+                this.comboBoxProvider.Enabled = true;
+                this.comboBoxDirection.Enabled = true;
+                this.buttonDeleteLocal.Enabled = true;
+                this.buttonDeleteCloud.Enabled = true;
+            }
+        }
+
+        private void buttonClearLog_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = string.Empty;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text.Length > 0)
+            {
+                buttonClearLog.Enabled = true;
+            }
+            else
+            {
+                buttonClearLog.Enabled=false;
             }
         }
     }

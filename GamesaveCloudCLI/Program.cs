@@ -129,6 +129,7 @@ namespace GamesaveCloudCLI
 
         public static void UnitTests()
         {
+            Synchronizer.UpdateMachine("C:\\Users\\rpmlo\\Desktop\\teste\\users", true, "", "sharedsettings.cfg");
             /*
             IniFile ini = new IniFile();
             ini.Write("DefaultCloudService","onedrive");
