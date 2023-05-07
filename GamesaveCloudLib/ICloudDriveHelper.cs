@@ -181,7 +181,7 @@ namespace GamesaveCloudLib
                     foreach (var folder in folders)
                     {
 
-                        var folderLastModified = LastModifiedDate(folder.Id, ref totalFiles, recursive, filterIn, filterOut, level+1);
+                        var folderLastModified = LastModifiedDate(folder.Id, ref totalFiles, recursive, filterIn, filterOut, level + 1);
                         if (lastModified == default || folderLastModified > lastModified)
                         {
                             lastModified = folderLastModified;
@@ -231,7 +231,7 @@ namespace GamesaveCloudLib
                     totalFiles += folderEntries.Length;
                     foreach (var folderEntry in folderEntries)
                     {
-                        var folderLastModified = LocalLastModifiedDate(folderEntry, ref totalFiles, recursive, filterIn, filterOut, level+1);
+                        var folderLastModified = LocalLastModifiedDate(folderEntry, ref totalFiles, recursive, filterIn, filterOut, level + 1);
                         if (lastModified == default || folderLastModified > lastModified)
                         {
                             lastModified = folderLastModified;
@@ -343,7 +343,7 @@ namespace GamesaveCloudLib
                             driveFolderId = driveFolder.Id;
                         }
 
-                        SyncFromLocal(folderEntry, driveFolderId, recursive, filterIn, filterOut, level+1);
+                        SyncFromLocal(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1);
                     }
                 }
             }
@@ -442,7 +442,7 @@ namespace GamesaveCloudLib
                         // Directory.SetLastWriteTime(checkFolder, driveFolder.ModifiedTime)
                     }
 
-                    SyncFromDrive(checkFolder, folder.Id, recursive, filterIn, filterOut, level+1);
+                    SyncFromDrive(checkFolder, folder.Id, recursive, filterIn, filterOut, level + 1);
                 }
             }
 
@@ -564,7 +564,7 @@ namespace GamesaveCloudLib
                             driveFolderId = driveFolder.Id;
                         }
                         //await SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filter);
-                        var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level+1);
+                        var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1);
                         syncTasks.Add(syncTask);
                     }
                     while (syncTasks.Count > 0)
@@ -686,7 +686,7 @@ namespace GamesaveCloudLib
                         // Directory.SetLastWriteTime(checkFolder, driveFolder.ModifiedTime)
                     }
 
-                    var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut, level+1);
+                    var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut, level + 1);
                     syncTasks.Add(syncTask);
                 }
                 while (syncTasks.Count > 0)

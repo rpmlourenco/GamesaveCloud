@@ -500,7 +500,7 @@ public class Synchronizer
                 {
                     Log("does not exist locally" + Environment.NewLine);
                 }
-                
+
             }
         }
         sqlite_datareader.Close();
@@ -728,7 +728,7 @@ public class Synchronizer
                 {
                     Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
                 }
-                CopyDirectory(dirPath, dirPath.Replace(sourcePath, targetPath), overwrite, recursive, filterIn, filterOut, level+1);
+                CopyDirectory(dirPath, dirPath.Replace(sourcePath, targetPath), overwrite, recursive, filterIn, filterOut, level + 1);
             }
 
         }

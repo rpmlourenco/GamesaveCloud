@@ -284,7 +284,7 @@ namespace GamesaveCloudManager
             }
             else
             {
-                buttonClearLog.Enabled=false;
+                buttonClearLog.Enabled = false;
             }
         }
     }
