@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- check if filters apply to folders
 - add support for machine filters
 - filter choose case sensitive
 - delete local files, delete cloud files

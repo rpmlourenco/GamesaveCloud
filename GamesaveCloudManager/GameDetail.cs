@@ -407,6 +407,7 @@ namespace GamesaveCloudManager
                                 rowValid = false;
                             }
 
+                            /*
                             if (!String.IsNullOrEmpty(dataRow["Filter"].ToString()))
                             {
                                 MessageBox.Show("If 'machine' is selected 'filter' must be empty.", "Warning");
@@ -418,6 +419,7 @@ namespace GamesaveCloudManager
                                 MessageBox.Show("If 'machine' is selected 'filter out' must be empty.", "Warning");
                                 rowValid = false;
                             }
+                            */
 
                         }
 
