@@ -1,11 +1,15 @@
 # GamesaveCloud
 
 Todo:
+- check why not in sync after sync playnite in itx
+- check if path exists before save
+- full async (files and folders together)
 - ask to delete cloud/local on game delete
 - refactor into game class
 - optimize initilizer, avoid connecting to cloud on local files delete
 - filter choose case sensitive
 - refactor ui async calls
+- button icons
 - documentation
 - delete permanently from onedrive
 
