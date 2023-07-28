@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Version>1.0.8.0</Version>
+    <Version>1.0.9.0</Version>
     <InformationalVersion>Machine filters and recursive</InformationalVersion>
     <VersionSuffix>$([System.DateTime]::UtcNow.ToString(`yyyyMMdd-HHmm`))</VersionSuffix>
     <Nullable>enable</Nullable>
