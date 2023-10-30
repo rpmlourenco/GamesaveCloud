@@ -174,10 +174,22 @@ namespace GamesaveCloudLib
 
             if (recursive == 0 || level < recursive)
             {
-                var folders = GetFolders(folderId);
-                totalFiles += folders.Count;
+                IList<ICloudFile> folders;
+                //var folders = GetFolders(folderId);
+
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allfolders = GetFolders(folderId);
+                    folders = FilterFiles(filterIn, filterOut, allfolders);
+                }
+                else
+                {
+                    folders = GetFolders(folderId);
+                }
+                
                 if (folders is not null && folders.Count > 0)
                 {
+                    totalFiles += folders.Count;
                     foreach (var folder in folders)
                     {
 
@@ -225,7 +237,18 @@ namespace GamesaveCloudLib
 
             if (recursive == 0 || level < recursive)
             {
-                string[] folderEntries = Directory.GetDirectories(folderPath);
+                //string[] folderEntries = Directory.GetDirectories(folderPath);
+                string[] folderEntries;
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allFolderEntries = Directory.GetDirectories(folderPath);
+                    folderEntries = FilterFiles(filterIn, filterOut, allFolderEntries);
+                }
+                else
+                {
+                    folderEntries = Directory.GetDirectories(folderPath);
+                }
+
                 if (folderEntries != null && folderEntries.Length > 0)
                 {
                     totalFiles += folderEntries.Length;
@@ -273,16 +296,26 @@ namespace GamesaveCloudLib
 
             IList<ICloudFile> folders = null;
             if (recursive == 0 || level < recursive)
-                folders = GetFolders(folderId);
-
-            if (folders is not null && folders.Count > 0)
-            {
-                foreach (var folder in folders)
+            {                
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
                 {
-                    string checkFolder = Path.Combine(folderPath, folder.Name);
-                    if (!Directory.Exists(checkFolder))
+                    var allfolders = GetFolders(folderId);
+                    folders = FilterFiles(filterIn, filterOut, allfolders);
+                }
+                else
+                {
+                    files = GetFolders(folderId);
+                }
+
+                if (folders is not null && folders.Count > 0)
+                {
+                    foreach (var folder in folders)
                     {
-                        DeleteFile(folder.Id).Wait();
+                        string checkFolder = Path.Combine(folderPath, folder.Name);
+                        if (!Directory.Exists(checkFolder))
+                        {
+                            DeleteFile(folder.Id).Wait();
+                        }
                     }
                 }
             }
@@ -325,7 +358,19 @@ namespace GamesaveCloudLib
 
             if (recursive == 0 || level < recursive)
             {
-                string[] folderEntries = Directory.GetDirectories(folderPath);
+                //string[] folderEntries = Directory.GetDirectories(folderPath);
+                string[] folderEntries;
+
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allFolderEntries = Directory.GetDirectories(folderPath);
+                    folderEntries = FilterFiles(filterIn, filterOut, allFolderEntries);
+                }
+                else
+                {
+                    folderEntries = Directory.GetDirectories(folderPath);
+                }
+
                 if (folderEntries != null && folderEntries.Length > 0)
                 {
                     foreach (var folderEntry in folderEntries)
@@ -363,8 +408,19 @@ namespace GamesaveCloudLib
             }
 
             IList<ICloudFile> folders = null;
-            if (recursive == 0 || level < recursive)
-                folders = GetFolders(folderId);
+            if (recursive == 0 || level < recursive) {
+                //folders = GetFolders(folderId);
+
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allfolders = GetFolders(folderId);
+                    folders = FilterFiles(filterIn, filterOut, allfolders);
+                }
+                else
+                {
+                    folders = GetFolders(folderId);
+                }
+            }
 
             //string[] fileEntries = Directory.GetFiles(folderPath);
             string[] fileEntries;
@@ -377,6 +433,7 @@ namespace GamesaveCloudLib
             {
                 fileEntries = Directory.GetFiles(folderPath);
             }
+
             if (fileEntries != null && fileEntries.Length > 0)
             {
                 foreach (var fileEntry in fileEntries)
@@ -392,7 +449,19 @@ namespace GamesaveCloudLib
 
             if ((recursive == 0 || level < recursive) && folders != null)
             {
-                string[] folderEntries = Directory.GetDirectories(folderPath);
+                //string[] folderEntries = Directory.GetDirectories(folderPath);
+                string[] folderEntries;
+
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allFolderEntries = Directory.GetDirectories(folderPath);
+                    folderEntries = FilterFiles(filterIn, filterOut, allFolderEntries);
+                }
+                else
+                {
+                    folderEntries = Directory.GetDirectories(folderPath);
+                }
+
                 foreach (var folderEntry in folderEntries)
                 {
 
@@ -479,7 +548,18 @@ namespace GamesaveCloudLib
 
             IList<ICloudFile> folders = null;
             if (recursive == 0 || level < recursive)
-                folders = GetFolders(folderId);
+            {
+                //folders = GetFolders(folderId);
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allfolders = GetFolders(folderId);
+                    folders = FilterFiles(filterIn, filterOut, allfolders);
+                }
+                else
+                {
+                    folders = GetFolders(folderId);
+                }
+            }
 
             if (folders is not null && folders.Count > 0)
             {
@@ -545,7 +625,18 @@ namespace GamesaveCloudLib
 
             if (recursive == 0 || level < recursive)
             {
-                string[] folderEntries = Directory.GetDirectories(folderPath);
+                //string[] folderEntries = Directory.GetDirectories(folderPath);
+                string[] folderEntries;
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allFolderEntries = Directory.GetDirectories(folderPath);
+                    folderEntries = FilterFiles(filterIn, filterOut, allFolderEntries);
+                }
+                else
+                {
+                    folderEntries = Directory.GetDirectories(folderPath);
+                }
+
                 if (folderEntries != null && folderEntries.Length > 0)
                 {
                     var syncTasks = new List<Task>();
@@ -595,7 +686,19 @@ namespace GamesaveCloudLib
 
             IList<ICloudFile> folders = null;
             if (recursive == 0 || level < recursive)
-                folders = GetFolders(folderId);
+            {
+                //folders = GetFolders(folderId);
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allfolders = GetFolders(folderId);
+                    folders = FilterFiles(filterIn, filterOut, allfolders);
+                }
+                else
+                {
+                    folders = GetFolders(folderId);
+                }
+
+            }
 
             //string[] fileEntries = Directory.GetFiles(folderPath);
             string[] fileEntries;
@@ -623,7 +726,18 @@ namespace GamesaveCloudLib
 
             if ((recursive == 0 || level < recursive) && folders != null)
             {
-                string[] folderEntries = Directory.GetDirectories(folderPath);
+                //string[] folderEntries = Directory.GetDirectories(folderPath);
+                string[] folderEntries;
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allFolderEntries = Directory.GetDirectories(folderPath);
+                    folderEntries = FilterFiles(filterIn, filterOut, allFolderEntries);
+                }
+                else
+                {
+                    folderEntries = Directory.GetDirectories(folderPath);
+                }
+
                 foreach (var folderEntry in folderEntries)
                 {
 
