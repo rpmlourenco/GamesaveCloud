@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- fix idgb client secret expire
 - check why not in sync after sync playnite in itx
 - check if path exists before save
 - full async (files and folders together)
