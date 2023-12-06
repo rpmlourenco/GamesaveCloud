@@ -462,15 +462,18 @@ namespace GamesaveCloudLib
                     folderEntries = Directory.GetDirectories(folderPath);
                 }
 
-                foreach (var folderEntry in folderEntries)
+                if (folderEntries != null && folderEntries.Length > 0)
                 {
-
-                    string folderName = Path.GetFileName(folderEntry);
-                    var driveFolder = FindFile(folderName, folders);
-
-                    if (driveFolder is null)
+                    foreach (var folderEntry in folderEntries)
                     {
-                        Directory.Delete(folderEntry, true);
+
+                        string folderName = Path.GetFileName(folderEntry);
+                        var driveFolder = FindFile(folderName, folders);
+
+                        if (driveFolder is null)
+                        {
+                            Directory.Delete(folderEntry, true);
+                        }
                     }
                 }
             }
@@ -738,15 +741,18 @@ namespace GamesaveCloudLib
                     folderEntries = Directory.GetDirectories(folderPath);
                 }
 
-                foreach (var folderEntry in folderEntries)
+                if (folderEntries != null && folderEntries.Length > 0)
                 {
-
-                    string folderName = Path.GetFileName(folderEntry);
-                    var driveFolder = FindFile(folderName, folders);
-
-                    if (driveFolder is null)
+                    foreach (var folderEntry in folderEntries)
                     {
-                        Directory.Delete(folderEntry, true);
+
+                        string folderName = Path.GetFileName(folderEntry);
+                        var driveFolder = FindFile(folderName, folders);
+
+                        if (driveFolder is null)
+                        {
+                            Directory.Delete(folderEntry, true);
+                        }
                     }
                 }
             }
