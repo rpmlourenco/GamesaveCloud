@@ -82,7 +82,7 @@ namespace GamesaveCloudUpdater
             }
         }
 
-        public static string? GetRemoteVersion(int index)
+        public string? GetRemoteVersion(int index)
         {
             try
             {
@@ -117,6 +117,7 @@ namespace GamesaveCloudUpdater
             }
             catch (Exception ex)
             {
+                if (ex.StackTrace != null) LogWriteLine(ex.StackTrace);
                 return null;
             }
 
@@ -154,8 +155,8 @@ namespace GamesaveCloudUpdater
             for (int i = 0; i < executables.Length; i++)
             {
                 this.fileToUpdate = Path.Combine(this.assemblyPath, executables[i]);
-                this.remoteVersion = Updater.GetRemoteVersion(i);
-                this.localVersion = Updater.GetLocalVersion(this.fileToUpdate);
+                this.remoteVersion = GetRemoteVersion(i);
+                this.localVersion = GetLocalVersion(this.fileToUpdate);
 
                 if (this.remoteVersion != null)
                 {
