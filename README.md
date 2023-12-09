@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- implement machine config set up on second pc
 - fix idgb client secret expire
 - check why not in sync after sync playnite in itx
 - check if path exists before save

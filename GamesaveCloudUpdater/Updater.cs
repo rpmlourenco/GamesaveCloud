@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO.Compression;
+using System.Net;
+using System.Text.Json;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace GamesaveCloudUpdater
@@ -80,23 +84,42 @@ namespace GamesaveCloudUpdater
 
         public static string? GetRemoteVersion(int index)
         {
-            XElement xdocument = XElement.Load(githubURL + remoteVersionURL[index]);
-            XElement? xversion;
-            XElement? xproperty = xdocument.Descendants("PropertyGroup").FirstOrDefault();
-            if (xproperty != null)
+            try
             {
-                xversion = xproperty.Descendants("Version").FirstOrDefault();
-                if (xversion != null)
-                {
-                    return xversion.Value;
-                }
-                else { return null; }
+                XElement xdocument;
 
+                var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                using (var request = new HttpRequestMessage(HttpMethod.Get, githubURL + remoteVersionURL[index]))
+                {
+                    var response = httpClient.Send(request);
+                    response.EnsureSuccessStatusCode();
+                    using var stream = response.Content.ReadAsStream();
+                    xdocument = XElement.Load(stream);
+                }
+
+                XElement? xversion;
+                XElement? xproperty = xdocument.Descendants("PropertyGroup").FirstOrDefault();
+                if (xproperty != null)
+                {
+                    xversion = xproperty.Descendants("Version").FirstOrDefault();
+                    if (xversion != null)
+                    {
+                        return xversion.Value;
+                    }
+                    else { return null; }
+
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (Exception ex)
             {
                 return null;
             }
+
         }
 
         public string? GetAssemblyPath()
