@@ -32,6 +32,11 @@ namespace GamesaveCloudManager
 
         private void Game_Load(object sender, EventArgs e)
         {
+
+            System.Reflection.Assembly ass = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Version? ver = ass.GetName().Version;
+            if (ver != null) this.Text += " " + ver.Major + "." + ver.Minor;
+
             var progress = new Progress<string>(msg =>
             {
                 textBoxStatus.AppendText(msg);

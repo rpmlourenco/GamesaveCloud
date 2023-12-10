@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using Tavis.UriTemplates;
 using Logger = GamesaveCloudLib.Logger;
 
 namespace GamesaveCloudCLI;
@@ -621,8 +622,14 @@ public class Synchronizer
                 syncResult = -1;
                 break;
             default:
-                var totalFilesDrive = 0;
-                var lastModifiedDrive = driveHelper.LastModifiedDate(folderId, ref totalFilesDrive, RecursiveLevel(recursive, machine), filterIn, filterOut);
+                //var totalFilesDrive = 0;
+                //var lastModifiedDrive = driveHelper.LastModifiedDate(folderId, ref totalFilesDrive, RecursiveLevel(recursive, machine), filterIn, filterOut);
+                var task = driveHelper.LastModifiedDateAsync(folderId, RecursiveLevel(recursive, machine), filterIn, filterOut);
+                task.Wait();
+                var CloudFolderInfo = task.Result;
+                var lastModifiedDrive = CloudFolderInfo.LastModified;
+                var totalFilesDrive = CloudFolderInfo.TotalFiles;
+
                 var totalFilesLocal = 0;
                 var lastModifiedLocal = ICloudDriveHelper.LocalLastModifiedDate(folderPath, ref totalFilesLocal, RecursiveLevel(recursive, machine), filterIn, filterOut);
 

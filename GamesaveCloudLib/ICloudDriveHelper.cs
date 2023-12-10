@@ -11,6 +11,18 @@ namespace GamesaveCloudLib
     {
         public string _username;
 
+        public struct FolderInfo
+        {
+            public FolderInfo(DateTime lastModified, int totalFiles)
+            {
+                this.LastModified = lastModified;
+                this.TotalFiles = totalFiles;
+            }
+
+            public DateTime LastModified { get; set; }
+            public int TotalFiles { get; set; }
+        }
+
         protected IProgress<string> progress;
 
         public abstract ICloudFile GetFolder(string parentId, string name);
@@ -207,6 +219,86 @@ namespace GamesaveCloudLib
 
             return lastModified;
         }
+
+        public async Task<FolderInfo> LastModifiedDateAsync(string folderId, int recursive, string filterIn, string filterOut, int level = 1)
+        {
+            
+            IList<ICloudFile> files;
+
+            DateTime lastModified = default;
+            FolderInfo result = new FolderInfo(lastModified, 0);
+
+            if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+            {
+                var allfiles = GetFiles(folderId);
+                files = FilterFiles(filterIn, filterOut, allfiles);
+            }
+            else
+            {
+                files = GetFiles(folderId);
+            }
+
+            if (files is not null && files.Count > 0)
+            {
+                result.TotalFiles += files.Count;
+                //totalFiles += files.Count;
+                foreach (var file in files)
+                {
+                    if (lastModified == default || file.ModifiedTime > lastModified)
+                    {
+                        lastModified = (DateTime)file.ModifiedTime;
+                        result.LastModified = lastModified;
+                    }
+                }
+            }
+
+            if (recursive == 0 || level < recursive)
+            {
+                IList<ICloudFile> folders;
+                //var folders = GetFolders(folderId);
+
+                if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
+                {
+                    var allfolders = GetFolders(folderId);
+                    folders = FilterFiles(filterIn, filterOut, allfolders);
+                }
+                else
+                {
+                    folders = GetFolders(folderId);
+                }
+
+                if (folders is not null && folders.Count > 0)
+                {                    
+                    //totalFiles += folders.Count;
+                    result.TotalFiles += folders.Count;
+                    var syncTasks = new List<Task>();
+                    foreach (var folder in folders)
+                    {
+                        var syncTask = Task.Run(() => LastModifiedDateAsync(folder.Id, recursive, filterIn, filterOut, level + 1));
+                        syncTasks.Add(syncTask);
+                    }
+                    while (syncTasks.Count > 0)
+                    {
+                        Task finishedTask = await Task.WhenAny(syncTasks);
+
+                        var subresult = await (Task<FolderInfo>)finishedTask;
+                        if (result.LastModified == default || subresult.LastModified > result.LastModified)
+                        {
+                            result.LastModified = subresult.LastModified;
+                        }
+                        result.TotalFiles += subresult.TotalFiles;
+
+                        syncTasks.Remove(finishedTask);
+                    }
+
+                }
+            }
+
+            return result;
+        }
+
+
+
         public static DateTime LocalLastModifiedDate(string folderPath, ref int totalFiles, int recursive, string filterIn, string filterOut, int level = 1)
         {
 
