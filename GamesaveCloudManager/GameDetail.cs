@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -12,6 +13,7 @@ namespace GamesaveCloudManager
         DataTable? dtSavegame;
         readonly string mode;
         bool updateMaster = true;
+        bool processrowchanged = true;
         readonly IGDBHelper igdbHelper;
 
         readonly string queryPath = "select game_id, savegame_id as 'Id', path as 'Path', filter as 'Filter', filter_out as 'Filter Out', machine, recursive from savegame where game_id = @game_id order by savegame_id";
@@ -116,6 +118,8 @@ namespace GamesaveCloudManager
 
         private void dataGridViewPaths_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
+            if (!processrowchanged) return;
+
             if (dataGridViewPaths.SelectedRows.Count == 1)
             {
                 buttonDelete.Enabled = true;
@@ -171,13 +175,16 @@ namespace GamesaveCloudManager
         {
             if (dtSavegame != null && updateMaster)
             {
+                updateMaster = false;
+                processrowchanged = false;
+
                 DataRow[] foundRows = dtSavegame.Select("Id = " + dataGridViewPaths.SelectedRows[0].Cells["Id"].Value.ToString());
                 if (foundRows != null && foundRows.Length == 1)
                 {
+                    DataGridViewRow gridrow = dataGridViewPaths.CurrentRow;
                     int index = dtSavegame.Rows.IndexOf(foundRows[0]);
-
+                    
                     dtSavegame.Rows[index]["Path"] = textBoxPath.Text;
-
                     dtSavegame.Rows[index]["Filter"] = textBoxFilter.Text;
                     dtSavegame.Rows[index]["Filter Out"] = textBoxFilterOut.Text;
 
@@ -198,8 +205,15 @@ namespace GamesaveCloudManager
                     {
                         dtSavegame.Rows[index]["recursive"] = 0;
                     }
+                    
+                    dataGridViewPaths.ClearSelection();
+                    dataGridViewPaths.Rows[gridrow.Index].Selected = true;
+                    dataGridViewPaths.CurrentCell = dataGridViewPaths[1, gridrow.Index];
 
                 }
+
+                processrowchanged = true;
+                updateMaster = true;
             }
         }
 

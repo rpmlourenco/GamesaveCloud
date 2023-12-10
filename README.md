@@ -1,7 +1,10 @@
 # GamesaveCloud
 
 Todo:
+- fix bug multiple path edit (death stranding)
+- add option in manager to backup/restore playnite
 - implement machine config set up on second pc
+- add instructions how to set up machine config, all pcs must have all machine folders
 - fix idgb client secret expire
 - check why not in sync after sync playnite in itx
 - check if path exists before save
