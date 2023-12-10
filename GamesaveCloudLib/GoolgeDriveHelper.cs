@@ -299,6 +299,35 @@ namespace GamesaveCloudLib
 
         }
 
+
+        public override async Task<ICloudFile> NewFolderAsync(string name, string parentId, DateTime createdTime = default, DateTime modifiedTime = default)
+        {
+
+            var plist = new List<string>
+            {
+                parentId // Set parent driveFolder
+            };
+
+            var folder = new Google.Apis.Drive.v3.Data.File
+            {
+                Name = name,
+                MimeType = "application/vnd.google-apps.folder",
+                Parents = plist
+            };
+            if (createdTime != default)
+            {
+                folder.CreatedTime = createdTime;
+            }
+            if (modifiedTime != default)
+            {
+                folder.ModifiedTime = modifiedTime;
+            }
+
+            var request = service.Files.Create(folder);
+            return new GoogleDriveFile(await request.ExecuteAsync());
+        }
+
+
         public override async Task<bool> UploadFileAsync(string filePath, string folderId, bool checkExists)
         {
 

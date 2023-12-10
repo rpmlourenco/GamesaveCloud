@@ -1,13 +1,12 @@
 # GamesaveCloud
 
 Todo:
-- add option in manager to backup/restore playnite
 - implement machine config set up on second pc
 - add instructions how to set up machine config, all pcs must have all machine folders
+- add option in manager to backup/restore playnite
 - fix idgb client secret expire
 - check why not in sync after sync playnite in itx
 - check if path exists before save
-- full async (files and folders together)
 - ask to delete cloud/local on game delete
 - refactor into game class
 - optimize initilizer, avoid connecting to cloud on local files delete
@@ -18,6 +17,7 @@ Todo:
 - delete permanently from onedrive
 
 Done:
+- full async (files and folders together) - improve performance in death stranding
 - fix bug multiple path edit (death stranding)
 - Create local backup when synchronizing from cloud
 - disable File Watcher when synchronizing from cloud and machine update

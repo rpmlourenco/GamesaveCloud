@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace GamesaveCloudLib
         public abstract Task<bool> UploadFileAsync(string filePath, string folderId, bool checkExists);
         public abstract Task<bool> DeleteFile(string itemId);
         public abstract ICloudFile NewFolder(string name, string parentId, DateTime createdTime = default, DateTime modifiedTime = default);
+        public abstract Task<ICloudFile> NewFolderAsync(string name, string parentId, DateTime createdTime = default, DateTime modifiedTime = default);
 
         public static ICloudFile FindFile(string name, IList<ICloudFile> files)
         {
@@ -522,10 +524,7 @@ namespace GamesaveCloudLib
 
         public async Task<bool> SyncFromLocalAsync(string folderPath, string folderId, int recursive, string filterIn, string filterOut, int level = 1)
         {
-            //Console.WriteLine("Synching " + folderPath);
-
-            // Delete files in drive which do not exist locally
-            // var files = GetFiles(folderId);
+            // Delete files in cloud which do not exist locally
             IList<ICloudFile> files;
             if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
             {
@@ -549,6 +548,7 @@ namespace GamesaveCloudLib
                 }
             }
 
+            // Delete folders in cloud which do not exist locally
             IList<ICloudFile> folders = null;
             if (recursive == 0 || level < recursive)
             {
@@ -578,7 +578,6 @@ namespace GamesaveCloudLib
 
 
             // Uploads non existing or different files
-            //string[] fileEntries = Directory.GetFiles(folderPath);
             string[] fileEntries;
             if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
             {
@@ -601,8 +600,9 @@ namespace GamesaveCloudLib
                     var driveFile = FindFile(Path.GetFileName(fileEntry), files);
                     if (driveFile is null)
                     {
-                        //Console.WriteLine("Uploading " + fileEntry);
-                        var uploadTask = UploadFileAsync(fileEntry, folderId, false);
+                        //Console.WriteLine(folderPath + ": Uploading new file " + fileEntry);
+                        //var uploadTask = UploadFileAsync(fileEntry, folderId, false);
+                        var uploadTask = Task.Run(() => UploadFileAsync(fileEntry, folderId, false));
                         uploadTasks.Add(uploadTask);
                     }
                     else
@@ -611,8 +611,9 @@ namespace GamesaveCloudLib
                         if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || driveFile.Size != size)
                         {
                             await DeleteFile(driveFile.Id);
-                            //Console.WriteLine("Uploading " + fileEntry);
-                            var uploadTask = UploadFileAsync(fileEntry, folderId, false);
+                            //Console.WriteLine(folderPath + ": Uploading modified file " + fileEntry);
+                            //var uploadTask = UploadFileAsync(fileEntry, folderId, false);
+                            var uploadTask = Task.Run(() => UploadFileAsync(fileEntry, folderId, false));
                             uploadTasks.Add(uploadTask);
                         }
                     }
@@ -620,7 +621,7 @@ namespace GamesaveCloudLib
                 while (uploadTasks.Count > 0)
                 {
                     Task finishedTask = await Task.WhenAny(uploadTasks);
-                    //Console.WriteLine("Upload completed");
+                    //Console.WriteLine(folderPath + ": Upload file completed");
                     await finishedTask;
                     uploadTasks.Remove(finishedTask);
                 }
@@ -628,7 +629,6 @@ namespace GamesaveCloudLib
 
             if (recursive == 0 || level < recursive)
             {
-                //string[] folderEntries = Directory.GetDirectories(folderPath);
                 string[] folderEntries;
                 if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
                 {
@@ -651,20 +651,24 @@ namespace GamesaveCloudLib
                         if (driveFolder is null)
                         {
                             // driveFolder = DriveNewFolder(service, folderName, folderId, Directory.GetCreationTime(folderEntry), Directory.GetLastWriteTime(folderEntry))
-                            driveFolderId = NewFolder(folderName, folderId).Id;
+                            //Console.WriteLine(folderPath + ": Creating new folder " + folderName);
+                            driveFolderId = (await NewFolderAsync(folderName, folderId)).Id;
                         }
                         else
                         {
                             driveFolderId = driveFolder.Id;
                         }
-                        //await SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filter);
-                        var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1);
-                        syncTasks.Add(syncTask);
+
+                        //Console.WriteLine(folderPath + ": Synchronising subdir " + folderEntry);
+                        var syncTask = Task.Run(() => SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1));
+                        //var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1);
+                        syncTasks.Add(syncTask);                        
+
                     }
                     while (syncTasks.Count > 0)
                     {
                         Task finishedTask = await Task.WhenAny(syncTasks);
-                        //Console.WriteLine("Sync completed");
+                        //Console.WriteLine(folderPath + ": Sync completed");
                         await finishedTask;
                         syncTasks.Remove(finishedTask);
                     }
@@ -766,7 +770,8 @@ namespace GamesaveCloudLib
                     if (!File.Exists(checkFile))
                     {
                         //Console.WriteLine("Downloading " + fileEntry.Name);
-                        var downloadTask = DownloadFileAsync(fileEntry, checkFile);
+                        //var downloadTask = DownloadFileAsync(fileEntry, checkFile);
+                        var downloadTask = Task.Run(() => DownloadFileAsync(fileEntry, checkFile));
                         downloadTasks.Add(downloadTask);
                     }
                     else
@@ -778,7 +783,8 @@ namespace GamesaveCloudLib
                         if (fileLastModified.ToString("yyyyMMdd HHmmss") != driveLastModified.ToString("yyyyMMdd HHmmss") || fileEntry.Size != size)
                         {
                             //Console.WriteLine("Downloading " + fileEntry.Name);
-                            var downloadTask = DownloadFileAsync(fileEntry, checkFile);
+                            //var downloadTask = DownloadFileAsync(fileEntry, checkFile);
+                            var downloadTask = Task.Run(() => DownloadFileAsync(fileEntry, checkFile));
                             downloadTasks.Add(downloadTask);
                         }
                     }
@@ -806,7 +812,8 @@ namespace GamesaveCloudLib
                         // Directory.SetLastWriteTime(checkFolder, driveFolder.ModifiedTime)
                     }
 
-                    var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut, level + 1);
+                    //var syncTask = SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut, level + 1);
+                    var syncTask = Task.Run(() => SyncFromDriveAsync(checkFolder, folder.Id, recursive, filterIn, filterOut, level + 1));
                     syncTasks.Add(syncTask);
                 }
                 while (syncTasks.Count > 0)

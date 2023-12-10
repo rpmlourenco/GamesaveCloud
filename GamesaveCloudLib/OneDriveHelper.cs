@@ -361,6 +361,33 @@ namespace GamesaveCloudLib
 
         }
 
+        public override async Task<ICloudFile> NewFolderAsync(string name, string parentId, DateTime createdTime = default, DateTime modifiedTime = default)
+        {
+            if (parentId.Equals("root")) { parentId = _rootId; }
+
+            var driveItem = new DriveItem
+            {
+                Name = name,
+                Folder = new Folder
+                {
+                },
+                AdditionalData = new Dictionary<string, object>()
+                {
+                    {"@microsoft.graph.conflictBehavior", "fail"}
+                }
+            };
+
+            DriveItem result = await _graphClient.Drives[_userDriveId].Items[parentId].Children.PostAsync(driveItem);
+
+            //var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[parentId].Children.PostAsync(driveItem));
+            //task.Wait();
+            if (result != null)
+            {
+                return new OneDriveFile(result);
+            }
+            else { return null; }
+        }
+
         public override async Task<bool> DeleteFile(string itemId)
         {
             await _graphClient.Drives[_userDriveId].Items[itemId].DeleteAsync();

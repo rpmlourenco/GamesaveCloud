@@ -6,7 +6,7 @@
     },
     "GamesaveCloudCLI 1": {
       "commandName": "Project",
-      "commandLineArgs": "-t \"Playnite\" -d auto -s onedrive -a n"
+      "commandLineArgs": "-t \"Death Stranding: Director's Cut\" -d fromcloud -s onedrive -a y"
     }
   }
 }
