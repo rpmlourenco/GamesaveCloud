@@ -1,7 +1,6 @@
 # GamesaveCloud
 
 Todo:
-- fix bug multiple path edit (death stranding)
 - add option in manager to backup/restore playnite
 - implement machine config set up on second pc
 - add instructions how to set up machine config, all pcs must have all machine folders
@@ -19,6 +18,7 @@ Todo:
 - delete permanently from onedrive
 
 Done:
+- fix bug multiple path edit (death stranding)
 - Create local backup when synchronizing from cloud
 - disable File Watcher when synchronizing from cloud and machine update
 - Scroll to bottom
