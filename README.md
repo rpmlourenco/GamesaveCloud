@@ -1,6 +1,8 @@
 # GamesaveCloud
 
 Todo:
+- filter files in/out when copying lastest machine
+- process folders before files for increased performance
 - implement machine config set up on second pc
 - add instructions how to set up machine config, all pcs must have all machine folders
 - add option in manager to backup/restore playnite
@@ -14,7 +16,7 @@ Todo:
 - refactor ui async calls
 - button icons
 - documentation
-- delete permanently from onedrive
+- delete permanently from onedrive?
 
 Done:
 - full async (files and folders together) - improve performance in death stranding
