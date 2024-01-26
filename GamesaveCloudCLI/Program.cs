@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
+using System.Diagnostics;
 
 namespace GamesaveCloudCLI
 {
@@ -17,6 +18,7 @@ namespace GamesaveCloudCLI
             bool help = false;
             string syncDirection = null;
             bool async = true;
+            bool playnite = false;
             try
             {
                 var options = new OptionSet() {
@@ -25,6 +27,7 @@ namespace GamesaveCloudCLI
                     { "s|service=", "The {SERVICE} to use. valid options are: " + $"{String.Join(", ",Synchronizer.CloudServices)}", v => cloudService = v },
                     { "d|direction=", "The {DIRECTION} of the synchronization (auto, tocloud, fromcloud).", v => syncDirection = v },
                     { "a|async=", "Asynchronous operation - downloads/uploads in parallel (yes/no). Default is yes.", v => async = !(v.ToLower() == "no" || v.ToLower() == "n") },
+                    { "p|playnite=", "Launch Playnite Fullscreen App after sync (yes/no). Default is no.", v => playnite = !(v.ToLower() == "no" || v.ToLower() == "n") },
                     { "h|?|help", v => help = v != null },
                 };
                 List<string> extra;
@@ -81,7 +84,7 @@ namespace GamesaveCloudCLI
                     return;
                 }
 
-                LaunchSynchronizer(gameId, gameTitle, cloudService, syncDirection, async);
+                LaunchSynchronizer(gameId, gameTitle, cloudService, syncDirection, async, playnite);
             }
             catch (Exception e)
             {
@@ -102,7 +105,7 @@ namespace GamesaveCloudCLI
             p.WriteOptionDescriptions(Console.Out);
         }
 
-        static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection, bool async = true)
+        static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection, bool async = true, bool playnite = false)
         {
             /*
             Logger logger = new();
@@ -117,6 +120,11 @@ namespace GamesaveCloudCLI
             {
                 sync.Initialize(cloudService);
                 sync.Sync(gameId, gameName, syncDirection, async);
+
+                if (playnite)
+                {
+                    Process.Start("C:\\Portable Apps\\Playnite\\Playnite.FullscreenApp.exe");
+                }                
 
             }
             catch (Exception ex)

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using Tavis.UriTemplates;
+using System.Diagnostics;
 using Logger = GamesaveCloudLib.Logger;
 
 namespace GamesaveCloudCLI;
@@ -236,6 +236,11 @@ public class Synchronizer
 
             game_id = sqlite_datareader.GetValue(0);
             title = sqlite_datareader.GetString(1);
+
+            if (game_id.ToString().Equals("900000000"))
+            {
+                WaitPlaynite();
+            }
 
             Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": " + title + " ");
 
@@ -771,6 +776,25 @@ public class Synchronizer
         {
             return false;
         }
+    }
+
+    private void WaitPlaynite()
+    {
+        Process[] pname1;
+        Process[] pname2;
+        do
+        {
+            pname1 = Process.GetProcessesByName("Playnite.DesktopApp");
+            pname2 = Process.GetProcessesByName("Playnite.FullscreenApp");
+
+            if (pname1.Length != 0 || pname2.Length != 0)
+            {
+                Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Waiting for Playnite to terminate" + Environment.NewLine);
+                System.Threading.Thread.Sleep(1000);
+            }
+
+        } while (pname1.Length != 0 || pname2.Length != 0);
+
     }
 
     public static bool IsValidCloudService(string cloudServiceName)
