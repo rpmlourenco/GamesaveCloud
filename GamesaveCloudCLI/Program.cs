@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
-using System.Diagnostics;
 
 namespace GamesaveCloudCLI
 {
@@ -123,7 +122,7 @@ namespace GamesaveCloudCLI
 
                 if (playnite)
                 {
-                    Process.Start("C:\\Portable Apps\\Playnite\\Playnite.FullscreenApp.exe");
+                    System.Diagnostics.Process.Start("C:\\Portable Apps\\Playnite\\Playnite.FullscreenApp.exe");
                 }                
 
             }

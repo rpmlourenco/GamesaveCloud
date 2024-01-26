@@ -840,12 +840,12 @@ public class Synchronizer
 
     private void WaitPlaynite()
     {
-        Process[] pname1;
-        Process[] pname2;
+        System.Diagnostics.Process[] pname1;
+        System.Diagnostics.Process[] pname2;
         do
         {
-            pname1 = Process.GetProcessesByName("Playnite.DesktopApp");
-            pname2 = Process.GetProcessesByName("Playnite.FullscreenApp");
+            pname1 = System.Diagnostics.Process.GetProcessesByName("Playnite.DesktopApp");
+            pname2 = System.Diagnostics.Process.GetProcessesByName("Playnite.FullscreenApp");
 
             if (pname1.Length != 0 || pname2.Length != 0)
             {
