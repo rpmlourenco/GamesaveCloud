@@ -1,4 +1,5 @@
 ﻿using GamesaveCloudLib;
+using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Logger = GamesaveCloudLib.Logger;
@@ -310,7 +312,13 @@ public class Synchronizer
                 if (gamesaveFolder is not null)
                 {
 
+                    if (machine == 1)
+                    {
+                        UpdateMachineBeforeSync(path, gamesaveFolder.Id, recursive == 1, filterIn, filterOut);
+                    }
+
                     var syncResult = SyncPath(path, gamesaveFolder.Id, performBackup, game_id.ToString() + "_" + savegame_id.ToString() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss"), recursive == 1, machine == 1, filterIn, filterOut, syncDirection, async);
+ 
                     if (syncResult == -1)
                     {
                         if (machine == 1)
@@ -692,6 +700,58 @@ public class Synchronizer
         return sPath.Replace(variable, Environment.GetEnvironmentVariable(variable.Replace("%", "")));
 
     }
+
+
+    public void UpdateMachineBeforeSync(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
+    {
+
+        DateTime lastModified = default;
+        string lastModifiedPath = null;
+
+        var localFolders = Directory.GetDirectories(folderPath);
+        for (int i = 0; i < localFolders.Length; i++)
+        {
+            localFolders[i] = Path.GetFileName(localFolders[i]);
+        }
+        localFolders = ICloudDriveHelper.FilterFiles(filterIn, filterOut, localFolders);
+
+        if (localFolders.Length > 1)
+        {
+            List<String> newFolders = new List<String>();
+            IList<ICloudFile> cloudFolders  = driveHelper.GetFolders(folderId);
+            cloudFolders = ICloudDriveHelper.FilterFiles(filterIn, filterOut, cloudFolders);
+
+            if (localFolders.Count() > cloudFolders.Count()) 
+            {
+                foreach (var localFolder in localFolders)
+                {
+                    if (ICloudDriveHelper.FindFile(localFolder, cloudFolders) == null)
+                    {
+                        newFolders.Add(localFolder);
+                    }
+                    else
+                    {
+                        var totalFiles = 0;
+                        var folderLastModified = ICloudDriveHelper.LocalLastModifiedDate(folderPath + "\\" + localFolder, ref totalFiles, RecursiveLevel(recursive, true), filterIn, filterOut);
+                        if (lastModified == default || folderLastModified > lastModified)
+                        {
+                            lastModified = folderLastModified;
+                            lastModifiedPath = localFolder;
+                        }
+                    }
+                }
+
+                foreach (var newFolder in newFolders)
+                {
+
+                    CopyDirectory(folderPath + "\\" + lastModifiedPath, folderPath + "\\" + newFolder, true, RecursiveLevel(recursive, true), filterIn, filterOut);
+                }
+            }
+
+        }
+
+    }
+
 
     public static void UpdateMachine(string folderPath, bool recursive, string filterIn, string filterOut)
     {
