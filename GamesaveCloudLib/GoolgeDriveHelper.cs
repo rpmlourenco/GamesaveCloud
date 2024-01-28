@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GamesaveCloudLib
@@ -32,11 +33,11 @@ namespace GamesaveCloudLib
     {
 
         private readonly UserCredential credentials;
-        private readonly DriveService service;
+        private readonly DriveService service;        
 
-
-        public GoolgeDriveHelper()
+        public GoolgeDriveHelper(string workingPath)
         {
+            this.workingPath = workingPath;
             string resourceName = Assembly.GetExecutingAssembly().GetManifestResourceNames().Single(str => str.EndsWith("googledrive_secrets.json"));
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
 
@@ -44,15 +45,14 @@ namespace GamesaveCloudLib
             service = OpenService(credentials);
         }
 
-        private static UserCredential Authenticate(Stream stream)
+        private UserCredential Authenticate(Stream stream)
         {
             UserCredential credential;
 
             using (stream)
             {
-                //string pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                //string pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-                var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+                //var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+                var pathCurrent = Path.GetDirectoryName(workingPath);
                 string pathCredential = Path.Combine(pathCurrent, "credential");
                 Directory.CreateDirectory(pathCredential);
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.FromStream(stream).Secrets, new[] { DriveService.Scope.Drive }, "user", System.Threading.CancellationToken.None, new FileDataStore(pathCredential, true)).Result;

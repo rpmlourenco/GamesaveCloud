@@ -10,6 +10,7 @@ namespace GamesaveCloudLib
     public abstract class ICloudDriveHelper
     {
         public string _username;
+        public string workingPath;
 
         public struct FolderInfo
         {

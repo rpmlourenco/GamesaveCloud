@@ -1,5 +1,4 @@
-﻿using GamesaveCloudLib;
-using Microsoft.Graph.Models;
+﻿using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Logger = GamesaveCloudLib.Logger;
 
-namespace GamesaveCloudCLI;
+namespace GamesaveCloudLib;
 
 public class Synchronizer
 {
@@ -40,13 +39,23 @@ public class Synchronizer
     private bool performBackup;
     private readonly IProgress<string> progress;
     private readonly Logger logger;
+    public string workingPath;
 
     [SupportedOSPlatform("windows")]
-    public Synchronizer(IProgress<string> progress)
+    public Synchronizer(IProgress<string> progress, string workingPath = null)
     {
+        if (workingPath == null || !Directory.Exists(workingPath))
+        {
+            this.workingPath = Environment.ProcessPath;
+        } 
+        else
+        {
+            this.workingPath = workingPath;            
+        }
+
         if (progress == null)
         {
-            logger = new();
+            logger = new(workingPath);
         }
         else
         {
@@ -64,7 +73,7 @@ public class Synchronizer
             var defaultCloudService = GetDefaultCloudService();
             if (string.IsNullOrEmpty(defaultCloudService))
             {
-                IniFile iniFile = new();
+                IniFile iniFile = new(workingPath);
                 iniFile.Write("DefaultCloudService", fallbackCloudService);
                 this.cloudService = fallbackCloudService;
                 Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Default cloud service set as " + fallbackCloudService + "." + Environment.NewLine);
@@ -82,16 +91,16 @@ public class Synchronizer
 
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-        var pathAtual = Path.GetDirectoryName(Environment.ProcessPath);
+        var pathAtual = Path.GetDirectoryName(workingPath);
 
         var startTime = DateTime.Now;
         Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Connecting to " + this.cloudService + "... " + Environment.NewLine);
 
         driveHelper = this.cloudService switch
         {
-            "googledrive" => new GoolgeDriveHelper(),
-            "onedrive" => new OneDriveHelper(progress, clientApp, handle),
-            _ => new OneDriveHelper(progress, clientApp, handle),
+            "googledrive" => new GoolgeDriveHelper(workingPath),
+            "onedrive" => new OneDriveHelper(workingPath, progress, clientApp, handle),
+            _ => new OneDriveHelper(workingPath, progress, clientApp, handle),
         };
 
         gamesaveRootFolder = driveHelper.GetFolder("root", "GamesaveCloud");
@@ -111,7 +120,7 @@ public class Synchronizer
             Directory.CreateDirectory(pathConfigFolder);
         }
 
-        IniFile ini = new();
+        IniFile ini = new(workingPath);
         _ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, ini.SFilename, null, "auto", true);
         pathDatabaseFile = Path.Combine(pathConfigFolder, databaseFile);
 
@@ -864,9 +873,9 @@ public class Synchronizer
         return false;
     }
 
-    public static string GetDefaultCloudService()
+    public string GetDefaultCloudService()
     {
-        IniFile ini = new();
+        IniFile ini = new(workingPath);
         var defaultCloudService = ini.Read("DefaultCloudService");
 
         if (IsValidCloudService(defaultCloudService))
@@ -880,11 +889,11 @@ public class Synchronizer
 
     }
 
-    public static string GetPathDatabaseFile()
+    public string GetPathDatabaseFile()
     {
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-        var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+        var pathCurrent = Path.GetDirectoryName(workingPath);
         var pathConfigFolder = Path.Combine(pathCurrent, "config");
         return Path.Combine(pathConfigFolder, databaseFile);
     }

@@ -11,6 +11,7 @@ namespace GamesaveCloudLib
         readonly string sPath;
         readonly string sFilename;
         readonly string EXE = Assembly.GetExecutingAssembly().GetName().Name;
+        public string workingPath;
 
         public string SFilename => sFilename;
 
@@ -22,11 +23,10 @@ namespace GamesaveCloudLib
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
 
-        public IniFile(string IniPath = null)
+        public IniFile(string workingPath, string IniPath = null)
         {
-            //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-            var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+            this.workingPath = workingPath; 
+            var pathCurrent = Path.GetDirectoryName(this.workingPath);
             var pathConfigFolder = Path.Combine(pathCurrent, "config");
             if (!Directory.Exists(pathConfigFolder))
             {

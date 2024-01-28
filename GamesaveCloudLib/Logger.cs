@@ -8,14 +8,16 @@ namespace GamesaveCloudLib
         private readonly StreamWriter logFile;
         static readonly string logDir = "logs";
         static readonly string logFileName = "GamesaveCloud.log";
+        public string workingPath;
 
-        public Logger()
+        public Logger(string workingPath)
         {
-            string assembly = Environment.ProcessPath;
+            this.workingPath = workingPath;    
+            //string workingPath = Environment.ProcessPath;
 
-            if (assembly != null)
+            if (workingPath != null)
             {
-                var assemblyPath = Path.GetDirectoryName(assembly);
+                var assemblyPath = Path.GetDirectoryName(workingPath);
                 if (assemblyPath != null)
                 {
                     string pathLog = Path.Combine(assemblyPath, logDir);

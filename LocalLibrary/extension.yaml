@@ -1,0 +1,7 @@
+﻿Id: LocalLibrary_56fa97bf-2401-4e7d-adeb-5bca4311a1c9
+Name: Local Library Importer
+Author: Rui Martins
+Version: 1.0
+Module: LocalLibrary.dll
+Type: GameLibrary
+Icon: icon.png

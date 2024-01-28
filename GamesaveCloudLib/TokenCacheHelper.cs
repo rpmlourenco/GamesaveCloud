@@ -35,16 +35,32 @@ namespace GamesaveCloudLib
 {
     public static class TokenCacheHelper
     {
-        static TokenCacheHelper()
+        //public string workingPath;
+        private static string workingPath { get; set; }
+
+        public static void Initialize(string aWorkingPath)
         {
-            //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-            var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+            workingPath = aWorkingPath;
+            var pathCurrent = Path.GetDirectoryName(workingPath);
             string pathCredential = Path.Combine(pathCurrent, "credential");
             Directory.CreateDirectory(pathCredential);
-
-            //string exe = Path.GetFileNameWithoutExtension(System.Environment.ProcessPath);
             CacheFilePath = Path.Combine(pathCredential, "OneDrive.msalcache.bin3");
+        }
+
+        static TokenCacheHelper()
+        {
+            if (workingPath != null)
+            {
+                //var workingPath = Environment.ProcessPath;
+                //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                //string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
+                var pathCurrent = Path.GetDirectoryName(workingPath);
+                string pathCredential = Path.Combine(pathCurrent, "credential");
+                Directory.CreateDirectory(pathCredential);
+
+                //string exe = Path.GetFileNameWithoutExtension(System.Environment.ProcessPath);
+                CacheFilePath = Path.Combine(pathCredential, "OneDrive.msalcache.bin3");
+            }
         }
 
         /// <summary>

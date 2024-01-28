@@ -1,4 +1,4 @@
-using GamesaveCloudCLI;
+using GamesaveCloudLib;
 using Microsoft.Identity.Client;
 using System.Data;
 using System.Data.SQLite;
@@ -57,6 +57,7 @@ namespace GamesaveCloudManager
         private async void StartSync(Synchronizer sync, IPublicClientApplication app, IntPtr handle)
         {
             labelStatus.Text = "Synchronizing database";
+            pathDatabaseFile = sync.GetPathDatabaseFile();
             await Task.Run(() => SyncBackgroundTask(sync, app, handle)).ContinueWith(EndSync, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
@@ -64,7 +65,7 @@ namespace GamesaveCloudManager
         {
             labelStatus.Invoke((MethodInvoker)delegate { labelStatus.Text = "Database Synchronized"; });
 
-            pathDatabaseFile = Synchronizer.GetPathDatabaseFile();
+            //pathDatabaseFile = Synchronizer.GetPathDatabaseFile();
             conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
             cmdGame = new(queryGame, conn);
             adapter = new(cmdGame);

@@ -1,5 +1,5 @@
-﻿using GamesaveCloudCLI;
-using GamesaveCloudLib;
+﻿using GamesaveCloudLib;
+using System;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -8,7 +8,7 @@ namespace GamesaveCloudManager
     {
         readonly List<long> games;
         Logger? logger;
-        private readonly string defaultCloudService = Synchronizer.GetDefaultCloudService();
+        private readonly string defaultCloudService = new Synchronizer(null).GetDefaultCloudService();
 
         public SyncForm(List<long> games)
         {
@@ -41,7 +41,7 @@ namespace GamesaveCloudManager
             this.buttonDeleteCloud.Enabled = false;
             try
             {
-                logger = new();
+                logger = new(Environment.ProcessPath);
                 var progress = new Progress<string>(msg =>
                 {
                     textBox1.AppendText(msg);

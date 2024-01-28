@@ -57,12 +57,14 @@ namespace GamesaveCloudLib
         static readonly string[] scopes = new string[] { "user.read", "Files.ReadWrite.All" };
 
         [SupportedOSPlatform("windows")]
-        public OneDriveHelper(IProgress<string> progress, IPublicClientApplication clientApplication = null, IntPtr? handle = null)
+        public OneDriveHelper(string workingPath, IProgress<string> progress, IPublicClientApplication clientApplication = null, IntPtr? handle = null)
         {
+            TokenCacheHelper.Initialize(workingPath);
+            this.workingPath = workingPath;
             this.progress = progress;
             //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             //string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-            var pathCurrent = Path.GetDirectoryName(Environment.ProcessPath);
+            var pathCurrent = Path.GetDirectoryName(this.workingPath);
             pathCredential = Path.Combine(pathCurrent, "credential");
 
             howToSign = 2;
@@ -98,7 +100,7 @@ namespace GamesaveCloudLib
             {
                 _clientApp = clientApplication;
             }
-
+            
             TokenCacheHelper.EnableSerialization(_clientApp.UserTokenCache);
 
             //TEST 24.04 SignInAndInitializeGraphServiceClient().Wait();
