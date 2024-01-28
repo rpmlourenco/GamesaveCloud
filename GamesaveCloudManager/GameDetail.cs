@@ -2,12 +2,14 @@
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
 {
     public partial class GameDetail : Form
     {
+        readonly string gamesFolder;
         readonly DataRow gameDataRow;
         readonly SQLiteConnection conn;
         DataTable? dtSavegame;
@@ -17,18 +19,22 @@ namespace GamesaveCloudManager
         readonly IGDBHelper igdbHelper;
 
         readonly string queryPath = "select game_id, savegame_id as 'Id', path as 'Path', filter as 'Filter', filter_out as 'Filter Out', machine, recursive from savegame where game_id = @game_id order by savegame_id";
-        readonly string queryGameUpdate = "update game set title = @title, active = @active where game_id = @game_id";
-        readonly string queryGameInsert = "INSERT INTO game (game_id,title,active) VALUES (@game_id,@title,@active)";
+        readonly string queryGameUpdate = "update game set title = @title, active = @active, platform = @platform, exec_path = @exec_path, install_path = @install_path, admin = @admin, tdvision = @tdvision, arguments = @arguments, stop_monitor = @stop_monitor where game_id = @game_id";
+        readonly string queryGameInsert = "insert into game (game_id,title,active, platform, exec_path, install_path, admin) VALUES (@game_id,@title,@active,@platform,@exec_path,@install_path,@admin,@tdvision,@arguments, @stop_monitor)";
         readonly string queryPathDelete = "delete from savegame where game_id = @game_id";
-        readonly string queryPathInsert = "INSERT INTO savegame (game_id,savegame_id,path,machine,recursive,filter,filter_out) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter,@filter_out)";
+        readonly string queryPathInsert = "insert into savegame (game_id,savegame_id,path,machine,recursive,filter,filter_out) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter,@filter_out)";
 
-        public GameDetail(ref DataRow row, SQLiteConnection conn, string mode, IGDBHelper igdbHelper)
+        public GameDetail(ref DataRow row, SQLiteConnection conn, string mode, IGDBHelper igdbHelper, string? gamesFolder)
         {
             InitializeComponent();
             this.gameDataRow = row;
             this.conn = conn;
             this.mode = mode;
             this.igdbHelper = igdbHelper;
+            if (gamesFolder != null)
+                this.gamesFolder = gamesFolder;
+            else
+                this.gamesFolder = @"C:\Games";
             groupBoxPath.Visible = false;
         }
 
@@ -41,7 +47,7 @@ namespace GamesaveCloudManager
                 buttonIGDBId.Enabled = false;
                 this.Text = "Edit Game " + gameDataRow["Id"].ToString();
 
-                if ((Int64)gameDataRow["Active"] == 1)
+                if (gameDataRow["Active"] == System.DBNull.Value || (Int64)gameDataRow["Active"] == 1)
                 {
                     checkBoxActive.Checked = true;
                 }
@@ -49,6 +55,35 @@ namespace GamesaveCloudManager
                 {
                     checkBoxActive.Checked = false;
                 }
+
+                if (gameDataRow["admin"] == System.DBNull.Value || (Int64)gameDataRow["admin"] == 0)
+                {
+                    checkBoxAdmin.Checked = false;
+                }
+                else
+                {
+                    checkBoxAdmin.Checked = true;
+                }
+
+                if (gameDataRow["tdvision"] == System.DBNull.Value || (Int64)gameDataRow["tdvision"] == 0)
+                {
+                    checkBox3DVision.Checked = false;
+                }
+                else
+                {
+                    checkBox3DVision.Checked = true;
+                }
+
+                if (gameDataRow["stop_monitor"] == System.DBNull.Value || (Int64)gameDataRow["stop_monitor"] == 0)
+                {
+                    checkBoxStopMonitor.Checked = false;
+                }
+                else
+                {
+                    checkBoxStopMonitor.Checked = true;
+                }
+
+
             }
             else
             {
@@ -56,8 +91,16 @@ namespace GamesaveCloudManager
                 buttonIGDBId.Enabled = true;
                 this.Text = "Add Game";
                 checkBoxActive.Checked = true;
+                checkBoxAdmin.Checked = false;
+                checkBox3DVision.Checked = false;
             }
             textBoxTitle.Text = gameDataRow["Title"].ToString();
+
+            comboBoxPlatform.Text = gameDataRow["platform"].ToString();
+            comboBoxPlatform.DropDownStyle = ComboBoxStyle.DropDownList;
+            textBoxExecPath.Text = gameDataRow["exec_path"].ToString();
+            textBoxInstallPath.Text = gameDataRow["install_path"].ToString();
+            textBoxArguments.Text = gameDataRow["arguments"].ToString();
 
             SQLiteCommand cmd = new(queryPath, conn);
             dtSavegame = new();
@@ -183,7 +226,7 @@ namespace GamesaveCloudManager
                 {
                     DataGridViewRow gridrow = dataGridViewPaths.CurrentRow;
                     int index = dtSavegame.Rows.IndexOf(foundRows[0]);
-                    
+
                     dtSavegame.Rows[index]["Path"] = textBoxPath.Text;
                     dtSavegame.Rows[index]["Filter"] = textBoxFilter.Text;
                     dtSavegame.Rows[index]["Filter Out"] = textBoxFilterOut.Text;
@@ -205,7 +248,7 @@ namespace GamesaveCloudManager
                     {
                         dtSavegame.Rows[index]["recursive"] = 0;
                     }
-                    
+
                     dataGridViewPaths.ClearSelection();
                     dataGridViewPaths.Rows[gridrow.Index].Selected = true;
                     dataGridViewPaths.CurrentCell = dataGridViewPaths[1, gridrow.Index];
@@ -327,6 +370,20 @@ namespace GamesaveCloudManager
                         long active = 0;
                         if (checkBoxActive.Checked) { active = 1; }
                         cmd.Parameters.AddWithValue("@active", active);
+                        cmd.Parameters.AddWithValue("@platform", comboBoxPlatform.Text);
+                        cmd.Parameters.AddWithValue("@exec_path", textBoxExecPath.Text);
+                        cmd.Parameters.AddWithValue("@install_path", textBoxInstallPath.Text);
+                        long admin = 0;
+                        if (checkBoxAdmin.Checked) { admin = 1; }
+                        cmd.Parameters.AddWithValue("@admin", admin);
+                        long tdvision = 0;
+                        if (checkBox3DVision.Checked) { tdvision = 1; }
+                        cmd.Parameters.AddWithValue("@tdvision", tdvision);
+                        cmd.Parameters.AddWithValue("@arguments", textBoxArguments.Text);
+                        long stop_monitor = 0;
+                        if (checkBoxStopMonitor.Checked) { stop_monitor = 1; }
+                        cmd.Parameters.AddWithValue("@stop_monitor", stop_monitor);
+
                         cmd.Parameters.AddWithValue("@game_id", gameDataRow["Id"]);
                         cmd.ExecuteNonQuery();
                     }
@@ -339,6 +396,20 @@ namespace GamesaveCloudManager
                         long active = 0;
                         if (checkBoxActive.Checked) { active = 1; }
                         cmd.Parameters.AddWithValue("@active", active);
+                        cmd.Parameters.AddWithValue("@platform", comboBoxPlatform.Text);
+                        cmd.Parameters.AddWithValue("@exec_path", textBoxExecPath.Text);
+                        cmd.Parameters.AddWithValue("@install_path", textBoxInstallPath.Text);
+                        long admin = 0;
+                        if (checkBoxAdmin.Checked) { admin = 1; }
+                        cmd.Parameters.AddWithValue("@admin", admin);
+                        long tdvision = 0;
+                        if (checkBox3DVision.Checked) { tdvision = 1; }
+                        cmd.Parameters.AddWithValue("@tdvision", tdvision);
+                        cmd.Parameters.AddWithValue("@arguments", textBoxArguments.Text);
+                        long stop_monitor = 0;
+                        if (checkBoxStopMonitor.Checked) { stop_monitor = 1; }
+                        cmd.Parameters.AddWithValue("@stop_monitor", stop_monitor);
+
                         cmd.Parameters.AddWithValue("@game_id", gameDataRow["Id"]);
                         cmd.ExecuteNonQuery();
                     }
@@ -400,6 +471,25 @@ namespace GamesaveCloudManager
                 textBoxTitle.Focus();
                 return false;
             }
+            if (String.IsNullOrEmpty(comboBoxPlatform.Text))
+            {
+                MessageBox.Show("Game platform must not be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                comboBoxPlatform.Focus();
+                return false;
+            }
+            if (comboBoxPlatform.Text.Equals("PC (Windows)") && String.IsNullOrEmpty(textBoxExecPath.Text))
+            {
+                MessageBox.Show("Game executable path must not be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBoxExecPath.Focus();
+                return false;
+            }
+            if (comboBoxPlatform.Text.Equals("PC (Windows)") && String.IsNullOrEmpty(textBoxInstallPath.Text))
+            {
+                MessageBox.Show("Game installation path must not be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBoxInstallPath.Focus();
+                return false;
+            }
+
             if (dtSavegame != null)
             {
                 foreach (DataRow dataRow in dtSavegame.Rows)
@@ -483,6 +573,59 @@ namespace GamesaveCloudManager
             }
         }
 
+        private void buttonExecFileBrowser_Click(object sender, EventArgs e)
+        {
+
+            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            {
+                InitialDirectory = @"D:\Games",
+                Title = "Browse Executable Files",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "exe",
+                Filter = "Executable files|*.exe;*.cmd;*.bat;*.lnk|All files (*.*)|*.*",
+                FilterIndex = 1,
+                RestoreDirectory = true,
+
+                ReadOnlyChecked = true,
+                ShowReadOnly = true
+            };
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!openFileDialog1.FileName.StartsWith(openFileDialog1.FileName.Substring(0, 1) + gamesFolder.Substring(1, gamesFolder.Length - 1), StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("Executable must be inside games folder.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    textBoxTitle.Focus();
+                    return;
+                }
+
+                var fullExecPath = openFileDialog1.FileName.Substring(gamesFolder.Length + 1, openFileDialog1.FileName.Length - gamesFolder.Length - 1);
+                var split = fullExecPath.Split("\\");
+                textBoxInstallPath.Text = split.First();
+                split[0] = "{InstallDir}";
+                textBoxExecPath.Text = String.Join("\\", split); ;
+            }
+
+        }
+
+        private void buttonInstallFolderBrowser_Click(object sender, EventArgs e)
+        {
+            using var fbd = new FolderBrowserDialog();
+            fbd.InitialDirectory = @"D:\Games";
+            DialogResult result = fbd.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+            {
+                textBoxInstallPath.Text = fbd.SelectedPath;
+                if (textBoxExecPath.Text.Contains("{InstallPath}"))
+                {
+                    textBoxExecPath.Text = "";
+                }
+            }
+        }
     }
 }
 #pragma warning restore IDE1006 // Estilos de Nomenclatura

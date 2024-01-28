@@ -10,6 +10,7 @@ namespace GamesaveCloudManager
 {
     public partial class Game : Form
     {
+        string? gamesFolder;
         DataTable? dtGame;
         SQLiteConnection? conn;
         SQLiteCommand? cmdGame;
@@ -18,8 +19,10 @@ namespace GamesaveCloudManager
 
         readonly string queryGame = "select game_id as 'Id', title as 'Title', " +
             "(select path from savegame s where s.game_id = g.game_id and s.savegame_id = (select min(savegame_id) from savegame s2 where s2.game_id = g.game_id)) as 'Path', " +
-            "active from game g order by title";
+            "active, platform, exec_path, install_path, admin, tdvision, arguments, stop_monitor from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
+        readonly string queryGetGamesFolder = "select value from parameter where parameter_id = 'GAMES_FOLDER'";
+
         string? pathDatabaseFile;
 
         bool closing = false;
@@ -65,6 +68,18 @@ namespace GamesaveCloudManager
             conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
             cmdGame = new(queryGame, conn);
             adapter = new(cmdGame);
+
+            conn.Open();
+            var sqlite_cmd = conn.CreateCommand();
+            sqlite_cmd.CommandText = queryGetGamesFolder;
+            var sqlite_datareader = sqlite_cmd.ExecuteReader();
+            while (sqlite_datareader.Read())
+            {
+                gamesFolder = sqlite_datareader.GetString(0);
+
+            }
+            sqlite_datareader.Close();
+            conn.Close();
             LoadData();
         }
 
@@ -127,7 +142,20 @@ namespace GamesaveCloudManager
         {
             try
             {
+                dataGridGame.Columns.Remove("platform");
+                dataGridGame.Columns.Remove("exec_path");
+                dataGridGame.Columns.Remove("install_path");
+                dataGridGame.Columns.Remove("admin");
+                dataGridGame.Columns.Remove("tdvision");
+                dataGridGame.Columns.Remove("arguments");
+                dataGridGame.Columns.Remove("stop_monitor");
+            }
+            catch { };
+
+            try
+            {
                 dataGridGame.Columns.Remove("Active");
+                dataGridGame.Columns.Remove("platform");
             }
             catch { };
             DataGridViewCheckBoxColumn colActive = new()
@@ -146,7 +174,8 @@ namespace GamesaveCloudManager
             // to accomodate the round up in conversions
             dataGridGame.Columns["Title"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridGame.Columns["Path"].Width = (int)(dataGridGame.Width * 0.60);
-            dataGridGame.Columns["Active"].Width = (int)(dataGridGame.Width * 0.05);
+            dataGridGame.Columns["Active"].Width = (int)(dataGridGame.Width * 0.05);            
+
             colActive.Width = (int)(dataGridGame.Width * 0.05);
 
         }
@@ -188,7 +217,7 @@ namespace GamesaveCloudManager
             if (conn != null && dtGame != null)
             {
                 DataRow dataRow = dtGame.NewRow();
-                GameDetail detailForm = new(ref dataRow, conn, "ADD", igdbHelper);
+                GameDetail detailForm = new(ref dataRow, conn, "ADD", igdbHelper, gamesFolder);
                 if (detailForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     var addedGameId = dataRow["Id"];
@@ -217,7 +246,7 @@ namespace GamesaveCloudManager
 
                     if (foundRows != null && foundRows.Length == 1)
                     {
-                        GameDetail detailForm = new(ref foundRows[0], conn, "EDIT", igdbHelper);
+                        GameDetail detailForm = new(ref foundRows[0], conn, "EDIT", igdbHelper, gamesFolder);
                         if (detailForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
                             LoadData();
