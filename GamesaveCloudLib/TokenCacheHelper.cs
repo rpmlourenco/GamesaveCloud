@@ -41,8 +41,8 @@ namespace GamesaveCloudLib
         public static void Initialize(string aWorkingPath)
         {
             workingPath = aWorkingPath;
-            var pathCurrent = Path.GetDirectoryName(workingPath);
-            string pathCredential = Path.Combine(pathCurrent, "credential");
+            //var pathCurrent = Path.GetDirectoryName(workingPath);
+            string pathCredential = Path.Combine(workingPath, "credential");
             Directory.CreateDirectory(pathCredential);
             CacheFilePath = Path.Combine(pathCredential, "OneDrive.msalcache.bin3");
         }
@@ -54,8 +54,8 @@ namespace GamesaveCloudLib
                 //var workingPath = Environment.ProcessPath;
                 //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 //string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-                var pathCurrent = Path.GetDirectoryName(workingPath);
-                string pathCredential = Path.Combine(pathCurrent, "credential");
+                //var pathCurrent = Path.GetDirectoryName(workingPath);
+                string pathCredential = Path.Combine(workingPath, "credential");
                 Directory.CreateDirectory(pathCredential);
 
                 //string exe = Path.GetFileNameWithoutExtension(System.Environment.ProcessPath);

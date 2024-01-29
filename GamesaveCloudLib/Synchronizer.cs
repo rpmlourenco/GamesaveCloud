@@ -46,7 +46,7 @@ public class Synchronizer
     {
         if (workingPath == null || !Directory.Exists(workingPath))
         {
-            this.workingPath = Environment.ProcessPath;
+            this.workingPath = Path.GetDirectoryName(Environment.ProcessPath);
         } 
         else
         {
@@ -55,7 +55,7 @@ public class Synchronizer
 
         if (progress == null)
         {
-            logger = new(workingPath);
+            logger = new(this.workingPath);
         }
         else
         {
@@ -91,7 +91,8 @@ public class Synchronizer
 
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-        var pathAtual = Path.GetDirectoryName(workingPath);
+        //var pathAtual = Path.GetDirectoryName(workingPath);
+        var pathAtual = workingPath;
 
         var startTime = DateTime.Now;
         Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Connecting to " + this.cloudService + "... " + Environment.NewLine);
@@ -893,8 +894,8 @@ public class Synchronizer
     {
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-        var pathCurrent = Path.GetDirectoryName(workingPath);
-        var pathConfigFolder = Path.Combine(pathCurrent, "config");
+        //var pathCurrent = Path.GetDirectoryName(workingPath);
+        var pathConfigFolder = Path.Combine(workingPath, "config");
         return Path.Combine(pathConfigFolder, databaseFile);
     }
 

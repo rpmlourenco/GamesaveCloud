@@ -64,8 +64,8 @@ namespace GamesaveCloudLib
             this.progress = progress;
             //string pathCurrent = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             //string pathCurrent = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-            var pathCurrent = Path.GetDirectoryName(this.workingPath);
-            pathCredential = Path.Combine(pathCurrent, "credential");
+            //var pathCurrent = Path.GetDirectoryName(this.workingPath);
+            pathCredential = Path.Combine(this.workingPath, "credential");
 
             howToSign = 2;
             if (handle == null)

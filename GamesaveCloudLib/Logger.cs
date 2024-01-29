@@ -17,18 +17,18 @@ namespace GamesaveCloudLib
 
             if (workingPath != null)
             {
-                var assemblyPath = Path.GetDirectoryName(workingPath);
-                if (assemblyPath != null)
-                {
-                    string pathLog = Path.Combine(assemblyPath, logDir);
+                //var assemblyPath = Path.GetDirectoryName(workingPath);
+                //if (assemblyPath != null)
+                //{
+                    string pathLog = Path.Combine(workingPath, logDir);
                     Directory.CreateDirectory(pathLog);
                     logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
-                }
-                else
-                {
-                    throw (new Exception("Error: could not determine current path."));
+                //}
+                //else
+                //{
+                //    throw (new Exception("Error: could not determine current path."));
 
-                }
+                //}
             }
             else
             {

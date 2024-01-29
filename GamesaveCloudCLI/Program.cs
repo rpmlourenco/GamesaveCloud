@@ -16,6 +16,7 @@ namespace GamesaveCloudCLI
             string gameTitle = null;
             string cloudService = null;
             bool help = false;
+            bool init = false;
             string syncDirection = null;
             bool async = true;
             bool playnite = false;
@@ -28,7 +29,8 @@ namespace GamesaveCloudCLI
                     { "d|direction=", "The {DIRECTION} of the synchronization (auto, tocloud, fromcloud).", v => syncDirection = v },
                     { "a|async=", "Asynchronous operation - downloads/uploads in parallel (yes/no). Default is yes.", v => async = !(v.ToLower() == "no" || v.ToLower() == "n") },
                     { "p|playnite=", "Launch Playnite Fullscreen App after sync (yes/no). Default is no.", v => playnite = !(v.ToLower() == "no" || v.ToLower() == "n") },
-                    { "h|?|help", v => help = v != null },
+                    { "r|refresh", "Refresh database only.", v => init = v != null },
+                    { "h|?|help", "Show help.", v => help = v != null }                    
                 };
                 List<string> extra;
                 extra = options.Parse(args);
@@ -40,7 +42,7 @@ namespace GamesaveCloudCLI
                     help = true;
                 }
 
-                if (gameId == null && gameTitle == null)
+                if (gameId == null && gameTitle == null && !init)
                 {
                     Console.WriteLine("Either the game id or title have to be provided.");
                     help = true;
@@ -84,7 +86,7 @@ namespace GamesaveCloudCLI
                     return;
                 }
 
-                LaunchSynchronizer(gameId, gameTitle, cloudService, syncDirection, async, playnite);
+                LaunchSynchronizer(init, gameId, gameTitle, cloudService, syncDirection, async, playnite);
             }
             catch (Exception e)
             {
@@ -105,7 +107,7 @@ namespace GamesaveCloudCLI
             p.WriteOptionDescriptions(Console.Out);
         }
 
-        static void LaunchSynchronizer(int? gameId, string gameName, string cloudService, string syncDirection, bool async = true, bool playnite = false)
+        static void LaunchSynchronizer(bool init, int? gameId, string gameName, string cloudService, string syncDirection, bool async = true, bool playnite = false)
         {
             /*
             Logger logger = new();
@@ -119,7 +121,11 @@ namespace GamesaveCloudCLI
             try
             {
                 sync.Initialize(cloudService);
-                sync.Sync(gameId, gameName, syncDirection, async);
+
+                if (!init)
+                {
+                    sync.Sync(gameId, gameName, syncDirection, async);
+                }                
 
                 if (playnite)
                 {
