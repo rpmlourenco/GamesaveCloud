@@ -1,6 +1,7 @@
 # GamesaveCloud
 
 Todo:
+- Handle cancellation example GamesaveCloudUpdater\Updater.cs:line 95 see logs
 - filter files in/out when copying lastest machine
 - process folders before files for increased performance
 - implement machine config set up on second pc

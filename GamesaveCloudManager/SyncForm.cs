@@ -8,13 +8,17 @@ namespace GamesaveCloudManager
     {
         readonly List<long> games;
         Logger? logger;
-        private readonly string defaultCloudService = new Synchronizer(null).GetDefaultCloudService();
+        private readonly string defaultCloudService;
 
         public SyncForm(List<long> games)
         {
             InitializeComponent();
             this.games = games;
             this.Text = $"Synchronizing {games.Count} games";
+
+            var sync = new Synchronizer(null);
+            defaultCloudService = sync.GetDefaultCloudService();    
+            sync.Close();
         }
 
         private void SyncForm_Load(object sender, EventArgs e)
@@ -41,7 +45,7 @@ namespace GamesaveCloudManager
             this.buttonDeleteCloud.Enabled = false;
             try
             {
-                logger = new(Environment.ProcessPath);
+                logger = new(Path.GetDirectoryName(Environment.ProcessPath));
                 var progress = new Progress<string>(msg =>
                 {
                     textBox1.AppendText(msg);
