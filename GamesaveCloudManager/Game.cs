@@ -143,30 +143,30 @@ namespace GamesaveCloudManager
         {
             try
             {
-                dataGridGame.Columns.Remove("platform");
+                //dataGridGame.Columns.Remove("platform");
                 dataGridGame.Columns.Remove("exec_path");
                 dataGridGame.Columns.Remove("install_path");
                 dataGridGame.Columns.Remove("admin");
                 dataGridGame.Columns.Remove("tdvision");
                 dataGridGame.Columns.Remove("arguments");
                 dataGridGame.Columns.Remove("stop_monitor");
+                dataGridGame.Columns.Remove("active");
             }
             catch { };
 
-            try
+            dataGridGame.Columns["platform"].HeaderText = "Platform";
+
+            if (dataGridGame.Columns["Active"] == null)
             {
-                dataGridGame.Columns.Remove("Active");
-                dataGridGame.Columns.Remove("platform");
+                DataGridViewCheckBoxColumn colActive = new()
+                {
+                    DataPropertyName = "active",
+                    Name = "Active",
+                    TrueValue = 1,
+                    FalseValue = 0
+                };
+                dataGridGame.Columns.Add(colActive);
             }
-            catch { };
-            DataGridViewCheckBoxColumn colActive = new()
-            {
-                DataPropertyName = "active",
-                Name = "Active",
-                TrueValue = 1,
-                FalseValue = 0
-            };
-            dataGridGame.Columns.Add(colActive);
 
             dataGridGame.Columns["_RowString"].Visible = false;
             //dataGridView1.Columns["active"].Visible = false;
@@ -174,11 +174,9 @@ namespace GamesaveCloudManager
             // also may be a good idea to set FILL for the last column
             // to accomodate the round up in conversions
             dataGridGame.Columns["Title"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridGame.Columns["Path"].Width = (int)(dataGridGame.Width * 0.60);
+            dataGridGame.Columns["Path"].Width = (int)(dataGridGame.Width * 0.50);
+            dataGridGame.Columns["platform"].Width = (int)(dataGridGame.Width * 0.10);
             dataGridGame.Columns["Active"].Width = (int)(dataGridGame.Width * 0.05);            
-
-            colActive.Width = (int)(dataGridGame.Width * 0.05);
-
         }
 
         private void dataGridGame_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
