@@ -594,15 +594,15 @@ namespace GamesaveCloudManager
             };
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                if (!openFileDialog1.FileName.StartsWith(openFileDialog1.FileName.Substring(0, 1) + gamesFolder.Substring(1, gamesFolder.Length - 1), StringComparison.OrdinalIgnoreCase))
+            {               
+                if (!openFileDialog1.FileName.StartsWith(Path.Combine(openFileDialog1.FileName.Substring(0, 2), gamesFolder), StringComparison.OrdinalIgnoreCase))
                 {
                     MessageBox.Show("Executable must be inside games folder.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     textBoxTitle.Focus();
                     return;
                 }
 
-                var fullExecPath = openFileDialog1.FileName.Substring(gamesFolder.Length + 1, openFileDialog1.FileName.Length - gamesFolder.Length - 1);
+                var fullExecPath = openFileDialog1.FileName.Substring(gamesFolder.Length + 4, openFileDialog1.FileName.Length - gamesFolder.Length - 4);
                 var split = fullExecPath.Split("\\");
                 textBoxInstallPath.Text = split.First();
                 split[0] = "{InstallDir}";
