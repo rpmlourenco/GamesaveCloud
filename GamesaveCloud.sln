@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesaveCloudCLI", "Gamesav
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1A191B0C-4232-4075-AC05-A9216FFA10CE}"
 	ProjectSection(SolutionItems) = preProject
+		Publish.ps1 = Publish.ps1
 		README.md = README.md
 	EndProjectSection
 EndProject

@@ -20,7 +20,7 @@ namespace GamesaveCloudManager
 
         readonly string queryPath = "select game_id, savegame_id as 'Id', path as 'Path', filter as 'Filter', filter_out as 'Filter Out', machine, recursive from savegame where game_id = @game_id order by savegame_id";
         readonly string queryGameUpdate = "update game set title = @title, active = @active, platform = @platform, exec_path = @exec_path, install_path = @install_path, admin = @admin, tdvision = @tdvision, arguments = @arguments, stop_monitor = @stop_monitor where game_id = @game_id";
-        readonly string queryGameInsert = "insert into game (game_id,title,active, platform, exec_path, install_path, admin) VALUES (@game_id,@title,@active,@platform,@exec_path,@install_path,@admin,@tdvision,@arguments, @stop_monitor)";
+        readonly string queryGameInsert = "insert into game (game_id,title,active, platform, exec_path, install_path, admin, tdvision, arguments, stop_monitor) VALUES (@game_id,@title,@active,@platform,@exec_path,@install_path,@admin,@tdvision,@arguments, @stop_monitor)";
         readonly string queryPathDelete = "delete from savegame where game_id = @game_id";
         readonly string queryPathInsert = "insert into savegame (game_id,savegame_id,path,machine,recursive,filter,filter_out) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter,@filter_out)";
 
