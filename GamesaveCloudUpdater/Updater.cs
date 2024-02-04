@@ -86,38 +86,64 @@ namespace GamesaveCloudUpdater
         {
             try
             {
-                XElement xdocument;
+                XElement? xdocument = null;
 
                 var httpClient = new HttpClient();
                 httpClient.Timeout = TimeSpan.FromSeconds(5);
                 using (var request = new HttpRequestMessage(HttpMethod.Get, githubURL + remoteVersionURL[index]))
                 {
-                    var response = httpClient.Send(request);
-                    response.EnsureSuccessStatusCode();
-                    using var stream = response.Content.ReadAsStream();
-                    xdocument = XElement.Load(stream);
+                    try
+                    {
+                        var response = httpClient.Send(request);
+                        response.EnsureSuccessStatusCode();
+                        using var stream = response.Content.ReadAsStream();
+                        xdocument = XElement.Load(stream);
+                    }
+                    catch (Exception)
+                    {
+                        LogWriteLine($"Get remote version ({index}) failed. Trying again");
+                        try
+                        {
+                            var response = httpClient.Send(request);
+                            response.EnsureSuccessStatusCode();
+                            using var stream = response.Content.ReadAsStream();
+                            xdocument = XElement.Load(stream);
+                        }
+                        catch (Exception e)
+                        {
+                            if (e.StackTrace != null) LogWriteLine(e.StackTrace);
+                            return null;
+                        }
+                    }
                 }
 
-                XElement? xversion;
-                XElement? xproperty = xdocument.Descendants("PropertyGroup").FirstOrDefault();
-                if (xproperty != null)
+                if (xdocument != null)
                 {
-                    xversion = xproperty.Descendants("Version").FirstOrDefault();
-                    if (xversion != null)
+                    XElement? xversion;
+                    XElement? xproperty = xdocument.Descendants("PropertyGroup").FirstOrDefault();
+                    if (xproperty != null)
                     {
-                        return xversion.Value;
-                    }
-                    else { return null; }
+                        xversion = xproperty.Descendants("Version").FirstOrDefault();
+                        if (xversion != null)
+                        {
+                            return xversion.Value;
+                        }
+                        else { return null; }
 
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
                     return null;
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                if (ex.StackTrace != null) LogWriteLine(ex.StackTrace);
+                if (e.StackTrace != null) LogWriteLine(e.StackTrace);
                 return null;
             }
 

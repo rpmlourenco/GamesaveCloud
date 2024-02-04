@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Text;
+using System.Xml;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -22,6 +23,7 @@ namespace GamesaveCloudManager
             "active, platform, exec_path, install_path, admin, tdvision, arguments, stop_monitor from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
         readonly string queryGetGamesFolder = "select value from parameter where parameter_id = 'GAMES_FOLDER'";
+        readonly string queryGetWindowsGames = "select title, install_path from game where active = 1 and platform = 'PC (Windows)'";
 
         string? pathDatabaseFile;
 
@@ -176,7 +178,7 @@ namespace GamesaveCloudManager
             dataGridGame.Columns["Title"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridGame.Columns["Path"].Width = (int)(dataGridGame.Width * 0.50);
             dataGridGame.Columns["platform"].Width = (int)(dataGridGame.Width * 0.10);
-            dataGridGame.Columns["Active"].Width = (int)(dataGridGame.Width * 0.05);            
+            dataGridGame.Columns["Active"].Width = (int)(dataGridGame.Width * 0.05);
         }
 
         private void dataGridGame_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
@@ -382,6 +384,28 @@ namespace GamesaveCloudManager
                 e.Cancel = true;
                 buttonSyncConfig_Click(this, new EventArgs());
             }
+        }
+
+        private void buttonCheckBackup_Click(object sender, EventArgs e)
+        {
+            textBoxStatus.AppendText($"----- Checking Backup -----{Environment.NewLine}");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
+            conn.Open();
+            var sqlite_cmd = conn.CreateCommand();
+            sqlite_cmd.CommandText = queryGetWindowsGames;
+            var sqlreader = sqlite_cmd.ExecuteReader();
+            while (sqlreader.Read())
+            {
+                var title = sqlreader.GetString(0);
+                var install_path = sqlreader.GetString(1);
+                if (!Directory.Exists($@"E:\Gamevault\{install_path}"))
+                {
+                    textBoxStatus.AppendText($"No Backup for {title}{Environment.NewLine}");
+                }
+
+            }
+            sqlreader.Close();
+            conn.Close();
         }
     }
 }

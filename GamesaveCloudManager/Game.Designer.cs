@@ -41,6 +41,7 @@
             textBoxStatus = new TextBox();
             buttonIGDB = new Button();
             labelStatus = new Label();
+            buttonCheckBackup = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridGame).BeginInit();
             SuspendLayout();
             // 
@@ -162,17 +163,28 @@
             // labelStatus
             // 
             labelStatus.AutoSize = true;
-            labelStatus.Location = new Point(478, 421);
+            labelStatus.Location = new Point(627, 421);
             labelStatus.Name = "labelStatus";
             labelStatus.Size = new Size(18, 20);
             labelStatus.TabIndex = 34;
             labelStatus.Text = "...";
+            // 
+            // buttonCheckBackup
+            // 
+            buttonCheckBackup.Location = new Point(390, 417);
+            buttonCheckBackup.Name = "buttonCheckBackup";
+            buttonCheckBackup.Size = new Size(120, 29);
+            buttonCheckBackup.TabIndex = 35;
+            buttonCheckBackup.Text = "Check Backup";
+            buttonCheckBackup.UseVisualStyleBackColor = true;
+            buttonCheckBackup.Click += buttonCheckBackup_Click;
             // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1425, 650);
+            Controls.Add(buttonCheckBackup);
             Controls.Add(labelStatus);
             Controls.Add(buttonIGDB);
             Controls.Add(textBoxStatus);
@@ -212,5 +224,6 @@
         private TextBox textBoxStatus;
         private Button buttonIGDB;
         private Label labelStatus;
+        private Button buttonCheckBackup;
     }
 }
