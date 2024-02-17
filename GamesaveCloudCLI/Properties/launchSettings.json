@@ -1,9 +1,5 @@
 {
   "profiles": {
-    "GamesaveCloudCLI 2": {
-      "commandName": "Project",
-      "commandLineArgs": "-i 900000000 -s onedrive -d tocloud -p y"
-    },
     "GamesaveCloudCLI 1": {
       "commandName": "Project",
       "commandLineArgs": "-t \"Death Stranding: Director's Cut\" -d auto -s onedrive -a y"
@@ -11,6 +7,10 @@
     "DB sync only": {
       "commandName": "Project",
       "commandLineArgs": "-r"
+    },
+    "Switch Prince": {
+      "commandName": "Project",
+      "commandLineArgs": "-i 252476 -s onedrive"
     }
   }
 }

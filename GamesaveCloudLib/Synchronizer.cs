@@ -18,7 +18,6 @@ namespace GamesaveCloudLib;
 
 public class Synchronizer
 {
-
     public static readonly List<string> CloudServices = new() { "googledrive", "onedrive" };
     public static readonly string fallbackCloudService = "onedrive";
     public static readonly List<string> SyncDirections = new() { "auto", "tocloud", "fromcloud" };
@@ -41,6 +40,8 @@ public class Synchronizer
     private readonly Logger logger;
     public string workingPath;
 
+    public List<KeyValuePair<string, string>> variables;
+
     [SupportedOSPlatform("windows")]
     public Synchronizer(IProgress<string> progress, string workingPath = null)
     {
@@ -61,6 +62,9 @@ public class Synchronizer
         {
             this.progress = progress;
         }
+
+        IniFile ini = new(this.workingPath);
+        variables = ini.GetSectionKeys("Variables");
     }
 
     [SupportedOSPlatform("windows")]
@@ -121,10 +125,11 @@ public class Synchronizer
             Directory.CreateDirectory(pathConfigFolder);
         }
 
-        IniFile ini = new(workingPath);
-        _ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, ini.SFilename, null, "auto", true);
+        //IniFile ini = new(workingPath);
+        //var keys = ini.GetSectionKeys("MySection");
+        //_ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, ini.SFilename, null, "auto", true);
+        
         pathDatabaseFile = Path.Combine(pathConfigFolder, databaseFile);
-
         if (syncDatabase)
         {
             var dbSync = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, databaseFile, null, "auto", true);
@@ -275,7 +280,7 @@ public class Synchronizer
 
                 savegame_id = (int)(long)sqlite_datareader2.GetValue(0);
                 path = sqlite_datareader2.GetString(1);
-                path = ReplaceEnvironmentVariables(path);
+                path = ReplaceVariables(path);
                 machine = (int)(long)sqlite_datareader2.GetValue(2);
                 recursive = (int)(long)sqlite_datareader2.GetValue(3);
                 try
@@ -496,7 +501,7 @@ public class Synchronizer
 
                 //savegame_id = (int)(long)sqlite_datareader2.GetValue(0);
                 path = sqlite_datareader2.GetString(1);
-                path = ReplaceEnvironmentVariables(path);
+                path = ReplaceVariables(path);
                 machine = (int)(long)sqlite_datareader2.GetValue(2);
                 recursive = (int)(long)sqlite_datareader2.GetValue(3);
                 try
@@ -692,9 +697,15 @@ public class Synchronizer
 
     }
 
-    private static string ReplaceEnvironmentVariables(string sPath)
+    private string ReplaceVariables(string sPath)
     {
+        var result = ReplaceEnvironmentVariables(sPath);
+        return ReplaceUserVariables(result);
+    }
 
+    // replace environment variables
+    private string ReplaceEnvironmentVariables(string sPath)
+    {
         var pos1 = sPath.IndexOf("%");
         if (pos1 == -1)
         {
@@ -708,9 +719,22 @@ public class Synchronizer
 
         var variable = sPath.Substring(pos1, pos2 - pos1 + 1);
         return sPath.Replace(variable, Environment.GetEnvironmentVariable(variable.Replace("%", "")));
-
     }
 
+    // replace user-defined variables
+    private string ReplaceUserVariables(string sPath)
+    {
+        var result = sPath;
+
+        foreach (var v in variables)
+        {
+            if (result.Contains($"{{{v.Key}}}"))
+            {
+                result = result.Replace($"{{{v.Key}}}", v.Value);
+            }
+        }
+        return result;
+    }
 
     public void UpdateMachineBeforeSync(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
     {

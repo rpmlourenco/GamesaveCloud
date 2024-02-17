@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Graph.Models;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -22,6 +24,9 @@ namespace GamesaveCloudLib
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
+
+        [DllImport("kernel32.dll")]
+        private static extern int GetPrivateProfileSection(string lpAppName, byte[] lpszReturnBuffer, int nSize, string lpFileName);
 
         public IniFile(string workingPath, string IniPath = null)
         {
@@ -63,6 +68,28 @@ namespace GamesaveCloudLib
         public bool KeyExists(string Key, string Section = null)
         {
             return Read(Key, Section).Length > 0;
+        }
+
+        public List<KeyValuePair<string, string>> GetSectionKeys(string section)
+        {
+            var result = new List<KeyValuePair<string, string>>();
+
+            byte[] buffer = new byte[4096];
+
+            GetPrivateProfileSection(section, buffer, 4096, sPath);
+            String[] tmp = Encoding.ASCII.GetString(buffer).Trim('\0').Split('\0');
+
+            foreach (String entry in tmp)
+            {
+                if (entry.Contains("="))
+                {
+                    var key = entry.Substring(0, entry.IndexOf("="));
+                    var value = entry.Substring(entry.IndexOf("=") + 1);
+                    result.Add(new KeyValuePair<string, string>(key, value));
+                }
+            }
+
+            return result;
         }
     }
 }
