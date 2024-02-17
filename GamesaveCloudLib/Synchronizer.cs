@@ -213,10 +213,6 @@ public class Synchronizer
         sqlite_conn = new SQLiteConnection("Data Source=" + pathDatabaseFile + ";Version=3;New=True;");
         sqlite_conn.Open();
 
-        // sqlite_cmd = sqlite_conn.CreateCommand()
-        // sqlite_cmd.CommandText = "INSERT INTO people (first_name, last_name) VALUES ('Rui','Martins');"
-        // sqlite_cmd.ExecuteNonQuery()
-
         sqlite_cmd = sqlite_conn.CreateCommand();
 
         if (gameId == 0)
@@ -281,6 +277,14 @@ public class Synchronizer
                 savegame_id = (int)(long)sqlite_datareader2.GetValue(0);
                 path = sqlite_datareader2.GetString(1);
                 path = ReplaceVariables(path);
+                if (!Path.IsPathRooted(path))
+                {
+                    sqlite_datareader2.Close();
+                    sqlite_datareader.Close();
+                    sqlite_conn.Close();
+                    throw new Exception($"Savegame path '{path}' must be fully qualified. Check your configuration.");
+                }
+
                 machine = (int)(long)sqlite_datareader2.GetValue(2);
                 recursive = (int)(long)sqlite_datareader2.GetValue(3);
                 try
