@@ -701,10 +701,16 @@ public class Synchronizer
 
     }
 
-    private string ReplaceVariables(string sPath)
+    public string ReplaceVariables(string sPath)
     {
         var result = ReplaceEnvironmentVariables(sPath);
         return ReplaceUserVariables(result);
+    }
+
+    public string UnreplaceVariables(string sPath)
+    {
+        var result = UnreplaceEnvironmentVariables(sPath);
+        return UnreplaceUserVariables(result);
     }
 
     // replace environment variables
@@ -725,20 +731,57 @@ public class Synchronizer
         return sPath.Replace(variable, Environment.GetEnvironmentVariable(variable.Replace("%", "")));
     }
 
+    private string UnreplaceEnvironmentVariables(string sPath)
+    {
+        string[] enVariables = { "PROGRAMDATA", "COMMONPROGRAMFILES", "COMMONPROGRAMFILES(x86)", "PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA", "APPDATA", "USERPROFILE", "PUBLIC" };
+
+        foreach (string variable in enVariables)
+        {
+            var variableValue = Environment.GetEnvironmentVariable(variable);
+            if (!String.IsNullOrEmpty(variableValue))
+            {
+                var pos = sPath.IndexOf(variableValue);
+                if (pos != -1)
+                {
+                    return sPath.Replace(variableValue, "%" + variable + "%");
+                }
+            }
+        }
+
+        return sPath;
+    }
+
+
     // replace user-defined variables
     private string ReplaceUserVariables(string sPath)
     {
         var result = sPath;
 
-        foreach (var v in variables)
+        foreach (var userVariable in variables)
         {
-            if (result.Contains($"{{{v.Key}}}"))
+            if (result.Contains($"{{{userVariable.Key}}}"))
             {
-                result = result.Replace($"{{{v.Key}}}", v.Value);
+                result = result.Replace($"{{{userVariable.Key}}}", $"{userVariable.Value}");
             }
         }
         return result;
     }
+
+    // un-replace user-defined variables
+    private string UnreplaceUserVariables(string sPath)
+    {
+        var result = sPath;
+
+        foreach (var userVariable in variables)
+        {
+            if (result.Contains($"{userVariable.Value}"))
+            {
+                result = result.Replace($"{userVariable.Value}", $"{{{userVariable.Key}}}");
+            }
+        }
+        return result;
+    }
+
 
     public void UpdateMachineBeforeSync(string folderPath, string folderId, bool recursive, string filterIn, string filterOut)
     {

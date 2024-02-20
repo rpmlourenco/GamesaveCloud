@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using GamesaveCloudLib;
+using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -287,17 +288,21 @@ namespace GamesaveCloudManager
 
         private void buttonFolderBrowser_Click(object sender, EventArgs e)
         {
+            var sync = new Synchronizer(null);
             using var fbd = new FolderBrowserDialog();
             if (!String.IsNullOrEmpty(textBoxPath.Text))
-            {
-                fbd.InitialDirectory = HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text);
+            {                
+                //fbd.InitialDirectory = HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text);
+                fbd.InitialDirectory = sync.ReplaceVariables(textBoxPath.Text);                
+                
             }
             DialogResult result = fbd.ShowDialog();
 
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
-                textBoxPath.Text = HelperFunctions.UnreplaceEnvironmentVariables(fbd.SelectedPath);
+                textBoxPath.Text = sync.UnreplaceVariables(fbd.SelectedPath);
             }
+            sync.Close();
         }
 
         private void buttonAdd_Click(object sender, EventArgs e)
@@ -538,11 +543,15 @@ namespace GamesaveCloudManager
 
         private void buttonFolderOpen_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(textBoxPath.Text) && Directory.Exists(HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text)))
+            var sync = new Synchronizer(null);
+            var path = sync.ReplaceVariables(textBoxPath.Text);           
+            sync.Close();
+
+            if (!string.IsNullOrEmpty(textBoxPath.Text) && Directory.Exists(path))
             {
                 ProcessStartInfo startInfo = new()
                 {
-                    Arguments = HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text),
+                    Arguments = path,
                     FileName = "explorer.exe"
                 };
                 System.Diagnostics.Process.Start(startInfo);
