@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Version>3.0.0.0</Version>
+    <Version>3.1.0.0</Version>
     <InformationalVersion>Filter Folders</InformationalVersion>
     <VersionSuffix>$([System.DateTime]::UtcNow.ToString(`yyyyMMdd-HHmm`))</VersionSuffix>
     <Nullable>enable</Nullable>
