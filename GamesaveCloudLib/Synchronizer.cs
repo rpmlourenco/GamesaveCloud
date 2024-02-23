@@ -971,4 +971,14 @@ public class Synchronizer
     }
 
 
+    public string GetGamesPath()
+    {
+        var gamesVar = variables.Where(v => (v.Key.Equals("games")));
+        if (gamesVar.Count() > 0)
+        {
+            return gamesVar.First().Value;
+        }
+        return @"C:\Games";
+    }
+
 }

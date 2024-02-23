@@ -11,7 +11,7 @@ namespace GamesaveCloudManager
 {
     public partial class Game : Form
     {
-        string? gamesFolder;
+        //string? gamesFolder;
         DataTable? dtGame;
         SQLiteConnection? conn;
         SQLiteCommand? cmdGame;
@@ -22,7 +22,7 @@ namespace GamesaveCloudManager
             "(select path from savegame s where s.game_id = g.game_id and s.savegame_id = (select min(savegame_id) from savegame s2 where s2.game_id = g.game_id)) as 'Path', " +
             "active, platform, exec_path, install_path, admin, tdvision, arguments, stop_monitor from game g order by title";
         readonly string queryGameDelete = "delete from game where game_id = @game_id";
-        readonly string queryGetGamesFolder = "select value from parameter where parameter_id = 'GAMES_FOLDER'";
+        //readonly string queryGetGamesFolder = "select value from parameter where parameter_id = 'GAMES_FOLDER'";
         readonly string queryGetWindowsGames = "select title, install_path from game where active = 1 and platform = 'PC (Windows)'";
 
         string? pathDatabaseFile;
@@ -72,17 +72,17 @@ namespace GamesaveCloudManager
             cmdGame = new(queryGame, conn);
             adapter = new(cmdGame);
 
-            conn.Open();
-            var sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = queryGetGamesFolder;
-            var sqlite_datareader = sqlite_cmd.ExecuteReader();
-            while (sqlite_datareader.Read())
-            {
-                gamesFolder = sqlite_datareader.GetString(0);
+            //conn.Open();
+            //var sqlite_cmd = conn.CreateCommand();
+            //sqlite_cmd.CommandText = queryGetGamesFolder;
+            //var sqlite_datareader = sqlite_cmd.ExecuteReader();
+            //while (sqlite_datareader.Read())
+            //{
+            //    gamesFolder = sqlite_datareader.GetString(0);
 
-            }
-            sqlite_datareader.Close();
-            conn.Close();
+            //}
+            //sqlite_datareader.Close();
+            //conn.Close();
             LoadData();
         }
 
@@ -218,7 +218,7 @@ namespace GamesaveCloudManager
             if (conn != null && dtGame != null)
             {
                 DataRow dataRow = dtGame.NewRow();
-                GameDetail detailForm = new(ref dataRow, conn, "ADD", igdbHelper, gamesFolder);
+                GameDetail detailForm = new(ref dataRow, conn, "ADD", igdbHelper);
                 if (detailForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     var addedGameId = dataRow["Id"];
@@ -247,7 +247,7 @@ namespace GamesaveCloudManager
 
                     if (foundRows != null && foundRows.Length == 1)
                     {
-                        GameDetail detailForm = new(ref foundRows[0], conn, "EDIT", igdbHelper, gamesFolder);
+                        GameDetail detailForm = new(ref foundRows[0], conn, "EDIT", igdbHelper);
                         if (detailForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
                             LoadData();

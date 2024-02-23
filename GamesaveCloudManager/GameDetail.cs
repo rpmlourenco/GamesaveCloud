@@ -10,7 +10,7 @@ namespace GamesaveCloudManager
 {
     public partial class GameDetail : Form
     {
-        readonly string gamesFolder;
+        //readonly string gamesFolder;
         readonly DataRow gameDataRow;
         readonly SQLiteConnection conn;
         DataTable? dtSavegame;
@@ -25,17 +25,13 @@ namespace GamesaveCloudManager
         readonly string queryPathDelete = "delete from savegame where game_id = @game_id";
         readonly string queryPathInsert = "insert into savegame (game_id,savegame_id,path,machine,recursive,filter,filter_out) VALUES (@game_id,@savegame_id,@path,@machine,@recursive,@filter,@filter_out)";
 
-        public GameDetail(ref DataRow row, SQLiteConnection conn, string mode, IGDBHelper igdbHelper, string? gamesFolder)
+        public GameDetail(ref DataRow row, SQLiteConnection conn, string mode, IGDBHelper igdbHelper)
         {
             InitializeComponent();
             this.gameDataRow = row;
             this.conn = conn;
             this.mode = mode;
             this.igdbHelper = igdbHelper;
-            if (gamesFolder != null)
-                this.gamesFolder = gamesFolder;
-            else
-                this.gamesFolder = @"C:\Games";
             groupBoxPath.Visible = false;
         }
 
@@ -584,17 +580,20 @@ namespace GamesaveCloudManager
 
         private void buttonExecFileBrowser_Click(object sender, EventArgs e)
         {
+            var sync = new Synchronizer(null);
+            var gamesPath = sync.GetGamesPath();
+            sync.Close();
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog
             {
-                InitialDirectory = @"D:\Games",
+                InitialDirectory = gamesPath,
                 Title = "Browse Executable Files",
 
                 CheckFileExists = true,
                 CheckPathExists = true,
 
                 DefaultExt = "exe",
-                Filter = "Executable files|*.exe;*.cmd;*.bat;*.lnk|All files (*.*)|*.*",
+                Filter = "Executable files|*.exe;*.cmd;*.bat;*.lnk;*.ps1|All files (*.*)|*.*",
                 FilterIndex = 1,
                 RestoreDirectory = true,
 
@@ -604,18 +603,18 @@ namespace GamesaveCloudManager
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {               
-                if (!openFileDialog1.FileName.StartsWith(Path.Combine(openFileDialog1.FileName.Substring(0, 2), gamesFolder), StringComparison.OrdinalIgnoreCase))
+                if (!openFileDialog1.FileName.StartsWith(gamesPath, StringComparison.OrdinalIgnoreCase))
                 {
                     MessageBox.Show("Executable must be inside games folder.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     textBoxTitle.Focus();
                     return;
                 }
 
-                var fullExecPath = openFileDialog1.FileName.Substring(gamesFolder.Length + 4, openFileDialog1.FileName.Length - gamesFolder.Length - 4);
-                var split = fullExecPath.Split("\\");
-                textBoxInstallPath.Text = split.First();
-                split[0] = "{InstallDir}";
-                textBoxExecPath.Text = String.Join("\\", split); ;
+                //var fullExecPath = openFileDialog1.FileName.Substring(gamesFolder.Length + 4, openFileDialog1.FileName.Length - gamesFolder.Length - 4);
+                //var split = fullExecPath.Split("\\");
+                //textBoxInstallPath.Text = split.First();
+                //split[0] = "{InstallDir}";
+                textBoxExecPath.Text = openFileDialog1.FileName.Replace(gamesPath, "{InstallDir}");
             }
 
         }
