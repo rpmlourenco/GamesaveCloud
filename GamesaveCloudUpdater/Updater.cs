@@ -1,9 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Compression;
-using System.Net;
-using System.Text.Json;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace GamesaveCloudUpdater

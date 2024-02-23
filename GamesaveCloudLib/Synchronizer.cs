@@ -1,5 +1,4 @@
-﻿using Microsoft.Graph.Models;
-using Microsoft.Identity.Client;
+﻿using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,10 +8,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using Logger = GamesaveCloudLib.Logger;
 
 namespace GamesaveCloudLib;
 
@@ -20,6 +16,7 @@ public class Synchronizer
 {
     public static readonly List<string> CloudServices = new() { "googledrive", "onedrive" };
     public static readonly string fallbackCloudService = "onedrive";
+    public static readonly string fallbackGamesPath = @"C:\Games";
     public static readonly List<string> SyncDirections = new() { "auto", "tocloud", "fromcloud" };
 
     private static readonly string databaseFile = "GamesaveDB.db";
@@ -48,10 +45,10 @@ public class Synchronizer
         if (workingPath == null || !Directory.Exists(workingPath))
         {
             this.workingPath = Path.GetDirectoryName(Environment.ProcessPath);
-        } 
+        }
         else
         {
-            this.workingPath = workingPath;            
+            this.workingPath = workingPath;
         }
 
         if (progress == null)
@@ -93,6 +90,13 @@ public class Synchronizer
             this.cloudService = cloudService;
         }
 
+        if (GetGamesPath() == null)
+        {
+            IniFile iniFile = new(workingPath);
+            iniFile.Write("games", fallbackGamesPath, "Variables");
+            Log(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + ": Default games path set as " + fallbackGamesPath + "." + Environment.NewLine);
+        }
+
         //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
         //var pathAtual = Path.GetDirectoryName(workingPath);
@@ -128,7 +132,7 @@ public class Synchronizer
         //IniFile ini = new(workingPath);
         //var keys = ini.GetSectionKeys("MySection");
         //_ = SyncPath(pathConfigFolder, configFolder.Id, false, "config", false, false, ini.SFilename, null, "auto", true);
-        
+
         pathDatabaseFile = Path.Combine(pathConfigFolder, databaseFile);
         if (syncDatabase)
         {
@@ -337,7 +341,7 @@ public class Synchronizer
                     }
 
                     var syncResult = SyncPath(path, gamesaveFolder.Id, performBackup, game_id.ToString() + "_" + savegame_id.ToString() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss"), recursive == 1, machine == 1, filterIn, filterOut, syncDirection, async);
- 
+
                     if (syncResult == -1)
                     {
                         if (machine == 1)
@@ -799,10 +803,10 @@ public class Synchronizer
         if (localFolders.Length > 1)
         {
             List<String> newFolders = new List<String>();
-            IList<ICloudFile> cloudFolders  = driveHelper.GetFolders(folderId);
+            IList<ICloudFile> cloudFolders = driveHelper.GetFolders(folderId);
             cloudFolders = ICloudDriveHelper.FilterFiles(filterIn, filterOut, cloudFolders);
 
-            if (localFolders.Count() > cloudFolders.Count()) 
+            if (localFolders.Count() > cloudFolders.Count())
             {
                 foreach (var localFolder in localFolders)
                 {
@@ -963,9 +967,6 @@ public class Synchronizer
 
     public string GetPathDatabaseFile()
     {
-        //var pathAtual = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //var pathAtual = Path.GetDirectoryName(System.AppContext.BaseDirectory);
-        //var pathCurrent = Path.GetDirectoryName(workingPath);
         var pathConfigFolder = Path.Combine(workingPath, "config");
         return Path.Combine(pathConfigFolder, databaseFile);
     }
@@ -978,7 +979,7 @@ public class Synchronizer
         {
             return gamesVar.First().Value;
         }
-        return @"C:\Games";
+        return null;
     }
 
 }

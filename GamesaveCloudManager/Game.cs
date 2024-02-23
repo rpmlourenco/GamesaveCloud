@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Text;
-using System.Xml;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager

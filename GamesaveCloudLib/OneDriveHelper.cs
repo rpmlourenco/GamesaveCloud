@@ -100,7 +100,7 @@ namespace GamesaveCloudLib
             {
                 _clientApp = clientApplication;
             }
-            
+
             TokenCacheHelper.EnableSerialization(_clientApp.UserTokenCache);
 
             //TEST 24.04 SignInAndInitializeGraphServiceClient().Wait();

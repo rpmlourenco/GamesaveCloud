@@ -1,5 +1,4 @@
 ﻿using GamesaveCloudLib;
-using System;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -17,7 +16,7 @@ namespace GamesaveCloudManager
             this.Text = $"Synchronizing {games.Count} games";
 
             var sync = new Synchronizer(null);
-            defaultCloudService = sync.GetDefaultCloudService();    
+            defaultCloudService = sync.GetDefaultCloudService();
             sync.Close();
         }
 

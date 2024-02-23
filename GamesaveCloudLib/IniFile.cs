@@ -1,8 +1,6 @@
-﻿using Microsoft.Graph.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -12,7 +10,7 @@ namespace GamesaveCloudLib
     {
         readonly string sPath;
         readonly string sFilename;
-        readonly string EXE = Assembly.GetExecutingAssembly().GetName().Name;
+        readonly string EXE = "GamesaveCloud";
         public string workingPath;
 
         public string SFilename => sFilename;
@@ -28,9 +26,9 @@ namespace GamesaveCloudLib
         [DllImport("kernel32.dll")]
         private static extern int GetPrivateProfileSection(string lpAppName, byte[] lpszReturnBuffer, int nSize, string lpFileName);
 
-        public IniFile(string workingPath, string IniPath = null)
+        public IniFile(string workingPath)
         {
-            this.workingPath = workingPath; 
+            this.workingPath = workingPath;
             //var pathCurrent = Path.GetDirectoryName(this.workingPath);
             var pathConfigFolder = Path.Combine(this.workingPath, "config");
             if (!Directory.Exists(pathConfigFolder))
@@ -39,7 +37,7 @@ namespace GamesaveCloudLib
             }
             var pathIniFile = Path.Combine(pathConfigFolder, EXE + ".ini");
 
-            sPath = new FileInfo(IniPath ?? pathIniFile).FullName;
+            sPath = new FileInfo(pathIniFile).FullName;
             sFilename = Path.GetFileName(sPath);
         }
 

@@ -1,8 +1,8 @@
-﻿using NDesk.Options;
+﻿using GamesaveCloudLib;
+using NDesk.Options;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
-using GamesaveCloudLib;
 
 namespace GamesaveCloudCLI
 {
@@ -30,7 +30,7 @@ namespace GamesaveCloudCLI
                     { "a|async=", "Asynchronous operation - downloads/uploads in parallel (yes/no). Default is yes.", v => async = !(v.ToLower() == "no" || v.ToLower() == "n") },
                     { "p|playnite=", "Launch Playnite Fullscreen App after sync (yes/no). Default is no.", v => playnite = !(v.ToLower() == "no" || v.ToLower() == "n") },
                     { "r|refresh", "Refresh database only.", v => init = v != null },
-                    { "h|?|help", "Show help.", v => help = v != null }                    
+                    { "h|?|help", "Show help.", v => help = v != null }
                 };
                 List<string> extra;
                 extra = options.Parse(args);
@@ -125,12 +125,12 @@ namespace GamesaveCloudCLI
                 if (!init)
                 {
                     sync.Sync(gameId, gameName, syncDirection, async);
-                }                
+                }
 
                 if (playnite)
                 {
                     System.Diagnostics.Process.Start("C:\\Portable Apps\\Playnite\\Playnite.FullscreenApp.exe");
-                }                
+                }
 
             }
             catch (Exception ex)

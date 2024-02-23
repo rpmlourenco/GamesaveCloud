@@ -12,7 +12,7 @@ namespace GamesaveCloudLib
 
         public Logger(string workingPath)
         {
-            this.workingPath = workingPath;    
+            this.workingPath = workingPath;
             //string workingPath = Environment.ProcessPath;
 
             if (workingPath != null)
@@ -20,9 +20,9 @@ namespace GamesaveCloudLib
                 //var assemblyPath = Path.GetDirectoryName(workingPath);
                 //if (assemblyPath != null)
                 //{
-                    string pathLog = Path.Combine(workingPath, logDir);
-                    Directory.CreateDirectory(pathLog);
-                    logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
+                string pathLog = Path.Combine(workingPath, logDir);
+                Directory.CreateDirectory(pathLog);
+                logFile = new StreamWriter(Path.Combine(pathLog, logFileName), true);
                 //}
                 //else
                 //{

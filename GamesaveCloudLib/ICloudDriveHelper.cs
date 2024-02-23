@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -201,7 +200,7 @@ namespace GamesaveCloudLib
                 {
                     folders = GetFolders(folderId);
                 }
-                
+
                 if (folders is not null && folders.Count > 0)
                 {
                     totalFiles += folders.Count;
@@ -223,7 +222,7 @@ namespace GamesaveCloudLib
 
         public async Task<FolderInfo> LastModifiedDateAsync(string folderId, int recursive, string filterIn, string filterOut, int level = 1)
         {
-            
+
             IList<ICloudFile> files;
 
             DateTime lastModified = default;
@@ -269,7 +268,7 @@ namespace GamesaveCloudLib
                 }
 
                 if (folders is not null && folders.Count > 0)
-                {                    
+                {
                     //totalFiles += folders.Count;
                     result.TotalFiles += folders.Count;
                     var syncTasks = new List<Task>();
@@ -391,7 +390,7 @@ namespace GamesaveCloudLib
 
             IList<ICloudFile> folders = null;
             if (recursive == 0 || level < recursive)
-            {                
+            {
                 if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
                 {
                     var allfolders = GetFolders(folderId);
@@ -503,7 +502,8 @@ namespace GamesaveCloudLib
             }
 
             IList<ICloudFile> folders = null;
-            if (recursive == 0 || level < recursive) {
+            if (recursive == 0 || level < recursive)
+            {
                 //folders = GetFolders(folderId);
 
                 if (!String.IsNullOrEmpty(filterIn) || !String.IsNullOrEmpty(filterOut))
@@ -755,7 +755,7 @@ namespace GamesaveCloudLib
                         //Console.WriteLine(folderPath + ": Synchronising subdir " + folderEntry);
                         var syncTask = Task.Run(() => SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1));
                         //var syncTask = SyncFromLocalAsync(folderEntry, driveFolderId, recursive, filterIn, filterOut, level + 1);
-                        syncTasks.Add(syncTask);                        
+                        syncTasks.Add(syncTask);
 
                     }
                     while (syncTasks.Count > 0)

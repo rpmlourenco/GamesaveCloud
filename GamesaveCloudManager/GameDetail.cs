@@ -2,8 +2,6 @@
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -287,10 +285,10 @@ namespace GamesaveCloudManager
             var sync = new Synchronizer(null);
             using var fbd = new FolderBrowserDialog();
             if (!String.IsNullOrEmpty(textBoxPath.Text))
-            {                
+            {
                 //fbd.InitialDirectory = HelperFunctions.ReplaceEnvironmentVariables(textBoxPath.Text);
-                fbd.InitialDirectory = sync.ReplaceVariables(textBoxPath.Text);                
-                
+                fbd.InitialDirectory = sync.ReplaceVariables(textBoxPath.Text);
+
             }
             DialogResult result = fbd.ShowDialog();
 
@@ -540,7 +538,7 @@ namespace GamesaveCloudManager
         private void buttonFolderOpen_Click(object sender, EventArgs e)
         {
             var sync = new Synchronizer(null);
-            var path = sync.ReplaceVariables(textBoxPath.Text);           
+            var path = sync.ReplaceVariables(textBoxPath.Text);
             sync.Close();
 
             if (!string.IsNullOrEmpty(textBoxPath.Text) && Directory.Exists(path))
@@ -602,7 +600,7 @@ namespace GamesaveCloudManager
             };
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {               
+            {
                 if (!openFileDialog1.FileName.StartsWith(gamesPath, StringComparison.OrdinalIgnoreCase))
                 {
                     MessageBox.Show("Executable must be inside games folder.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);

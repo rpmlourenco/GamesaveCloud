@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GamesaveCloudLib
@@ -33,7 +32,7 @@ namespace GamesaveCloudLib
     {
 
         private readonly UserCredential credentials;
-        private readonly DriveService service;        
+        private readonly DriveService service;
 
         public GoolgeDriveHelper(string workingPath)
         {
