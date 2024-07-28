@@ -34,12 +34,12 @@ namespace GamesaveCloudManager
 
                             var builder = PublicClientApplicationBuilder.Create(ClientId)
                                 .WithAuthority($"https://login.microsoftonline.com/{Tenant}")
-                                .WithDefaultRedirectUri()
-                            //    .WithBroker(true);
+                                .WithDefaultRedirectUri();
+                            //  .WithBroker(true);
                             // WithWindowsDesktopFeatures needed when used in Windows Desktop
-                                .WithBroker(new BrokerOptions(BrokerOptions.OperatingSystems.Windows));
-                            //.WithWindowsDesktopFeatures(options);
-                            //.WithParentActivityOrWindow(handle);
+                            //  .WithBroker(options)
+                            //  .WithWindowsDesktopFeatures(options);
+                            //  .WithParentActivityOrWindow(handle);
 
                             return builder.Build();
                         }
