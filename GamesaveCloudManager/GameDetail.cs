@@ -431,8 +431,8 @@ namespace GamesaveCloudManager
                                 cmd.Parameters.AddWithValue("@path", dataRow["Path"]);
                                 cmd.Parameters.AddWithValue("@machine", dataRow["machine"]);
                                 cmd.Parameters.AddWithValue("@recursive", dataRow["recursive"]);
-                                cmd.Parameters.AddWithValue("@Filter", dataRow["Filter"]);
-                                cmd.Parameters.AddWithValue("@Filter_out", dataRow["Filter Out"]);
+                                cmd.Parameters.AddWithValue("@filter", dataRow["Filter"]);
+                                cmd.Parameters.AddWithValue("@filter_out", dataRow["Filter Out"]);
                                 cmd.ExecuteNonQuery();
                             }
                         }
