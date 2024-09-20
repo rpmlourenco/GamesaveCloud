@@ -37,10 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.62.0" />
-    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.62.0" />
-    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.16.2" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
+    <PackageReference Include="Microsoft.Graph" Version="5.58.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.64.1" />
+    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.64.1" />
+    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.17.0" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
   </ItemGroup>
 
   <ItemGroup>

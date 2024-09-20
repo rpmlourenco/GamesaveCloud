@@ -286,29 +286,70 @@ namespace GamesaveCloudLib
 
             if (parentId.Equals("root")) { parentId = _rootId; }
 
-            List<Microsoft.Graph.Models.DriveItem> children = null;
+            List<DriveItem> children = new List<DriveItem>();
             if (name is not null)
             {
-                var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[parentId].SearchWithQ(name).GetAsync((requestConfiguration) =>
+                var task = Task.Run(async () =>
                 {
-                    requestConfiguration.QueryParameters.Filter = filter;
-                }));
+                    var response = await _graphClient.Drives[_userDriveId].Items[parentId]
+                        .SearchWithQ(name)
+                        .GetAsSearchWithQGetResponseAsync();
+                    return response;
+                });
+
+                //var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[parentId].SearchWithQ(name).GetAsync((requestConfiguration) =>
+                //{
+                //    requestConfiguration.QueryParameters.Filter = filter;
+                //}));
                 task.Wait();
                 if (task.Result != null)
                 {
-                    children = task.Result.Value;
+                    foreach (var item in task.Result.Value)
+                    {                        
+                        if (item.File != null) // Check if the item is a file
+                        {
+                            if (filter.Equals("folder eq null"))
+                            {
+                                children.Add(item);
+                            }
+                        } else
+                        {
+                            if (filter.Equals("folder ne null"))
+                            {
+                                children.Add(item);
+                            }
+                        }
+                    }                    
                 }
             }
             else
             {
-                var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[parentId].Children.GetAsync((requestConfiguration) =>
-                {
-                    requestConfiguration.QueryParameters.Filter = filter;
-                }));
+                var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[parentId].Children.GetAsync());
+                //var task = Task.Run(() => _graphClient.Drives[_userDriveId].Items[parentId].Children.GetAsync((requestConfiguration) =>
+                //{
+                //    requestConfiguration.QueryParameters.Filter = filter;
+                //}));
                 task.Wait();
                 if (task.Result != null)
                 {
-                    children = task.Result.Value;
+                    foreach (var item in task.Result.Value)
+                    {
+                        if (item.File != null) // Check if the item is a file
+                        {
+                            if (filter.Equals("folder eq null"))
+                            {
+                                children.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            if (filter.Equals("folder ne null"))
+                            {
+                                children.Add(item);
+                            }
+                        }
+                    }
+                    //children = task.Result.Value;
                 }
             }
 
