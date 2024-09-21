@@ -2,7 +2,6 @@
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 #pragma warning disable IDE1006 // Estilos de Nomenclatura
 namespace GamesaveCloudManager
@@ -583,7 +582,7 @@ namespace GamesaveCloudManager
             var gamesPath = sync.GetGamesPath();
             sync.Close();
 
-            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            OpenFileDialog openFileDialog1 = new()
             {
                 InitialDirectory = gamesPath,
                 Title = "Browse Executable Files",
@@ -609,7 +608,7 @@ namespace GamesaveCloudManager
                     return;
                 }
 
-                var fullExecPath = openFileDialog1.FileName.Substring(gamesPath.Length + 1);
+                var fullExecPath = openFileDialog1.FileName[(gamesPath.Length + 1)..];
                 var split = fullExecPath.Split(Path.DirectorySeparatorChar);
                 textBoxInstallPath.Text = split.First();
                 split[0] = "{InstallDir}";

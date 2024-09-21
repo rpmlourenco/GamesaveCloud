@@ -20,10 +20,14 @@ namespace GamesaveCloudLib
         {
             this.file = file;
             this.Id = file.Id;
-            if (file.ModifiedTime != null)
-                this.ModifiedTime = (DateTime)file.ModifiedTime;
-            if (file.ModifiedTime != null)
-                this.CreatedTime = (DateTime)file.CreatedTime;
+            if (file.ModifiedTimeDateTimeOffset != null)
+            {
+                this.ModifiedTime = ((DateTimeOffset)file.ModifiedTimeDateTimeOffset).LocalDateTime;
+            }
+            if (file.CreatedTimeDateTimeOffset != null)
+            {
+                this.CreatedTime = ((DateTimeOffset)file.CreatedTimeDateTimeOffset).LocalDateTime; ;
+            }                
             this.Name = file.Name;
         }
     }
@@ -175,8 +179,8 @@ namespace GamesaveCloudLib
                 {
                     Name = Path.GetFileName(filePath),
                     Parents = plist,
-                    CreatedTime = File.GetCreationTime(filePath),
-                    ModifiedTime = File.GetLastWriteTime(filePath)
+                    CreatedTimeDateTimeOffset = File.GetCreationTime(filePath),
+                    ModifiedTimeDateTimeOffset = File.GetLastWriteTime(filePath)
                 };
 
                 if (checkExists)
@@ -286,11 +290,11 @@ namespace GamesaveCloudLib
             };
             if (createdTime != default)
             {
-                folder.CreatedTime = createdTime;
+                folder.CreatedTimeDateTimeOffset = createdTime;
             }
             if (modifiedTime != default)
             {
-                folder.ModifiedTime = modifiedTime;
+                folder.ModifiedTimeDateTimeOffset = modifiedTime;
             }
 
             var request = service.Files.Create(folder);
@@ -315,11 +319,11 @@ namespace GamesaveCloudLib
             };
             if (createdTime != default)
             {
-                folder.CreatedTime = createdTime;
+                folder.CreatedTimeDateTimeOffset = createdTime;
             }
             if (modifiedTime != default)
             {
-                folder.ModifiedTime = modifiedTime;
+                folder.ModifiedTimeDateTimeOffset = modifiedTime;
             }
 
             var request = service.Files.Create(folder);
@@ -343,8 +347,8 @@ namespace GamesaveCloudLib
                 {
                     Name = Path.GetFileName(filePath),
                     Parents = plist,
-                    CreatedTime = File.GetCreationTime(filePath),
-                    ModifiedTime = File.GetLastWriteTime(filePath)
+                    CreatedTimeDateTimeOffset = File.GetCreationTime(filePath),
+                    ModifiedTimeDateTimeOffset = File.GetLastWriteTime(filePath)
                 };
 
                 if (checkExists)

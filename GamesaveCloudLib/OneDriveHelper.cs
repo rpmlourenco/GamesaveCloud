@@ -286,7 +286,7 @@ namespace GamesaveCloudLib
 
             if (parentId.Equals("root")) { parentId = _rootId; }
 
-            List<DriveItem> children = new List<DriveItem>();
+            List<DriveItem> children = new();
             if (name is not null)
             {
                 var task = Task.Run(async () =>
@@ -305,21 +305,22 @@ namespace GamesaveCloudLib
                 if (task.Result != null)
                 {
                     foreach (var item in task.Result.Value)
-                    {                        
+                    {
                         if (item.File != null) // Check if the item is a file
                         {
                             if (filter.Equals("folder eq null"))
                             {
                                 children.Add(item);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (filter.Equals("folder ne null"))
                             {
                                 children.Add(item);
                             }
                         }
-                    }                    
+                    }
                 }
             }
             else
