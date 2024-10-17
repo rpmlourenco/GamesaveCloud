@@ -806,7 +806,7 @@ public class Synchronizer
             IList<ICloudFile> cloudFolders = driveHelper.GetFolders(folderId);
             cloudFolders = ICloudDriveHelper.FilterFiles(filterIn, filterOut, cloudFolders);
 
-            if (localFolders.Count() > cloudFolders.Count())
+            if (cloudFolders != null && localFolders.Count() > cloudFolders.Count())
             {
                 foreach (var localFolder in localFolders)
                 {
