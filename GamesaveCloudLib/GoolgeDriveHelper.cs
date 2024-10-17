@@ -26,7 +26,7 @@ namespace GamesaveCloudLib
             }
             if (file.CreatedTimeDateTimeOffset != null)
             {
-                this.CreatedTime = ((DateTimeOffset)file.CreatedTimeDateTimeOffset).LocalDateTime; ;
+                this.CreatedTime = ((DateTimeOffset)file.CreatedTimeDateTimeOffset).LocalDateTime;
             }                
             this.Name = file.Name;
         }

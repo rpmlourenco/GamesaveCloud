@@ -612,7 +612,7 @@ namespace GamesaveCloudManager
                 var split = fullExecPath.Split(Path.DirectorySeparatorChar);
                 textBoxInstallPath.Text = split.First();
                 split[0] = "{InstallDir}";
-                textBoxExecPath.Text = String.Join(Path.DirectorySeparatorChar, split); ;
+                textBoxExecPath.Text = String.Join(Path.DirectorySeparatorChar, split);
 
                 //textBoxExecPath.Text = openFileDialog1.FileName.Replace(gamesPath, "{InstallDir}");
             }
